@@ -2,7 +2,10 @@ package pl.tomekf1846.Login.Spigot.LoginManager.Premium;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.*;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -25,7 +28,9 @@ public class PremiumLoginListener extends PacketAdapter {
 
     public static final String SPECIAL_NICK = "Tomekf1846";
 
+    // map key -> session (może być kilka aliasów dla tej samej sesji)
     private final Map<String, PremiumSession> sessions = new ConcurrentHashMap<>();
+    // map: connKey -> verified profile (zachowujemy dotychczasowe API consumeVerifiedProfile)
     private final Map<String, MojangProfile> verifiedProfiles = new ConcurrentHashMap<>();
     private final SecureRandom random = new SecureRandom();
     private final ProtocolManager pm;
@@ -93,39 +98,97 @@ public class PremiumLoginListener extends PacketAdapter {
                 byte[] verifyToken = new byte[4];
                 random.nextBytes(verifyToken);
 
-                String key = connKey(event, null);
-                sessions.put(key, new PremiumSession(username, serverId, verifyToken, kp));
+                PremiumSession session = new PremiumSession(username, serverId, verifyToken, kp);
 
+                // zapisujemy sesję pod kilkoma aliasami (jeśli uda się je obliczyć)
+                String keyEvent = connKey(event, null); // fallback - często identityHashCode(event)
+                sessions.put(keyEvent, session);
+
+                // spróbuj pobrać connection i zapisać również pod nim (jeśli uda)
+                Object connection = findConnectionFor(event);
+                if (connection != null) {
+                    try {
+                        String keyConn = connKey(event, connection);
+                        if (!keyConn.equals(keyEvent)) sessions.put(keyConn, session);
+                    } catch (Throwable ignored) {}
+                }
+
+                plugin.getLogger().info("[PremiumLogin] START username=" + username + " stored under keys (example) keyEvent=" + keyEvent
+                        + (connection != null ? " (connection-based key also stored)" : " (no connection found now)"));
+
+                // utwórz i wyślij EncryptionBegin
                 PacketContainer req = pm.createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN);
                 req.getStrings().write(0, serverId);
                 req.getByteArrays().write(0, kp.getPublic().getEncoded());
                 req.getByteArrays().write(1, verifyToken);
-                pm.sendServerPacket(event.getPlayer(), req);
+
+                try {
+                    Player p = event.getPlayer();
+                    if (p != null) {
+                        pm.sendServerPacket(p, req);
+                        plugin.getLogger().info("[PremiumLogin] Sent ENCRYPTION_BEGIN to Player object for " + username);
+                    } else {
+                        // event.getPlayer() null — spróbuj wysłać mimo to (ProtocolLib zwykle wymaga Player) -> logujemy i zostawiamy
+                        plugin.getLogger().warning("[PremiumLogin] Player==null on START for username=" + username + " — ENCRYPTION_BEGIN wysłany do Player-a może nie przejść.");
+                        // próbujemy jeszcze przez connection jeśli mamy
+                        if (connection != null) {
+                            // Nie gwarantuję, że ProtocolManager ma overload z raw connection w Twojej wersji — dlatego nie używam go tutaj,
+                            // a jedynie loguję. Jeśli Twoja wersja ProtocolLib wspiera wysyłanie na raw connection, możesz dodać tu to wywołanie.
+                        }
+                    }
+                } catch (Exception ex) {
+                    plugin.getLogger().warning("[PremiumLogin] Error while sending ENCRYPTION_BEGIN: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
 
             } catch (Exception ex) {
+                plugin.getLogger().warning("[PremiumLogin] START handler failed: " + ex.getMessage());
                 ex.printStackTrace();
             }
         }
 
         else if (type.equals(PacketType.Login.Client.ENCRYPTION_BEGIN)) {
             Object connection = findConnectionFor(event);
-            String key = connKey(event, connection);
-            PremiumSession session = sessions.get(key);
-            if (session == null) return;
+            String lookupKey = connKey(event, connection);
+
+            // first quick lookup attempts by plausible keys
+            PremiumSession session = sessions.get(lookupKey);
+            if (session == null) {
+                String fallbackKey = connKey(event, null);
+                session = sessions.get(fallbackKey);
+            }
+            if (session == null) {
+                String idKey = String.valueOf(System.identityHashCode(event));
+                session = sessions.get(idKey);
+            }
 
             try {
                 byte[] encShared = event.getPacket().getByteArrays().read(0);
                 byte[] encToken  = event.getPacket().getByteArrays().read(1);
 
+                // jeśli nie znaleziono sesji przez klucze — spróbuj znaleźć poprzez odszyfrowanie encToken każdą zapisaną sesją
+                if (session == null) {
+                    session = findSessionByDecrypting(encToken);
+                    if (session != null) {
+                        plugin.getLogger().info("[PremiumLogin] Session matched by decrypt fallback for connection " + lookupKey + " username=" + session.username);
+                    }
+                }
+
+                if (session == null) {
+                    plugin.getLogger().warning("[PremiumLogin] No session found for incoming ENCRYPTION_BEGIN (connection=" + lookupKey + "). Ignoring.");
+                    return;
+                }
+
+                // odszyfruj shared i token przy użyciu klucza prywatnego danej sesji
                 Cipher rsa = Cipher.getInstance("RSA/ECB/PKCS1Padding");
                 rsa.init(Cipher.DECRYPT_MODE, session.keyPair.getPrivate());
                 byte[] shared = rsa.doFinal(encShared);
                 byte[] token  = rsa.doFinal(encToken);
 
                 if (!java.util.Arrays.equals(token, session.verifyToken)) {
-                    disconnect(event, "Failed to verify username! (token)");
-                    event.setCancelled(true);
-                    sessions.remove(key);
+                    plugin.getLogger().warning("[PremiumLogin] Token mismatch for session username=" + session.username + " connection=" + lookupKey);
+                    safeDisconnect(event, "Failed to verify username! (token)");
+                    removeSession(session);
                     return;
                 }
 
@@ -133,24 +196,50 @@ public class PremiumLoginListener extends PacketAdapter {
                 session.sharedKey = secretKey;
 
                 if (connection == null) {
-                    plugin.getLogger().warning("[tomekf1846-Login] Nie udało się znaleźć Connection");
-                    disconnect(event, "Internal error (connection)");
-                    event.setCancelled(true);
-                    sessions.remove(key);
+                    plugin.getLogger().warning("[PremiumLogin] Nie udało się znaleźć Connection (ENCRYPTION_BEGIN).");
+                    safeDisconnect(event, "Internal error (connection)");
+                    removeSession(session);
                     return;
                 }
-                invokeSetupEncryption(connection, secretKey);
 
-                String serverHash = MojangAuthService.computeServerHash(shared, session.keyPair.getPublic());
+                // Setup szyfrowania po stronie NMS/connection
+                try {
+                    invokeSetupEncryption(connection, secretKey);
+                } catch (NoSuchMethodException nsme) {
+                    plugin.getLogger().warning("[PremiumLogin] Brak metody setupEncryption(SecretKey) - " + nsme.getMessage());
+                    // mimo braku setupEncryption możemy spróbować dalej (ale raczej nie przejdzie)
+                }
+
+                // compute serverHash i query HasJoined
+                String serverHash;
+                try {
+                    serverHash = MojangAuthService.computeServerHash(shared, session.keyPair.getPublic());
+                } catch (Throwable t) {
+                    // log i fail safe
+                    plugin.getLogger().warning("[PremiumLogin] computeServerHash failed: " + t.getMessage());
+                    t.printStackTrace();
+                    safeDisconnect(event, "Failed to verify username!");
+                    removeSession(session);
+                    return;
+                }
+
+                plugin.getLogger().info("[PremiumLogin] Calling sessionserver.hasJoined username=" + session.username + " serverHash=" + serverHash);
+
                 MojangProfile profile = MojangAuthService.queryHasJoined(session.username, serverHash);
                 if (profile == null) {
-                    disconnect(event, "Failed to verify username!");
-                    event.setCancelled(true);
-                    sessions.remove(key);
+                    plugin.getLogger().warning("[PremiumLogin] Mojang session server returned null profile for username=" + session.username + " serverHash=" + serverHash);
+                    safeDisconnect(event, "Failed to verify username!");
+                    removeSession(session);
                     return;
                 }
 
-                verifiedProfiles.put(key, profile);
+                // store verified profile under any key that references this session (so consumeVerifiedProfile works)
+                String sessionKey = getAnyKeyForSession(session);
+                if (sessionKey == null) {
+                    // awaryjnie generujemy tymczasowy klucz
+                    sessionKey = "sess:" + System.identityHashCode(session);
+                }
+                verifiedProfiles.put(sessionKey, profile);
 
                 // PODMIANA: ustaw GameProfile w handlerze logowania przed READY_TO_ACCEPT
                 try {
@@ -159,33 +248,56 @@ public class PremiumLoginListener extends PacketAdapter {
                         // najpierw ustaw profil, potem ready
                         LoginStateUtil.setLoginGameProfile(loginHandler, profile);
                         LoginStateUtil.setReadyToAccept(loginHandler);
+                        plugin.getLogger().info("[PremiumLogin] Set GameProfile and READY_TO_ACCEPT for username=" + session.username);
+                    } else {
+                        plugin.getLogger().warning("[PremiumLogin] Nie znaleziono loginHandler (ServerLoginPacketListenerImpl) do ustawienia profilu.");
                     }
                 } catch (Throwable t) {
-                    plugin.getLogger().warning("Nie udało się ustawić profilu/READY_TO_ACCEPT: " + t.getMessage());
+                    plugin.getLogger().warning("[PremiumLogin] Nie udało się ustawić profilu/READY_TO_ACCEPT: " + t.getMessage());
                     t.printStackTrace();
                 }
 
-                // konsumuj pakiet klienta
+                // konsumuj pakiet klienta (niech dalej login flow pójdzie z podmienionym profilem)
                 event.setCancelled(true);
+
+                // nie usuwamy od razu sesji - w razie potrzeby możemy później jej użyć (ale lepiej usunąć)
+                removeSession(session);
 
             } catch (Exception e) {
                 e.printStackTrace();
+                plugin.getLogger().warning("[PremiumLogin] Exception in ENCRYPTION_BEGIN: " + e.getMessage());
                 try {
-                    disconnect(event, "Failed to verify username!");
-                    event.setCancelled(true);
+                    safeDisconnect(event, "Failed to verify username!");
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    plugin.getLogger().warning("[PremiumLogin] safeDisconnect failed: " + ex.getMessage());
                 } finally {
-                    sessions.remove(key);
+                    // próbujemy znaleźć jakąkolwiek sesję powiązaną i usunąć ją
+                    try {
+                        byte[] encToken = event.getPacket().getByteArrays().read(1);
+                        PremiumSession ss = findSessionByDecrypting(encToken);
+                        if (ss != null) removeSession(ss);
+                    } catch (Throwable ignored) {}
                 }
             }
         }
     }
 
-    private void disconnect(PacketEvent event, String msg) throws Exception {
-        PacketContainer dis = pm.createPacket(PacketType.Login.Server.DISCONNECT);
-        dis.getChatComponents().write(0, WrappedChatComponent.fromText(msg));
-        pm.sendServerPacket(event.getPlayer(), dis);
+    /**
+     * Bezpieczne wysłanie pakietu rozłączenia — nie rzuca wyjątków na zewnątrz.
+     */
+    private void safeDisconnect(PacketEvent event, String msg) {
+        try {
+            PacketContainer dis = pm.createPacket(PacketType.Login.Server.DISCONNECT);
+            dis.getChatComponents().write(0, WrappedChatComponent.fromText(msg));
+            Player p = event.getPlayer();
+            if (p != null) {
+                pm.sendServerPacket(p, dis);
+            } else {
+                plugin.getLogger().warning("[PremiumLogin] Nie można wysłać DISCONNECT, event.getPlayer() == null. Msg: " + msg);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("[PremiumLogin] Failed to send disconnect: " + e.getMessage());
+        }
     }
 
     private Object findConnectionFor(PacketEvent event) {
@@ -261,7 +373,7 @@ public class PremiumLoginListener extends PacketAdapter {
                 }
             }
         } catch (Throwable t) {
-            plugin.getLogger().warning("[tomekf1846-Login] Nie udało się pobrać Connection: " + t.getMessage());
+            plugin.getLogger().warning("[PremiumLogin] Nie udało się pobrać Connection: " + t.getMessage());
             t.printStackTrace();
         }
         return null;
@@ -349,5 +461,62 @@ public class PremiumLoginListener extends PacketAdapter {
     public void clearSessions() {
         sessions.clear();
         verifiedProfiles.clear();
+    }
+
+    // ---- pomocnicze metody ----
+
+    /**
+     * Przeszukuje wszystkie zapisane sesje i próbuje odszyfrować encToken przy ich pomocy.
+     * Jeśli odszyfrowanie się uda i porównanie tokenów pasuje -> zwracamy tę sesję.
+     */
+    private PremiumSession findSessionByDecrypting(byte[] encToken) {
+        for (Map.Entry<String, PremiumSession> e : sessions.entrySet()) {
+            PremiumSession s = e.getValue();
+            try {
+                Cipher rsa = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                rsa.init(Cipher.DECRYPT_MODE, s.keyPair.getPrivate());
+                byte[] token = rsa.doFinal(encToken);
+                if (java.util.Arrays.equals(token, s.verifyToken)) {
+                    return s;
+                }
+            } catch (Throwable ignored) {
+                // nie pasuje - kontynuuj
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Usuń daną sesję spod wszystkich kluczy w mapie sessions (cleanup).
+     */
+    private void removeSession(PremiumSession session) {
+        if (session == null) return;
+        Iterator<Map.Entry<String, PremiumSession>> it = sessions.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, PremiumSession> e = it.next();
+            if (e.getValue() == session) {
+                it.remove();
+            }
+        }
+        // usuń też potencjalny verifiedProfile powiązany (jeśli było)
+        Iterator<Map.Entry<String, MojangProfile>> itv = verifiedProfiles.entrySet().iterator();
+        while (itv.hasNext()) {
+            Map.Entry<String, MojangProfile> e = itv.next();
+            // nie mamy bezpośredniego odwołania do sesji w profilu - zostawimy profile jeśli jest potrzeba
+            // (opcjonalnie usunąć profile powiązane z tą sesją - ale nie mamy powiązania)
+            // zostawiamy jak jest, by nie zniszczyć API consumeVerifiedProfile
+            break;
+        }
+    }
+
+    /**
+     * Zwraca przykładowy (jeden) klucz mapy sessions pod którym przechowywana była dana sesja.
+     * Przydatne do przechowywania verifiedProfiles pod tym kluczem.
+     */
+    private String getAnyKeyForSession(PremiumSession session) {
+        for (Map.Entry<String, PremiumSession> e : sessions.entrySet()) {
+            if (e.getValue() == session) return e.getKey();
+        }
+        return null;
     }
 }

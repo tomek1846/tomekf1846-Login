@@ -69,14 +69,16 @@ public class MojangAuthService {
     }
 
     public static String computeServerHash(byte[] sharedSecret, PublicKey publicKey) throws Exception {
-        final String serverId = ""; // kluczowe: zawsze pusty
+        final String serverId = "";
 
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
         sha1.update(serverId.getBytes(StandardCharsets.ISO_8859_1));
         sha1.update(sharedSecret);
         sha1.update(publicKey.getEncoded());
 
-        // Użyj BigInteger z signum = 1, aby uniknąć problemów z ujemną reprezentacją
-        return new BigInteger(1, sha1.digest()).toString(16);
+        byte[] digest = sha1.digest();
+
+        BigInteger bi = new BigInteger(digest);
+        return bi.toString(16);
     }
 }
