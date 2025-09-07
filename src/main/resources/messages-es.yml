@@ -1,0 +1,267 @@
+#    $$\                                                                                    $$$$$$$$\  $$$$$$\
+#    $$ |                                                                                   $$  _____|$$  __$$\
+#    $$ |      $$$$$$\  $$$$$$$\   $$$$$$\  $$\   $$\  $$$$$$\   $$$$$$\   $$$$$$\          $$ |      $$ /  \__|
+#    $$ |      \____$$\ $$  __$$\ $$  __$$\ $$ |  $$ | \____$$\ $$  __$$\ $$  __$$\ $$$$$$\ $$$$$\    \$$$$$$\
+#    $$ |      $$$$$$$ |$$ |  $$ |$$ /  $$ |$$ |  $$ | $$$$$$$ |$$ /  $$ |$$$$$$$$ |\______|$$  __|    \____$$\
+#    $$ |     $$  __$$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$  __$$ |$$ |  $$ |$$   ____|        $$ |      $$\   $$ |
+#    $$$$$$$$\\$$$$$$$ |$$ |  $$ |\$$$$$$$ |\$$$$$$  |\$$$$$$$ |\$$$$$$$ |\$$$$$$$\         $$$$$$$$\ \$$$$$$  |
+#    \________|\_______|\__|  \__| \____$$ | \______/  \_______| \____$$ | \_______|        \________| \______/
+#    $$\   $$ |                    $$\   $$ |
+#    \$$$$$$  |                    \$$$$$$  |
+#    \______/                      \______/
+#
+#                                    Hecho por: : Champion2115 - tomekf1846-Login 1.0.0
+messages:
+  prefix:
+    main-prefix: "&e[&6Tomekf1846-Login&e] &7&m = &r "
+  startmessages:
+    banners:
+      border: "|==========================================|"
+      loading_command: "Cargando comando"
+      loading_listener: "Cargando escuchador"
+      loading_data: "Cargando datos"
+      loading_success: "¡Cargado exitosamente!"
+      plugin_shutdown: "Plugin cerrado exitosamente"
+      error: "Error"
+    plugin_info:
+      info: "Información del plugin"
+      version_prefix: "Versión: "
+      author_prefix: "Autor: "
+      website_prefix: "Sitio web: "
+    kick_messages:
+      start: "&e[&6Tomekf1846-Login&e]\n &4Tomekf1846-Login está iniciando\n Todos los jugadores han sido expulsados"
+      stop: "&e[&6Tomekf1846-Login&e]\n &4Tomekf1846-Login se está cerrando\n Todos los jugadores han sido expulsados"
+  player-commands:
+    only_players: "&cEste comando solo puede ser usado por jugadores."
+    command_disabled: "&cEl comando premium/cracked está deshabilitado."
+    register_usage: "&cUso: /register (contraseña) (confirmar contraseña)"
+    login_usage: "&cUso: /login (contraseña)"
+    premium_usage: "&cUso: /premium (contraseña)"
+    cracked_usage: "&cUso: /cracked (nueva contraseña)"
+    changepass_usage: "&cUso: /changepass (contraseña antigua) (nueva contraseña)"
+    email_usage: "&cUso: /email (correo electrónico)"
+    unknown_command: "&cComando desconocido. Usa /login-help para ver los comandos disponibles."
+    help:
+      available_commands: "&cComandos disponibles:"
+      login_command: "&e/login (contraseña)"
+      log_command: "&e/log (contraseña)"
+      short_login_command: "&e/l (contraseña)"
+      register_command: "&e/register (contraseña) (contraseña)"
+      short_register_command: "&e/reg (contraseña) (contraseña)"
+      cracked_command: "&e/cracked (nueva-contraseña)"
+      premium_command: "&e/premium (contraseña)"
+      changepass_command: "&e/changepass (contraseña-antigua) (contraseña-nueva)"
+      changepassword_command: "&e/changepassword (contraseña-antigua) (contraseña-nueva)"
+      email_command: "&e/email (email) (contraseña)"
+      login_help_command: "&e/login-help"
+    premium-player: "&cNo puedes cambiar la contraseña porque eres un jugador premium."
+    data-not-found: "&cNo se encontró el archivo de datos de inicio de sesión."
+    incorrect-old-password: "&c¡La contraseña antigua no es correcta!"
+    password-too-short: "&c¡La nueva contraseña debe tener al menos {min-length} caracteres!"
+    password-too-simple: "&c¡La nueva contraseña es demasiado simple!"
+    success-password-change: "&a¡Contraseña cambiada exitosamente!"
+    player-not-found: "&cNo se encontró al jugador."
+    invalid-email-format: "&c¡Formato de correo electrónico no válido! Por favor ingrese una dirección válida."
+    success-email-change: "&aEl correo electrónico del jugador {player} ha sido cambiado exitosamente a {new_email}."
+    incorrect-password: "&c¡Contraseña incorrecta!"
+    account-already-set: "&c¡Tu cuenta ya está configurada como {account_status}!"
+    confirmation-requested: "&e¡Vuelve a ingresar el comando dentro de 25 segundos para confirmar el modo {mode}!"
+    passwords-do-not-match: "&c¡Las contraseñas no coinciden!"
+    account-status-updated: "&a¡El estado de tu cuenta ha sido actualizado exitosamente a modo {mode}!"
+    error-occurred: "&c¡Ocurrió un error al actualizar el estado de la cuenta!"
+    account-changed-message-kick: "&e[&6Tomekf1846-Login&e]\n &bTu cuenta ha sido cambiada al modo {mode}!"
+    already-registered: "&c¡Ya estás registrado!"
+    registration-success: "&a¡Registro exitoso!"
+    blocked-command: "&cNo puedes usar este comando antes de iniciar sesión."
+    blocked-chat: "&cNo puedes hablar en el chat antes de iniciar sesión."
+    register-message: "&ePor favor usa /register (contraseña) (confirmar contraseña) para registrarte."
+    login-message: "&ePor favor usa /login (contraseña) para iniciar sesión."
+    premium-login-disabled: "&cEl inicio de sesión Premium está deshabilitado. Tu cuenta ha sido cambiada al modo Non-Premium\n &c&lTu nueva contraseña es: &n{new_password}"
+    already_registered: "&c¡Ya has iniciado sesión!"
+    ya_registered: "&c¡Ya estás registrado!"
+    not_registered: "&c¡No te has registrado aún!"
+    successfully_logged_in: "&a¡Inicio de sesión exitoso!"
+  title:
+    premium-register:
+      title: "&9Registro exitoso"
+      subtitle: "&bCuenta Premium registrada"
+    cracked-register:
+      title: "&9Registro exitoso"
+      subtitle: "&bCuenta Non-Premium registrada"
+    login:
+      title: "&2Inicio de sesión exitoso"
+      subtitle: "&a¡Disfruta del juego!"
+    premium-login:
+      title: "&2Inicio de sesión exitoso"
+      subtitle: "&aInicio de sesión con cuenta Premium"
+    cracked-session-login:
+      title: "&2Inicio de sesión exitoso"
+      subtitle: "&aInicio de sesión con cuenta Non-Premium"
+    admin-login:
+      title: "&2Inicio de sesión exitoso"
+      subtitle: "&aInicio de sesión forzado por administrador"
+    registration-timeout:
+      message: "&e[&6Tomekf1846-Login&e]\n &cNo te registraste a tiempo."
+    login-timeout:
+      message: "&e[&6Tomekf1846-Login&e]\n &cNo iniciaste sesión a tiempo."
+    bossbar:
+      registration_time_left: "&9Tiempo restante para el registro: &l{seconds} &9segundos"
+      login_time_left: "&aTiempo restante para el inicio de sesión: &l{seconds} &asegundos"
+    uselogin:
+      title: "&2Ingrese el comando"
+      subtitle: "&a/login (Contraseña)"
+    useregister:
+      title: "&9Ingrese el comando"
+      subtitle: "&b/register (Contraseña) (Contraseña)"
+  admin-commands:
+    player_not_found: "&cNo se encontró al jugador."
+    cannot_change_premium_password: "&cNo se puede cambiar la contraseña del jugador {player} porque es un jugador Premium."
+    password_changed: "&aLa contraseña del jugador {player} ha sido cambiada."
+    email_removed: "&aEl correo electrónico del jugador {player} ha sido eliminado."
+    invalid_email: "&cEl correo electrónico proporcionado no es válido. ¿Estás seguro de que quieres agregarlo? Ingresa nuevamente el comando en &15 segundos &cpara continuar."
+    email_changed: "&aEl correo electrónico del jugador {player} ha sido cambiado a {email}"
+    player_not_online: "&cEl jugador {player} no está en línea."
+    already_logged_in: "&cEl jugador {player} ya ha iniciado sesión."
+    force_login_success: "&aEl jugador {player} ha sido forzado a iniciar sesión exitosamente."
+    cannot_change_own_status: "&cNo puedes cambiar el estado de tu propia cuenta."
+    premium_command_disabled: "&cEl comando Premium/Cracked está deshabilitado."
+    player_file_not_found: "&cNo se encontró el archivo de datos del jugador."
+    already_premium: "&c¡El jugador ya es Premium!"
+    already_cracked: "&c¡El jugador ya es Cracked!"
+    player_status_updated: "&aEl estado del jugador {player} ha sido actualizado a {status} exitosamente."
+    player_kicked_premium: "&e[&6Tomekf1846-Login&e]\n &bCuenta cambiada a &a&nPremium&b"
+    player_kicked_cracked: "&e[&6Tomekf1846-Login&e]\n &bCuenta cambiada a &c&nCracked&b"
+    failed_to_update_player: "&c¡No se pudo actualizar los datos del jugador!"
+    error_updating_player_file: "&c¡Ocurrió un error al actualizar el archivo de datos del jugador!"
+    never_played_before: "&cEl jugador {player} nunca ha jugado en el servidor."
+    already_registered: "&cEl jugador {player} ya está registrado."
+    successfully_registered: "&aEl jugador {player} ha sido registrado exitosamente."
+    cannot_unregister_self: "&cNo puedes desregistrarte a ti mismo."
+    player_does_not_exist: "&cEl jugador {player} no existe."
+    successfully_unregistered: "&aEl jugador {player} ha sido desregistrado exitosamente."
+    failed_to_unregister: "&cNo se pudo desregistrar al jugador {player}"
+    player_kicked_unregistered: "&e[&6Tomekf1846-Login&e]\n &4Has sido desregistrado"
+    reload_success: "&aEl archivo de configuración ha sido recargado exitosamente."
+    only_players_gui: "&cEste comando solo puede ser usado por jugadores."
+    usage_cracked: "&cUso: /alogin cracked (jugador) (nueva contraseña)"
+    usage_premium: "&cUso: /alogin premium (jugador)"
+    usage_changepass: "&cUso: /alogin changepass (jugador) (contraseña)"
+    usage_unregister: "&cUso: /alogin unregister (jugador)"
+    usage_register: "&cUso: /alogin register (jugador) (contraseña)"
+    usage_email: "&cUso: /alogin email (jugador) (correo electrónico o"
+    usage_forcelogin: "&cUso: /alogin forcelogin (jugador)"
+    usage_ip: "&cUso: /alogin ip (jugador)"
+    usage_reload: "&cUso: /alogin reload"
+    unknown_command: "&cComando desconocido. Intenta con /alogin."
+    help:
+      available_commands: "&cComandos disponibles:"
+      about_command: "&e/alogin about"
+      gui_command: "&e/alogin gui"
+      cracked_command: "&e/alogin cracked (jugador)"
+      premium_command: "&e/alogin premium (jugador)"
+      changepass_command: "&e/alogin changepass (jugador) (contraseña)"
+      changepassword_command: "&e/alogin changepassword (jugador) (contraseña)"
+      unregister_command: "&e/alogin unregister (jugador)"
+      register_command: "&e/alogin register (jugador) (contraseña)"
+      email_command: "&e/alogin email (jugador) (correo electrónico o none)"
+      forcelogin_command: "&e/alogin forcelogin (jugador)"
+      ip_command: "&e/alogin ip (jugador)"
+      reload_command: "&e/alogin reload"
+gui:
+  frist-page: "&cEsta es la primera página, no puedes volver atrás."
+  no-data: "&cNo definido"
+  Maingui:
+    name: "&e&lMenú principal"
+    filling:
+      filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+      filling-B: "BLACK_STAINED_GLASS_PANE"
+      filling-C: "BLUE_STAINED_GLASS_PANE"
+    buttons:
+      Player-Accounts:
+        material: "PAPER"
+        name: "&d&lCuentas de jugador"
+        lore:
+          - "&7Aquí puedes gestionar las cuentas,"
+          - "&7editar contraseñas, etc."
+      Player-Login-History:
+        material: "BOOK"
+        name: "&b&lHistorial de inicio de sesión"
+        lore:
+          - "&7Aquí puedes ver"
+          - "&7el historial de inicio de sesión de los jugadores"
+      Settings:
+        material: COMPARATOR
+        name: "&a&lConfiguración"
+        lore:
+          - "&7Aquí puedes ver"
+          - "&7configuraciones del plugin y el estado de la base de datos"
+      Close:
+        material: BARRIER
+        name: "&c&lCerrar GUI"
+        lore:
+          - "&7Haz clic derecho/izquierdo para cerrar el menú"
+  Playerlist:
+    name: "&d&lLista de jugadores"
+    layout: "ABCBABCBA00000000000000000000000000000000000012AB3AB45"
+    filling:
+      filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+      filling-B: "BLACK_STAINED_GLASS_PANE"
+      filling-C: "BLUE_STAINED_GLASS_PANE"
+    buttons:
+      Search-player:
+        material: OAK_SIGN
+        name: "&eBuscar jugador"
+        lore:
+          - "&7Busca un jugador por nombre."
+      Previous-page:
+  material: ARROW
+  name: "&e&lPágina anterior"
+  lore:
+    - "&7Pasa a la página anterior de la lista de jugadores"
+    - "&7Página actual: {page}"
+Next-page:
+  material: ARROW
+  name: "&e&lPágina siguiente"
+  lore:
+    - "&7Pasa a la página siguiente de la lista de jugadores"
+    - "&7Página actual: {page}"
+Close:
+  material: BARRIER
+  name: "&c&lCerrar GUI"
+  lore:
+    - "&7Haz clic derecho/izquierdo para cerrar el GUI"
+Onlinedye:
+  material: LIME_DYE
+  name: "&a&lJugador en línea"
+  lore:
+    - "&7Ver jugadores en línea"
+Offlinedye:
+  material: GRAY_DYE
+  name: "&7&lJugador desconectado"
+  lore:
+    - "&7Ver jugadores desconectados"
+Players:
+  name: "&dJugador {player}"
+  lore:
+    uuid: "&7UUID: &f{uuid}"
+    password: "&7Contraseña: &f{password}"
+    fristip: "&7IP inicial: &f{fristip}"
+    lastip: "&7Última IP: &f{lastip}"
+    email: "&7Correo electrónico: &f{email}"
+    premium: "&7Premium: &f{premium}"
+Search:
+  layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
+  name: "&b&lResultados de búsqueda de jugadores"
+  no-player-data: "&cNo se encontraron jugadores coincidentes."
+  search-message: "&aIntroduce un nombre para buscar"
+  search-title:
+    title: "&6Introduce un nombre"
+    subtitle: "&eBusca un jugador en el chat"
+  buttons:
+    Close:
+      material: BARRIER
+      name: "&c&lCerrar GUI"
+      lore:
+        - "&7Haz clic derecho/izquierdo para cerrar el GUI"
+Config-Version: 1.0.0 #NO CAMBIES
+#Generado por tomekf1846-Login
