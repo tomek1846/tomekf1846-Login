@@ -13,11 +13,20 @@ import java.security.MessageDigest;
 import java.security.PublicKey;
 import java.util.*;
 
+import pl.tomekf1846.Login.Spigot.MainSpigot;
+
 public class MojangAuthService {
 
     public static MojangProfile queryHasJoined(String username, String serverHash) {
+        final int maxAttempts = 10;
+        final long defaultDelay = 200L;
+        final long rateLimitDelay = 400L;
+        String pluginName = MainSpigot.getInstance().getDescription().getName();
+        String pluginVersion = MainSpigot.getInstance().getDescription().getVersion();
+        String userAgent = pluginName + "/" + pluginVersion;
+
         try {
-            for (int attempt = 0; attempt < 6; attempt++) {
+            for (int attempt = 0; attempt < maxAttempts; attempt++) {
                 String urlStr = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username="
                         + java.net.URLEncoder.encode(username, StandardCharsets.UTF_8)
                         + "&serverId=" + java.net.URLEncoder.encode(serverHash, StandardCharsets.UTF_8);
@@ -26,49 +35,74 @@ public class MojangAuthService {
                 con.setConnectTimeout(7000);
                 con.setReadTimeout(7000);
                 con.setRequestMethod("GET");
-                con.setRequestProperty("User-Agent", "tomekf1846-Login/1.1");
+                con.setRequestProperty("User-Agent", userAgent);
 
-                int code = con.getResponseCode();
-                if (code == 200) {
-                    JsonObject obj = JsonParser.parseReader(
-                            new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8)
-                    ).getAsJsonObject();
-
-                    if (!obj.has("id")) return null;
-                    String id = obj.get("id").getAsString();
-                    String name = obj.has("name") ? obj.get("name").getAsString() : username;
-
-                    String s = id.trim();
-                    if (s.length() != 32) return null;
-                    String dashed = s.replaceFirst(
-                            "([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})",
-                            "$1-$2-$3-$4-$5"
-                    );
-                    UUID uuid = UUID.fromString(dashed);
-
-                    List<Map<String, String>> propsList = new ArrayList<>();
-                    if (obj.has("properties")) {
-                        JsonArray props = obj.getAsJsonArray("properties");
-                        for (int i = 0; i < props.size(); i++) {
-                            JsonObject p = props.get(i).getAsJsonObject();
-                            Map<String, String> m = new HashMap<>();
-                            m.put("name", p.get("name").getAsString());
-                            m.put("value", p.get("value").getAsString());
-                            if (p.has("signature")) m.put("signature", p.get("signature").getAsString());
-                            propsList.add(m);
+                try {
+                    int code = con.getResponseCode();
+                    if (code == HttpURLConnection.HTTP_OK) {
+                        JsonObject obj;
+                        try (InputStreamReader reader = new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8)) {
+                            obj = JsonParser.parseReader(reader).getAsJsonObject();
                         }
+
+                        if (!obj.has("id")) return null;
+                        String id = obj.get("id").getAsString();
+                        String name = obj.has("name") ? obj.get("name").getAsString() : username;
+
+                        String s = id.trim();
+                        if (s.length() != 32) return null;
+                        String dashed = s.replaceFirst(
+                                "([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})",
+                                "$1-$2-$3-$4-$5"
+                        );
+                        UUID uuid = UUID.fromString(dashed);
+
+                        List<Map<String, String>> propsList = new ArrayList<>();
+                        if (obj.has("properties")) {
+                            JsonArray props = obj.getAsJsonArray("properties");
+                            for (int i = 0; i < props.size(); i++) {
+                                JsonObject p = props.get(i).getAsJsonObject();
+                                Map<String, String> m = new HashMap<>();
+                                m.put("name", p.get("name").getAsString());
+                                m.put("value", p.get("value").getAsString());
+                                if (p.has("signature")) m.put("signature", p.get("signature").getAsString());
+                                propsList.add(m);
+                            }
+                        }
+                        return new MojangProfile(uuid, name, propsList);
                     }
-                    return new MojangProfile(uuid, name, propsList);
-                } else if (code == 204) {
-                    return null;
-                } else {
-                    System.out.println("[PremiumLogin] hasJoined HTTP code=" + code);
-                    if (code == 403 | code == 429) {
-                        Thread.sleep(200L);
+
+                    long sleepDelay = defaultDelay;
+                    boolean retry;
+                    if (code == HttpURLConnection.HTTP_NO_CONTENT) {
+                        // 204 oznacza, że gracz jeszcze nie zakończył logowania - spróbuj ponownie
+                        retry = true;
+                    } else if (code == HttpURLConnection.HTTP_FORBIDDEN || code == 429) {
+                        System.out.println("[PremiumLogin] hasJoined HTTP code=" + code + " (rate limited/forbidden)");
+                        retry = true;
+                        sleepDelay = rateLimitDelay;
+                    } else if (code >= 500 && code < 600) {
+                        System.out.println("[PremiumLogin] hasJoined temporary server error code=" + code);
+                        retry = true;
+                    } else {
+                        System.out.println("[PremiumLogin] hasJoined unexpected HTTP code=" + code);
+                        retry = false;
                     }
+
+                    if (!retry) {
+                        return null;
+                    }
+
+                    if (attempt < maxAttempts - 1) {
+                        Thread.sleep(sleepDelay);
+                        continue;
+                    }
+                } finally {
+                    con.disconnect();
                 }
-                Thread.sleep(120L);
             }
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,22 +126,6 @@ public class MojangAuthService {
             return "0";
         }
 
-        BigInteger bi = new BigInteger(digest);
-        String hex = bi.toString(16);
-
-        int expectedLength = digest.length * 2;
-        if (hex.startsWith("-")) {
-            String body = hex.substring(1);
-            if (body.length() < expectedLength) {
-                body = "0".repeat(expectedLength - body.length()) + body;
-            }
-            return "-" + body;
-        }
-
-        if (hex.length() < expectedLength) {
-            hex = "0".repeat(expectedLength - hex.length()) + hex;
-        }
-
-        return hex;
+        return new BigInteger(digest).toString(16);
     }
 }

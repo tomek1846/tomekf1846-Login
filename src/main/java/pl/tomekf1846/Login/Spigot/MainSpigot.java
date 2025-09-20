@@ -76,8 +76,11 @@ public final class MainSpigot extends JavaPlugin {
         pluginStart.printLoadingListener();
 
         ProtocolManager pm = ProtocolLibrary.getProtocolManager();
-        PremiumLoginListener pll = new PremiumLoginListener(this, pm);
-        pm.addPacketListener(pll);
+        this.loginListener = new PremiumLoginListener(this, pm);
+        pm.addPacketListener(this.loginListener);
+
+        this.successListener = new SuccessPacketListener(this, pm, this.loginListener);
+        pm.addPacketListener(this.successListener);
 
         getServer().getPluginManager().registerEvents(new MainGuiListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerListGuiListener(), this);
@@ -105,9 +108,14 @@ public final class MainSpigot extends JavaPlugin {
         pluginStart.printPluginShutdown();
         pluginStart.stopkickall();
 
-        ProtocolLibrary.getProtocolManager().removePacketListener(loginListener);
-        ProtocolLibrary.getProtocolManager().removePacketListener(successListener);
-        if (loginListener != null) loginListener.clearSessions();
+        ProtocolManager pm = ProtocolLibrary.getProtocolManager();
+        if (loginListener != null) {
+            pm.removePacketListener(loginListener);
+            loginListener.clearSessions();
+        }
+        if (successListener != null) {
+            pm.removePacketListener(successListener);
+        }
     }
 
     public static MainSpigot getInstance() {
