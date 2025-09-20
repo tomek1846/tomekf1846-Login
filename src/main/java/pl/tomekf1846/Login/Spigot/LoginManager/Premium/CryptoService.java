@@ -16,7 +16,7 @@ public class CryptoService {
         KeyPair kp = kpg.generateKeyPair();
 
         String serverId = "";
-        byte[] verifyToken = new byte[4];
+        byte[] verifyToken = new byte[16];
         random.nextBytes(verifyToken);
 
         return new PremiumSession(username, serverId, verifyToken, kp);

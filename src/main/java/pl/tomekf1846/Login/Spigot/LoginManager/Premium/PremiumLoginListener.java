@@ -14,6 +14,8 @@ import pl.tomekf1846.Login.Spigot.LoginManager.Session.Premium.SessionPremiumChe
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import java.lang.reflect.Method;
+import java.util.Objects;
 
 public class PremiumLoginListener extends PacketAdapter {
 
@@ -127,7 +129,7 @@ public class PremiumLoginListener extends PacketAdapter {
 
                 if (!java.util.Arrays.equals(token, session.verifyToken)) {
                     plugin.getLogger().warning("[PremiumLogin] Token mismatch for session username=" + session.username + " connection=" + lookupKey);
-                    safeDisconnect(event, "Failed to verify username! (token)");
+                    safeDisconnect(event, connection, "Failed to verify username! (token)");
                     sessionManager.removeSession(session);
                     return;
                 }
@@ -137,7 +139,7 @@ public class PremiumLoginListener extends PacketAdapter {
 
                 if (connection == null) {
                     plugin.getLogger().warning("[PremiumLogin] Nie udało się znaleźć Connection (ENCRYPTION_BEGIN).");
-                    safeDisconnect(event, "Internal error (connection)");
+                    safeDisconnect(event, connection, "Internal error (connection)");
                     sessionManager.removeSession(session);
                     return;
                 }
@@ -156,7 +158,7 @@ public class PremiumLoginListener extends PacketAdapter {
                 } catch (Throwable t) {
                     plugin.getLogger().warning("[PremiumLogin] computeServerHash failed: " + t.getMessage());
                     t.printStackTrace();
-                    safeDisconnect(event, "Failed to verify username!");
+                    safeDisconnect(event, connection, "Failed to verify username!");
                     sessionManager.removeSession(session);
                     return;
                 }
@@ -166,7 +168,7 @@ public class PremiumLoginListener extends PacketAdapter {
                 MojangProfile profile = MojangAuthService.queryHasJoined(session.username, serverHash);
                 if (profile == null) {
                     plugin.getLogger().warning("[PremiumLogin] hasJoined==null dla " + session.username + " (hash=" + serverHash + "). Wymagane premium -> rozłączam.");
-                    safeDisconnect(event, "§cTo konto wymaga logowania premium.\n§7Zaloguj się launcherem Mojang/Microsoft i spróbuj ponownie.");
+                    safeDisconnect(event, connection, "§cTo konto wymaga logowania premium.\n§7Zaloguj się launcherem Mojang/Microsoft i spróbuj ponownie.");
                     sessionManager.removeSession(session);
                     return;
                 }
@@ -184,7 +186,7 @@ public class PremiumLoginListener extends PacketAdapter {
                 e.printStackTrace();
                 plugin.getLogger().warning("[PremiumLogin] Exception in ENCRYPTION_BEGIN: " + e.getMessage());
                 try {
-                    safeDisconnect(event, "Failed to verify username!");
+                    safeDisconnect(event, connection, "Failed to verify username!");
                 } catch (Exception ex) {
                     plugin.getLogger().warning("[PremiumLogin] safeDisconnect failed: " + ex.getMessage());
                 } finally {
@@ -219,18 +221,153 @@ public class PremiumLoginListener extends PacketAdapter {
         return false;
     }
 
-    private void safeDisconnect(PacketEvent event, String msg) {
+    private void safeDisconnect(PacketEvent event, Object connection, String msg) {
+        boolean disconnected = false;
         try {
             PacketContainer dis = pm.createPacket(PacketType.Login.Server.DISCONNECT);
             dis.getChatComponents().write(0, WrappedChatComponent.fromText(msg));
             Player p = event.getPlayer();
             if (p != null) {
                 pm.sendServerPacket(p, dis);
-            } else {
-                plugin.getLogger().warning("[PremiumLogin] Nie można wysłać DISCONNECT, event.getPlayer() == null. Msg: " + msg);
+                disconnected = true;
             }
         } catch (Exception e) {
-            plugin.getLogger().warning("[PremiumLogin] Failed to send disconnect: " + e.getMessage());
+            plugin.getLogger().warning("[PremiumLogin] Failed to send disconnect packet: " + e.getMessage());
+        }
+
+        if (disconnected) {
+            return;
+        }
+
+        if (connection == null) {
+            try {
+                connection = connectionResolver.findConnectionFor(event);
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (connection == null) {
+            plugin.getLogger().warning("[PremiumLogin] Nie można rozłączyć połączenia (brak referencji connection). Msg: " + msg);
+            return;
+        }
+
+        if (invokeDisconnectOnLoginHandler(connection, msg)) {
+            return;
+        }
+
+        if (invokeDisconnect(connection, msg)) {
+            return;
+        }
+
+        if (closeChannel(connection)) {
+            return;
+        }
+
+        plugin.getLogger().warning("[PremiumLogin] Nie udało się rozłączyć gracza mimo prób fallback. Msg: " + msg);
+    }
+
+    private boolean invokeDisconnectOnLoginHandler(Object connection, String msg) {
+        Object loginHandler = ConnectionResolver.extractFieldType(connection, "net.minecraft.server.network.ServerLoginPacketListenerImpl");
+        if (loginHandler != null) {
+            if (invokeDisconnect(loginHandler, msg)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean invokeDisconnect(Object target, String msg) {
+        if (target == null) {
+            return false;
+        }
+
+        ChatComponentWrapper component = ChatComponentWrapper.fromText(msg);
+        if (component == null) {
+            return false;
+        }
+
+        for (Method method : target.getClass().getMethods()) {
+            if (!method.getName().equals("disconnect") || method.getParameterCount() != 1) {
+                continue;
+            }
+            Class<?> paramType = method.getParameterTypes()[0];
+            if (!paramType.isInstance(component.instance())) {
+                continue;
+            }
+            try {
+                method.setAccessible(true);
+                method.invoke(target, component.instance());
+                return true;
+            } catch (Exception ex) {
+                plugin.getLogger().warning("[PremiumLogin] disconnect() invocation failed: " + ex.getMessage());
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean closeChannel(Object connection) {
+        try {
+            for (Class<?> current = connection.getClass(); current != null && current != Object.class; current = current.getSuperclass()) {
+                for (var field : current.getDeclaredFields()) {
+                    if (!field.getType().getName().equals("io.netty.channel.Channel")) {
+                        continue;
+                    }
+                    field.setAccessible(true);
+                    Object channel = field.get(connection);
+                    if (channel == null) {
+                        continue;
+                    }
+                    try {
+                        Method closeMethod = channel.getClass().getMethod("close");
+                        closeMethod.setAccessible(true);
+                        closeMethod.invoke(channel);
+                        return true;
+                    } catch (NoSuchMethodException ignored) {
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            plugin.getLogger().warning("[PremiumLogin] Channel close failed: " + ex.getMessage());
+        }
+        return false;
+    }
+
+    private static final class ChatComponentWrapper {
+        private final Object instance;
+
+        private ChatComponentWrapper(Object instance) {
+            this.instance = instance;
+        }
+
+        public Object instance() {
+            return instance;
+        }
+
+        public static ChatComponentWrapper fromText(String text) {
+            try {
+                Class<?> componentClass = Class.forName("net.minecraft.network.chat.Component");
+                Method literal = componentClass.getMethod("literal", String.class);
+                Object comp = literal.invoke(null, text);
+                return new ChatComponentWrapper(comp);
+            } catch (ClassNotFoundException e) {
+                try {
+                    Class<?> ichatClass = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
+                    Class<?> serializer = Class.forName("net.minecraft.network.chat.IChatBaseComponent$ChatSerializer");
+                    Method a = serializer.getMethod("a", String.class);
+                    String json = Objects.toString(text, "")
+                            .replace("\\", "\\\\")
+                            .replace("\"", "\\\"")
+                            .replace("\n", "\\n");
+                    Object comp = a.invoke(null, "{\"text\":\"" + json + "\"}");
+                    return new ChatComponentWrapper(comp);
+                } catch (Exception ignored) {
+                    return null;
+                }
+            } catch (Exception ex) {
+                return null;
+            }
         }
     }
 

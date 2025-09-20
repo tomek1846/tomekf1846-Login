@@ -84,8 +84,30 @@ public class MojangAuthService {
         sha1.update(publicKey.getEncoded());
 
         byte[] digest = sha1.digest();
+        return toMinecraftHex(digest);
+    }
+
+    private static String toMinecraftHex(byte[] digest) {
+        if (digest.length == 0) {
+            return "0";
+        }
 
         BigInteger bi = new BigInteger(digest);
-        return bi.toString(16);
+        String hex = bi.toString(16);
+
+        int expectedLength = digest.length * 2;
+        if (hex.startsWith("-")) {
+            String body = hex.substring(1);
+            if (body.length() < expectedLength) {
+                body = "0".repeat(expectedLength - body.length()) + body;
+            }
+            return "-" + body;
+        }
+
+        if (hex.length() < expectedLength) {
+            hex = "0".repeat(expectedLength - hex.length()) + hex;
+        }
+
+        return hex;
     }
 }
