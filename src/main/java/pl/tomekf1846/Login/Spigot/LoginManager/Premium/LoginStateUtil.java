@@ -39,50 +39,102 @@ public final class LoginStateUtil {
 
             stateField.setAccessible(true);
             Class<?> stateClass = stateField.getType();
-            Object ready = null;
-            Object[] constants = stateClass.getEnumConstants();
-            if (constants != null) {
-                for (Object constant : constants) {
-                    if (constant instanceof Enum && "READY_TO_ACCEPT".equals(((Enum<?>) constant).name())) {
-                        ready = constant;
-                        break;
-                    }
-                }
-                if (ready == null) {
-                    for (Object constant : constants) {
-                        if (constant instanceof Enum) {
-                            String name = ((Enum<?>) constant).name();
-                            if (name.contains("READY") && name.contains("ACCEPT")) {
-                                ready = constant;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (ready == null) {
-                    for (Object constant : constants) {
-                        if (constant instanceof Enum) {
-                            String name = ((Enum<?>) constant).name();
-                            if (name.contains("ACCEPT")) {
-                                ready = constant;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (ready == null && constants.length > 0) {
-                    ready = constants[constants.length - 1];
-                }
-            }
+            Object ready = resolveReadyState(stateClass);
 
-            if (ready == null) {
-                throw new IllegalStateException("Nie znaleziono stanu READY/ACCEPT w ServerLoginPacketListenerImpl");
+            if (!tryInvokeStateSetter(loginHandler, stateClass, ready)) {
+                stateField.set(loginHandler, ready);
+            } else {
+                // upewnij się, że również pole odzwierciedla aktualny stan jeśli metoda go nie aktualizuje
+                try {
+                    stateField.set(loginHandler, ready);
+                } catch (Throwable ignored) {}
             }
-
-            stateField.set(loginHandler, ready);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static Object resolveReadyState(Class<?> stateClass) {
+        Object[] constants = stateClass.getEnumConstants();
+        if (constants == null || constants.length == 0) {
+            throw new IllegalStateException("Brak stałych enum dla stanu logowania");
+        }
+
+        for (Object constant : constants) {
+            if (constant instanceof Enum<?> enumConst && "READY_TO_ACCEPT".equals(enumConst.name())) {
+                return constant;
+            }
+        }
+
+        Object ready = findStateByNameFragments(constants, "READY", "ACCEPT");
+        if (ready == null) {
+            ready = findStateByNameFragments(constants, "ACCEPT");
+        }
+        if (ready == null) {
+            ready = findStateByNameFragments(constants, "JOIN");
+        }
+        if (ready == null) {
+            ready = constants[constants.length - 1];
+        }
+
+        if (ready instanceof Enum<?>) {
+            return ready;
+        }
+
+        throw new IllegalStateException("Nie znaleziono odpowiedniego stanu READY/ACCEPT w ServerLoginPacketListenerImpl");
+    }
+
+    private static Object findStateByNameFragments(Object[] constants, String... fragments) {
+        for (Object constant : constants) {
+            if (!(constant instanceof Enum<?> enumConst)) {
+                continue;
+            }
+            String name = enumConst.name();
+            boolean matches = true;
+            for (String fragment : fragments) {
+                if (!name.contains(fragment)) {
+                    matches = false;
+                    break;
+                }
+            }
+            if (matches) {
+                return constant;
+            }
+        }
+        return null;
+    }
+
+    private static boolean tryInvokeStateSetter(Object loginHandler, Class<?> stateClass, Object ready) {
+        Method[] methods = loginHandler.getClass().getDeclaredMethods();
+        for (Method method : methods) {
+            if (method.getParameterCount() != 1) {
+                continue;
+            }
+
+            Class<?> paramType = method.getParameterTypes()[0];
+            if (!paramType.isAssignableFrom(stateClass) && !stateClass.isAssignableFrom(paramType)) {
+                continue;
+            }
+
+            if (method.getReturnType() != Void.TYPE && !paramType.isAssignableFrom(method.getReturnType())) {
+                // unikamy przypadkowych metod zwracających inny typ
+                continue;
+            }
+
+            String name = method.getName().toLowerCase();
+            if (!(name.contains("state") || name.contains("login") || name.contains("switch"))) {
+                // metoda prawdopodobnie nie dotyczy zmiany stanu
+                continue;
+            }
+
+            try {
+                method.setAccessible(true);
+                method.invoke(loginHandler, ready);
+                return true;
+            } catch (Throwable ignored) {}
+        }
+
+        return false;
     }
 
     /**
