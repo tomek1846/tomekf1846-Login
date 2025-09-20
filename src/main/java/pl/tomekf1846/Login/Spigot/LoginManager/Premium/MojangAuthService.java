@@ -125,7 +125,6 @@ public class MojangAuthService {
         if (digest.length == 0) {
             return "0";
         }
-
         return new BigInteger(digest).toString(16);
     }
 }
