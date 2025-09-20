@@ -37,7 +37,6 @@ public class SuccessPacketListener extends PacketAdapter {
                 return socketKey(p.getAddress());
             }
         } catch (Exception ignored) {}
-        // awaryjnie
         return String.valueOf(System.identityHashCode(event));
     }
 
@@ -53,7 +52,6 @@ public class SuccessPacketListener extends PacketAdapter {
 
             WrappedGameProfile wrapped = new WrappedGameProfile(uuid, name);
 
-            // properties (np. textures)
             List<Map<String, String>> props = profile.properties;
             if (props != null) {
                 for (Map<String, String> p : props) {
@@ -68,7 +66,6 @@ public class SuccessPacketListener extends PacketAdapter {
                 }
             }
 
-            // podmień profil w pakiecie SUCCESS
             event.getPacket().getGameProfiles().write(0, wrapped);
 
         } catch (Exception e) {
