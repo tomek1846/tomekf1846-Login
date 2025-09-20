@@ -3,7 +3,6 @@ package pl.tomekf1846.Login.Spigot.LoginManager.Premium;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,13 +12,11 @@ public final class LoginStateUtil {
     private LoginStateUtil() {
     }
 
-    @SuppressWarnings("unchecked")
     public static void setReadyToAccept(Object loginHandler) {
         if (loginHandler == null) return;
         try {
             Field stateField = null;
 
-            // 1) Szukaj pola typu State
             for (Field f : loginHandler.getClass().getDeclaredFields()) {
                 if (f.getType().getName().contains("ServerLoginPacketListenerImpl$State")) {
                     stateField = f;
@@ -27,7 +24,6 @@ public final class LoginStateUtil {
                 }
             }
 
-            // 2) Jeśli nie znaleziono, spróbuj po nazwie "state"
             if (stateField == null) {
                 try {
                     stateField = loginHandler.getClass().getDeclaredField("state");
@@ -46,7 +42,6 @@ public final class LoginStateUtil {
             if (!tryInvokeStateSetter(loginHandler, stateClass, ready)) {
                 stateField.set(loginHandler, ready);
             } else {
-                // upewnij się, że również pole odzwierciedla aktualny stan jeśli metoda go nie aktualizuje
                 try {
                     stateField.set(loginHandler, ready);
                 } catch (Throwable ignored) {
@@ -120,13 +115,11 @@ public final class LoginStateUtil {
             }
 
             if (method.getReturnType() != Void.TYPE && !paramType.isAssignableFrom(method.getReturnType())) {
-                // unikamy przypadkowych metod zwracających inny typ
                 continue;
             }
 
             String name = method.getName().toLowerCase();
             if (!(name.contains("state") || name.contains("login") || name.contains("switch"))) {
-                // metoda prawdopodobnie nie dotyczy zmiany stanu
                 continue;
             }
 
@@ -141,11 +134,6 @@ public final class LoginStateUtil {
         return false;
     }
 
-    /**
-     * Ustawia com.mojang.authlib.GameProfile w handlerze logowania.
-     * Dzięki temu serwer użyje premium UUID zamiast offline UUID przy tworzeniu gracza.
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static void setLoginGameProfile(Object loginHandler, MojangProfile profile) {
         if (loginHandler == null || profile == null) return;
         try {
@@ -153,9 +141,8 @@ public final class LoginStateUtil {
             Constructor<?> gpCtor = gpClass.getConstructor(UUID.class, String.class);
             Object gp = gpCtor.newInstance(profile.uuid, profile.name);
 
-            // wstaw properties (textures)
             Method getProps = gpClass.getMethod("getProperties");
-            Object propMap = getProps.invoke(gp); // PropertyMap - implementuje Multimap<String, Property>
+            Object propMap = getProps.invoke(gp);
 
             Class<?> propClass = Class.forName("com.mojang.authlib.properties.Property");
             Constructor<?> propCtor = propClass.getConstructor(String.class, String.class);
@@ -177,7 +164,6 @@ public final class LoginStateUtil {
                     } else {
                         prop = propCtor.newInstance(pname, value);
                     }
-                    // PropertyMap supports put(key, value)
                     propMap.getClass().getMethod("put", Object.class, Object.class).invoke(propMap, pname, prop);
                 }
             }
@@ -188,25 +174,7 @@ public final class LoginStateUtil {
         }
     }
 
-    /**
-     * Ustawia offline GameProfile (UUID offline) w handlerze logowania.
-     */
-    public static void setOfflineGameProfile(Object loginHandler, String username) {
-        if (loginHandler == null || username == null || username.isBlank()) return;
-        try {
-            Class<?> gpClass = Class.forName("com.mojang.authlib.GameProfile");
-            Constructor<?> gpCtor = gpClass.getConstructor(UUID.class, String.class);
-            UUID offlineUuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
-            Object gp = gpCtor.newInstance(offlineUuid, username);
-
-            setProfileOnHandler(loginHandler, gpClass, gp);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private static void setProfileOnHandler(Object loginHandler, Class<?> gpClass, Object gp) throws IllegalAccessException {
-        // Znajdź pole typu GameProfile i ustaw
         for (Field f : loginHandler.getClass().getDeclaredFields()) {
             try {
                 f.setAccessible(true);
@@ -218,7 +186,6 @@ public final class LoginStateUtil {
             }
         }
 
-        // fallback: nazwy pól
         try {
             Field f = loginHandler.getClass().getDeclaredField("gameProfile");
             f.setAccessible(true);

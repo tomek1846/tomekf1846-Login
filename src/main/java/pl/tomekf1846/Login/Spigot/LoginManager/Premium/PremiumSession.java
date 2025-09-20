@@ -9,7 +9,6 @@ public class PremiumSession {
     public final byte[] verifyToken;
     public final KeyPair keyPair;
 
-    // set after EncryptionResponse
     public SecretKey sharedKey;
 
     public PremiumSession(String username, String serverId, byte[] verifyToken, KeyPair keyPair) {

@@ -79,7 +79,7 @@ public final class MainSpigot extends JavaPlugin {
         this.loginListener = new PremiumLoginListener(this, pm);
         pm.addPacketListener(this.loginListener);
 
-        this.successListener = new SuccessPacketListener(this, pm, this.loginListener);
+        this.successListener = new SuccessPacketListener(this, this.loginListener);
         pm.addPacketListener(this.successListener);
 
         getServer().getPluginManager().registerEvents(new MainGuiListener(), this);

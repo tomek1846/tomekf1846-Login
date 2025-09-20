@@ -75,7 +75,6 @@ public class MojangAuthService {
                     long sleepDelay = defaultDelay;
                     boolean retry;
                     if (code == HttpURLConnection.HTTP_NO_CONTENT) {
-                        // 204 oznacza, że gracz jeszcze nie zakończył logowania - spróbuj ponownie
                         retry = true;
                     } else if (code == HttpURLConnection.HTTP_FORBIDDEN || code == 429) {
                         System.out.println("[PremiumLogin] hasJoined HTTP code=" + code + " (rate limited/forbidden)");
@@ -95,7 +94,6 @@ public class MojangAuthService {
 
                     if (attempt < maxAttempts - 1) {
                         Thread.sleep(sleepDelay);
-                        continue;
                     }
                 } finally {
                     con.disconnect();

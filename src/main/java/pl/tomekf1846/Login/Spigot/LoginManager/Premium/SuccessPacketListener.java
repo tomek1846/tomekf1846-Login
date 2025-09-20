@@ -1,7 +1,6 @@
 package pl.tomekf1846.Login.Spigot.LoginManager.Premium;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
@@ -17,11 +16,9 @@ import java.util.UUID;
 public class SuccessPacketListener extends PacketAdapter {
 
     private final PremiumLoginListener loginListener;
-    private final ProtocolManager pm;
 
-    public SuccessPacketListener(Plugin plugin, ProtocolManager pm, PremiumLoginListener loginListener) {
+    public SuccessPacketListener(Plugin plugin, PremiumLoginListener loginListener) {
         super(plugin, ListenerPriority.HIGHEST, PacketType.Login.Server.SUCCESS);
-        this.pm = pm;
         this.loginListener = loginListener;
     }
 
