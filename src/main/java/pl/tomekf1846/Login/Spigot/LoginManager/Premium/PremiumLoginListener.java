@@ -42,6 +42,7 @@ public class PremiumLoginListener extends PacketAdapter {
             String username = event.getPacket().getStrings().read(0);
             if (!shouldHandlePremiumLogin(username)) return;
 
+            boolean cancelStartPacket = false;
             try {
                 PremiumSession session = cryptoService.createSession(username);
 
@@ -83,7 +84,11 @@ public class PremiumLoginListener extends PacketAdapter {
             } catch (Exception ex) {
                 plugin.getLogger().warning("[PremiumLogin] START handler failed: " + ex.getMessage());
                 ex.printStackTrace();
-            }
+            } finally {
+                if (cancelStartPacket) {
+                    event.setCancelled(true);
+                }
+                }
         }
 
         else if (type.equals(PacketType.Login.Client.ENCRYPTION_BEGIN)) {
