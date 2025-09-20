@@ -3,6 +3,7 @@ package pl.tomekf1846.Login.Spigot.LoginManager.Premium;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -38,7 +39,45 @@ public final class LoginStateUtil {
 
             stateField.setAccessible(true);
             Class<?> stateClass = stateField.getType();
-            Object ready = Enum.valueOf((Class<Enum>) stateClass, "READY_TO_ACCEPT");
+            Object ready = null;
+            Object[] constants = stateClass.getEnumConstants();
+            if (constants != null) {
+                for (Object constant : constants) {
+                    if (constant instanceof Enum && "READY_TO_ACCEPT".equals(((Enum<?>) constant).name())) {
+                        ready = constant;
+                        break;
+                    }
+                }
+                if (ready == null) {
+                    for (Object constant : constants) {
+                        if (constant instanceof Enum) {
+                            String name = ((Enum<?>) constant).name();
+                            if (name.contains("READY") && name.contains("ACCEPT")) {
+                                ready = constant;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (ready == null) {
+                    for (Object constant : constants) {
+                        if (constant instanceof Enum) {
+                            String name = ((Enum<?>) constant).name();
+                            if (name.contains("ACCEPT")) {
+                                ready = constant;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (ready == null && constants.length > 0) {
+                    ready = constants[constants.length - 1];
+                }
+            }
+
+            if (ready == null) {
+                throw new IllegalStateException("Nie znaleziono stanu READY/ACCEPT w ServerLoginPacketListenerImpl");
+            }
 
             stateField.set(loginHandler, ready);
         } catch (Exception e) {
@@ -69,9 +108,9 @@ public final class LoginStateUtil {
                 propCtorSig = propClass.getConstructor(String.class, String.class, String.class);
             } catch (NoSuchMethodException ignored) {}
 
-            List<Map<String,String>> props = profile.properties;
+            List<Map<String, String>> props = profile.properties;
             if (props != null) {
-                for (Map<String,String> m : props) {
+                for (Map<String, String> m : props) {
                     String pname = m.get("name");
                     String value = m.get("value");
                     String signature = m.get("signature");
@@ -86,33 +125,52 @@ public final class LoginStateUtil {
                 }
             }
 
-            // Znajdź pole typu GameProfile i ustaw
-            for (Field f : loginHandler.getClass().getDeclaredFields()) {
-                try {
-                    f.setAccessible(true);
-                    if (f.getType().getName().equals(gpClass.getName())) {
-                        f.set(loginHandler, gp);
-                        return;
-                    }
-                } catch (Throwable ignored) {}
-            }
-
-            // fallback: nazwy pól
-            try {
-                Field f = loginHandler.getClass().getDeclaredField("gameProfile");
-                f.setAccessible(true);
-                f.set(loginHandler, gp);
-                return;
-            } catch (NoSuchFieldException ignored) {}
-            try {
-                Field f = loginHandler.getClass().getDeclaredField("profile");
-                f.setAccessible(true);
-                f.set(loginHandler, gp);
-                return;
-            } catch (NoSuchFieldException ignored) {}
-
+            setProfileOnHandler(loginHandler, gpClass, gp);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Ustawia offline GameProfile (UUID offline) w handlerze logowania.
+     */
+    public static void setOfflineGameProfile(Object loginHandler, String username) {
+        if (loginHandler == null || username == null || username.isBlank()) return;
+        try {
+            Class<?> gpClass = Class.forName("com.mojang.authlib.GameProfile");
+            Constructor<?> gpCtor = gpClass.getConstructor(UUID.class, String.class);
+            UUID offlineUuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+            Object gp = gpCtor.newInstance(offlineUuid, username);
+
+            setProfileOnHandler(loginHandler, gpClass, gp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void setProfileOnHandler(Object loginHandler, Class<?> gpClass, Object gp) throws IllegalAccessException {
+        // Znajdź pole typu GameProfile i ustaw
+        for (Field f : loginHandler.getClass().getDeclaredFields()) {
+            try {
+                f.setAccessible(true);
+                if (f.getType().getName().equals(gpClass.getName())) {
+                    f.set(loginHandler, gp);
+                    return;
+                }
+            } catch (Throwable ignored) {}
+        }
+
+        // fallback: nazwy pól
+        try {
+            Field f = loginHandler.getClass().getDeclaredField("gameProfile");
+            f.setAccessible(true);
+            f.set(loginHandler, gp);
+            return;
+        } catch (NoSuchFieldException ignored) {}
+        try {
+            Field f = loginHandler.getClass().getDeclaredField("profile");
+            f.setAccessible(true);
+            f.set(loginHandler, gp);
+        } catch (NoSuchFieldException ignored) {}
     }
 }

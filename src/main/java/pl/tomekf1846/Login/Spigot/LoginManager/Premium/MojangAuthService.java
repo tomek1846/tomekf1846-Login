@@ -38,9 +38,13 @@ public class MojangAuthService {
                     String id = obj.get("id").getAsString();
                     String name = obj.has("name") ? obj.get("name").getAsString() : username;
 
-                    UUID uuid = UUID.fromString(id.replaceFirst(
-                            "(\\\\w{8})(\\\\w{4})(\\\\w{4})(\\\\w{4})(\\\\w{12})",
-                            "$1-$2-$3-$4-$5"));
+                    String s = id.trim();
+                    if (s.length() != 32) return null;
+                    String dashed = s.replaceFirst(
+                            "([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})",
+                            "$1-$2-$3-$4-$5"
+                    );
+                    UUID uuid = UUID.fromString(dashed);
 
                     List<Map<String, String>> propsList = new ArrayList<>();
                     if (obj.has("properties")) {
@@ -57,8 +61,11 @@ public class MojangAuthService {
                     return new MojangProfile(uuid, name, propsList);
                 } else if (code == 204) {
                     return null;
-                } else if (code == 403 || code == 429) {
-                    Thread.sleep(200L);
+                } else {
+                    System.out.println("[PremiumLogin] hasJoined HTTP code=" + code);
+                    if (code == 403 | code == 429) {
+                        Thread.sleep(200L);
+                    }
                 }
                 Thread.sleep(120L);
             }

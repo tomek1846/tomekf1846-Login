@@ -9,14 +9,13 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.LoginManager.Session.Premium.SessionPremiumCheck;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import java.lang.reflect.Method;
 
 public class PremiumLoginListener extends PacketAdapter {
-
-    public static final String SPECIAL_NICK = "Tomekf1846";
 
     private final SessionManager sessionManager = new SessionManager();
     private final ProtocolManager pm;
@@ -39,7 +38,7 @@ public class PremiumLoginListener extends PacketAdapter {
 
         if (type.equals(PacketType.Login.Client.START)) {
             String username = event.getPacket().getStrings().read(0);
-            if (!SPECIAL_NICK.equalsIgnoreCase(username)) return;
+            if (!shouldHandlePremiumLogin(username)) return;
 
             try {
                 PremiumSession session = cryptoService.createSession(username);
@@ -73,9 +72,6 @@ public class PremiumLoginListener extends PacketAdapter {
                         plugin.getLogger().info("[PremiumLogin] Sent ENCRYPTION_BEGIN to Player object for " + username);
                     } else {
                         plugin.getLogger().warning("[PremiumLogin] Player==null on START for username=" + username + " — ENCRYPTION_BEGIN wysłany do Player-a może nie przejść.");
-                        if (connection != null) {
-                            // jak w oryginale: logujemy i zostawiamy (nie wywołujemy surowego wysyłania)
-                        }
                     }
                 } catch (Exception ex) {
                     plugin.getLogger().warning("[PremiumLogin] Error while sending ENCRYPTION_BEGIN: " + ex.getMessage());
@@ -103,6 +99,7 @@ public class PremiumLoginListener extends PacketAdapter {
                 session = sessionManager.get(idKey);
             }
 
+            boolean cancelEvent = false;
             try {
                 byte[] encShared = event.getPacket().getByteArrays().read(0);
                 byte[] encToken  = event.getPacket().getByteArrays().read(1);
@@ -119,6 +116,8 @@ public class PremiumLoginListener extends PacketAdapter {
                     plugin.getLogger().warning("[PremiumLogin] No session found for incoming ENCRYPTION_BEGIN (connection=" + lookupKey + "). Ignoring.");
                     return;
                 }
+
+                cancelEvent = true;
 
                 // odszyfruj shared i token przy użyciu klucza prywatnego danej sesji
                 Cipher rsa = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -148,7 +147,6 @@ public class PremiumLoginListener extends PacketAdapter {
                     connectionResolver.invokeSetupEncryption(connection, secretKey);
                 } catch (NoSuchMethodException nsme) {
                     plugin.getLogger().warning("[PremiumLogin] Brak metody setupEncryption(SecretKey) - " + nsme.getMessage());
-                    // mimo braku setupEncryption możemy spróbować dalej (ale raczej nie przejdzie)
                 }
 
                 // compute serverHash i query HasJoined
@@ -167,37 +165,17 @@ public class PremiumLoginListener extends PacketAdapter {
 
                 MojangProfile profile = MojangAuthService.queryHasJoined(session.username, serverHash);
                 if (profile == null) {
-                    plugin.getLogger().warning("[PremiumLogin] Mojang session server returned null profile for username=" + session.username + " serverHash=" + serverHash);
-                    safeDisconnect(event, "Failed to verify username!");
+                    plugin.getLogger().warning("[PremiumLogin] hasJoined==null dla " + session.username + " (hash=" + serverHash + "). Wymagane premium -> rozłączam.");
+                    safeDisconnect(event, "§cTo konto wymaga logowania premium.\n§7Zaloguj się launcherem Mojang/Microsoft i spróbuj ponownie.");
                     sessionManager.removeSession(session);
                     return;
                 }
 
                 // store verified profile under any key that references this session (so consumeVerifiedProfile works)
-                String sessionKey = sessionManager.getAnyKeyForSession(session);
-                if (sessionKey == null) {
-                    sessionKey = "sess:" + System.identityHashCode(session);
-                }
-                sessionManager.storeVerifiedProfile(sessionKey, profile);
+                sessionManager.storeVerifiedProfile(lookupKey, profile);
 
                 // PODMIANA: ustaw GameProfile w handlerze logowania przed READY_TO_ACCEPT
-                try {
-                    Object loginHandler = ConnectionResolver.extractFieldType(connection, "net.minecraft.server.network.ServerLoginPacketListenerImpl");
-                    if (loginHandler != null) {
-                        // najpierw ustaw profil, potem ready
-                        LoginStateUtil.setLoginGameProfile(loginHandler, profile);
-                        LoginStateUtil.setReadyToAccept(loginHandler);
-                        plugin.getLogger().info("[PremiumLogin] Set GameProfile and READY_TO_ACCEPT for username=" + session.username);
-                    } else {
-                        plugin.getLogger().warning("[PremiumLogin] Nie znaleziono loginHandler (ServerLoginPacketListenerImpl) do ustawienia profilu.");
-                    }
-                } catch (Throwable t) {
-                    plugin.getLogger().warning("[PremiumLogin] Nie udało się ustawić profilu/READY_TO_ACCEPT: " + t.getMessage());
-                    t.printStackTrace();
-                }
-
-                // konsumuj pakiet klienta (niech dalej login flow pójdzie z podmienionym profilem)
-                event.setCancelled(true);
+                applyPremiumProfile(connection, profile, session.username);
 
                 // nie usuwamy od razu sesji - w razie potrzeby możemy później jej użyć (ale lepiej usunąć)
                 sessionManager.removeSession(session);
@@ -216,13 +194,31 @@ public class PremiumLoginListener extends PacketAdapter {
                         if (ss != null) sessionManager.removeSession(ss);
                     } catch (Throwable ignored) {}
                 }
+            } finally {
+                if (cancelEvent) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
 
-    /**
-     * Bezpieczne wysłanie pakietu rozłączenia — nie rzuca wyjątków na zewnątrz.
-     */
+    private boolean shouldHandlePremiumLogin(String username) {
+        if (username == null || username.isBlank()) {
+            return false;
+        }
+
+        if (PlayerDataSave.isPlayerPremium(username)) {
+            return true;
+        }
+
+        boolean premiumCommandEnabled = plugin.getConfig().getBoolean("Main-Settings.Premium-Command", false);
+        if (!premiumCommandEnabled) {
+            return SessionPremiumCheck.isPlayerPremium(username);
+        }
+
+        return false;
+    }
+
     private void safeDisconnect(PacketEvent event, String msg) {
         try {
             PacketContainer dis = pm.createPacket(PacketType.Login.Server.DISCONNECT);
@@ -238,12 +234,46 @@ public class PremiumLoginListener extends PacketAdapter {
         }
     }
 
-    // zachowujemy API (delegacja)
     public MojangProfile consumeVerifiedProfile(String connKey) {
         return sessionManager.consumeVerifiedProfile(connKey);
     }
 
     public void clearSessions() {
         sessionManager.clearSessions();
+    }
+
+    private void applyPremiumProfile(Object connection, MojangProfile profile, String username) {
+        try {
+            Object loginHandler = ConnectionResolver.extractFieldType(connection, "net.minecraft.server.network.ServerLoginPacketListenerImpl");
+            if (loginHandler != null) {
+                LoginStateUtil.setLoginGameProfile(loginHandler, profile);
+                LoginStateUtil.setReadyToAccept(loginHandler);
+                plugin.getLogger().info("[PremiumLogin] Set GameProfile and READY_TO_ACCEPT for username=" + username);
+            } else {
+                plugin.getLogger().warning("[PremiumLogin] Nie znaleziono loginHandler (ServerLoginPacketListenerImpl) do ustawienia profilu.");
+            }
+        } catch (Throwable t) {
+            plugin.getLogger().warning("[PremiumLogin] Nie udało się ustawić profilu/READY_TO_ACCEPT: " + t.getMessage());
+            t.printStackTrace();
+        }
+    }
+
+    private boolean applyOfflineProfile(Object connection, String username) {
+        try {
+            Object loginHandler = ConnectionResolver.extractFieldType(connection, "net.minecraft.server.network.ServerLoginPacketListenerImpl");
+            if (loginHandler != null) {
+                LoginStateUtil.setOfflineGameProfile(loginHandler, username);
+                LoginStateUtil.setReadyToAccept(loginHandler);
+                plugin.getLogger().info("[PremiumLogin] Applied offline GameProfile and READY_TO_ACCEPT for username=" + username);
+                return true;
+            } else {
+                plugin.getLogger().warning("[PremiumLogin] Nie znaleziono loginHandler do ustawienia offline profilu dla " + username);
+                return false;
+            }
+        } catch (Throwable t) {
+            plugin.getLogger().warning("[PremiumLogin] Nie udało się ustawić offline profilu: " + t.getMessage());
+            t.printStackTrace();
+            return false;
+        }
     }
 }
