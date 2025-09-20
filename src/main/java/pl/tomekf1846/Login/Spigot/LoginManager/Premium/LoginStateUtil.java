@@ -10,7 +10,8 @@ import java.util.UUID;
 
 public final class LoginStateUtil {
 
-    private LoginStateUtil() {}
+    private LoginStateUtil() {
+    }
 
     @SuppressWarnings("unchecked")
     public static void setReadyToAccept(Object loginHandler) {
@@ -30,7 +31,8 @@ public final class LoginStateUtil {
             if (stateField == null) {
                 try {
                     stateField = loginHandler.getClass().getDeclaredField("state");
-                } catch (NoSuchFieldException ignored) {}
+                } catch (NoSuchFieldException ignored) {
+                }
             }
 
             if (stateField == null) {
@@ -47,7 +49,8 @@ public final class LoginStateUtil {
                 // upewnij się, że również pole odzwierciedla aktualny stan jeśli metoda go nie aktualizuje
                 try {
                     stateField.set(loginHandler, ready);
-                } catch (Throwable ignored) {}
+                } catch (Throwable ignored) {
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,7 +134,8 @@ public final class LoginStateUtil {
                 method.setAccessible(true);
                 method.invoke(loginHandler, ready);
                 return true;
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
 
         return false;
@@ -158,7 +162,8 @@ public final class LoginStateUtil {
             Constructor<?> propCtorSig = null;
             try {
                 propCtorSig = propClass.getConstructor(String.class, String.class, String.class);
-            } catch (NoSuchMethodException ignored) {}
+            } catch (NoSuchMethodException ignored) {
+            }
 
             List<Map<String, String>> props = profile.properties;
             if (props != null) {
@@ -209,7 +214,8 @@ public final class LoginStateUtil {
                     f.set(loginHandler, gp);
                     return;
                 }
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
 
         // fallback: nazwy pól
@@ -218,11 +224,13 @@ public final class LoginStateUtil {
             f.setAccessible(true);
             f.set(loginHandler, gp);
             return;
-        } catch (NoSuchFieldException ignored) {}
+        } catch (NoSuchFieldException ignored) {
+        }
         try {
             Field f = loginHandler.getClass().getDeclaredField("profile");
             f.setAccessible(true);
             f.set(loginHandler, gp);
-        } catch (NoSuchFieldException ignored) {}
+        } catch (NoSuchFieldException ignored) {
+        }
     }
 }
