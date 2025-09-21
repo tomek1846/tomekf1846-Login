@@ -324,30 +324,30 @@ public class PremiumLoginListener extends PacketAdapter {
     private record ChatComponentWrapper(Object instance) {
 
         public static ChatComponentWrapper fromText(String text) {
+            try {
+                Class<?> componentClass = Class.forName("net.minecraft.network.chat.Component");
+                Method literal = componentClass.getMethod("literal", String.class);
+                Object comp = literal.invoke(null, text);
+                return new ChatComponentWrapper(comp);
+            } catch (ClassNotFoundException e) {
                 try {
-                    Class<?> componentClass = Class.forName("net.minecraft.network.chat.Component");
-                    Method literal = componentClass.getMethod("literal", String.class);
-                    Object comp = literal.invoke(null, text);
+                    Class.forName("net.minecraft.network.chat.IChatBaseComponent");
+                    Class<?> serializer = Class.forName("net.minecraft.network.chat.IChatBaseComponent$ChatSerializer");
+                    Method a = serializer.getMethod("a", String.class);
+                    String json = Objects.toString(text, "")
+                            .replace("\\", "\\\\")
+                            .replace("\"", "\\\"")
+                            .replace("\n", "\\n");
+                    Object comp = a.invoke(null, "{\"text\":\"" + json + "\"}");
                     return new ChatComponentWrapper(comp);
-                } catch (ClassNotFoundException e) {
-                    try {
-                        Class.forName("net.minecraft.network.chat.IChatBaseComponent");
-                        Class<?> serializer = Class.forName("net.minecraft.network.chat.IChatBaseComponent$ChatSerializer");
-                        Method a = serializer.getMethod("a", String.class);
-                        String json = Objects.toString(text, "")
-                                .replace("\\", "\\\\")
-                                .replace("\"", "\\\"")
-                                .replace("\n", "\\n");
-                        Object comp = a.invoke(null, "{\"text\":\"" + json + "\"}");
-                        return new ChatComponentWrapper(comp);
-                    } catch (Exception ignored) {
-                        return null;
-                    }
-                } catch (Exception ex) {
+                } catch (Exception ignored) {
                     return null;
                 }
+            } catch (Exception ex) {
+                return null;
             }
         }
+    }
 
     public MojangProfile consumeVerifiedProfile(String connKey) {
         return sessionManager.consumeVerifiedProfile(connKey);

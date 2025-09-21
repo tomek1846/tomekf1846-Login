@@ -17,5 +17,6 @@ public class PlayerLeaveListener implements Listener {
             searchingPlayer = null;
         }
         PlayerDataSave.savePlayerLeaveTime(player);
+
     }
 }
