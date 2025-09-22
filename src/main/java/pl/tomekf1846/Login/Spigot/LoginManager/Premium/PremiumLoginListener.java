@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import io.netty.channel.Channel;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
@@ -15,15 +16,24 @@ import pl.tomekf1846.Login.Spigot.LoginManager.Session.Premium.SessionPremiumChe
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
 
 public class PremiumLoginListener extends PacketAdapter {
+    private static final long SESSION_EXPIRY_MILLIS = 30_000L;
 
-    private final SessionManager sessionManager = new SessionManager();
     private final ProtocolManager pm;
     private final Plugin plugin;
     private final ConnectionResolver connectionResolver;
     private final CryptoService cryptoService = new CryptoService();
+    private final ConcurrentMap<String, ConcurrentLinkedQueue<PremiumSession>> pendingSessions = new ConcurrentHashMap<>();
 
     public PremiumLoginListener(Plugin plugin, ProtocolManager pm) {
         super(plugin, ListenerPriority.HIGHEST,
@@ -44,20 +54,27 @@ public class PremiumLoginListener extends PacketAdapter {
 
             try {
                 PremiumSession session = cryptoService.createSession(username);
-
-                String keyEvent = connectionResolver.connKey(event, null);
-                sessionManager.put(keyEvent, session);
+                registerPendingSession(session);
 
                 Object connection = connectionResolver.findConnectionFor(event);
-                if (connection != null) {
-                    try {
-                        String keyConn = connectionResolver.connKey(event, connection);
-                        if (!keyConn.equals(keyEvent)) sessionManager.put(keyConn, session);
-                    } catch (Throwable ignored) {}
+                Channel channel = connectionResolver.resolveChannel(event, connection);
+                if (channel != null && (connection == null || connectionResolver.findChannel(connection) != channel)) {
+                    Object byChannel = connectionResolver.findConnectionByChannel(channel);
+                    if (byChannel != null) {
+                        connection = byChannel;
+                    }
                 }
-
-                plugin.getLogger().info("[PremiumLogin] START username=" + username + " stored under keys (example) keyEvent=" + keyEvent
-                        + (connection != null ? " (connection-based key also stored)" : " (no connection found now)"));
+                String connKey = connectionResolver.connKey(event, connection);
+                if (channel != null) {
+                    channel.attr(PremiumConnectionKeys.PREMIUM_SESSION).set(session);
+                    channel.attr(PremiumConnectionKeys.LOGIN_CONNECTION).set(connection);
+                    ensureCloseCleanup(channel);
+                    plugin.getLogger().info("[PremiumLogin] START username=" + username + " bound premium session to channel "
+                            + channel.remoteAddress() + " (key=" + connKey + ")");
+                } else {
+                    plugin.getLogger().warning("[PremiumLogin] START username=" + username + " - unable to resolve Netty channel (key="
+                            + connKey + "). Falling back to pending session queue.");
+                }
 
                 PacketContainer req = pm.createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN);
                 req.getStrings().write(0, session.serverId);
@@ -84,33 +101,43 @@ public class PremiumLoginListener extends PacketAdapter {
         }
 
         else if (type.equals(PacketType.Login.Client.ENCRYPTION_BEGIN)) {
-            Object connection = connectionResolver.findConnectionFor(event);
+            Channel channel = connectionResolver.resolveChannel(event, null);
+            Object connection = channel != null ? channel.attr(PremiumConnectionKeys.LOGIN_CONNECTION).get() : null;
+            if (connection == null) {
+                connection = connectionResolver.findConnectionFor(event);
+            }
+            if (channel != null && (connection == null || connectionResolver.findChannel(connection) != channel)) {
+                Object byChannel = connectionResolver.findConnectionByChannel(channel);
+                if (byChannel != null) {
+                    connection = byChannel;
+                    channel.attr(PremiumConnectionKeys.LOGIN_CONNECTION).set(connection);
+                }
+            }
             String lookupKey = connectionResolver.connKey(event, connection);
 
-            PremiumSession session = sessionManager.get(lookupKey);
-            if (session == null) {
-                String fallbackKey = connectionResolver.connKey(event, null);
-                session = sessionManager.get(fallbackKey);
-            }
-            if (session == null) {
-                String idKey = String.valueOf(System.identityHashCode(event));
-                session = sessionManager.get(idKey);
+            Player tempPlayer;
+            String username = null;
+            try {
+                tempPlayer = event.getPlayer();
+                if (tempPlayer != null) {
+                    username = tempPlayer.getName();
+                }
+            } catch (Exception ignored) {
             }
 
             boolean cancelEvent = false;
+            PremiumSession session = null;
             try {
                 byte[] encShared = event.getPacket().getByteArrays().read(0);
                 byte[] encToken  = event.getPacket().getByteArrays().read(1);
 
+                session = resolvePendingSession(channel, username, encToken);
                 if (session == null) {
-                    session = sessionManager.findSessionByDecrypting(encToken);
-                    if (session != null) {
-                        plugin.getLogger().info("[PremiumLogin] Session matched by decrypt fallback for connection " + lookupKey + " username=" + session.username);
-                    }
-                }
-
-                if (session == null) {
-                    plugin.getLogger().warning("[PremiumLogin] No session found for incoming ENCRYPTION_BEGIN (connection=" + lookupKey + "). Ignoring.");
+                    plugin.getLogger().warning("[PremiumLogin] No premium session bound to connection " + lookupKey + ". Ignoring.");
+                    event.setCancelled(true);
+                    safeDisconnect(event, connection, "Failed to verify username!");
+                    clearSession(channel);
+                    discardPendingSessions(username);
                     return;
                 }
 
@@ -121,10 +148,11 @@ public class PremiumLoginListener extends PacketAdapter {
                 byte[] shared = rsa.doFinal(encShared);
                 byte[] token  = rsa.doFinal(encToken);
 
-                if (!java.util.Arrays.equals(token, session.verifyToken)) {
+                if (!Arrays.equals(token, session.verifyToken)) {
                     plugin.getLogger().warning("[PremiumLogin] Token mismatch for session username=" + session.username + " connection=" + lookupKey);
                     safeDisconnect(event, connection, "Failed to verify username! (token)");
-                    sessionManager.removeSession(session);
+                    clearSession(channel);
+                    removePendingSession(session);
                     return;
                 }
 
@@ -134,7 +162,8 @@ public class PremiumLoginListener extends PacketAdapter {
                 if (connection == null) {
                     plugin.getLogger().warning("[PremiumLogin] Nie udało się znaleźć Connection (ENCRYPTION_BEGIN).");
                     safeDisconnect(event, null, "Internal error (connection)");
-                    sessionManager.removeSession(session);
+                    clearSession(channel);
+                    removePendingSession(session);
                     return;
                 }
 
@@ -151,7 +180,8 @@ public class PremiumLoginListener extends PacketAdapter {
                     plugin.getLogger().warning("[PremiumLogin] computeServerHash failed: " + t.getMessage());
                     t.printStackTrace();
                     safeDisconnect(event, connection, "Failed to verify username!");
-                    sessionManager.removeSession(session);
+                    clearSession(channel);
+                    removePendingSession(session);
                     return;
                 }
 
@@ -161,15 +191,16 @@ public class PremiumLoginListener extends PacketAdapter {
                 if (profile == null) {
                     plugin.getLogger().warning("[PremiumLogin] hasJoined==null dla " + session.username + " (hash=" + serverHash + "). Wymagane premium -> rozłączam.");
                     safeDisconnect(event, connection, "§cTo konto wymaga logowania premium.\n§7Zaloguj się launcherem Mojang/Microsoft i spróbuj ponownie.");
-                    sessionManager.removeSession(session);
+                    clearSession(channel);
+                    removePendingSession(session);
                     return;
                 }
 
-                sessionManager.storeVerifiedProfile(lookupKey, profile);
+                Objects.requireNonNull(channel).attr(PremiumConnectionKeys.VERIFIED_PROFILE).set(profile);
 
                 applyPremiumProfile(connection, profile, session.username);
 
-                sessionManager.removeSession(session);
+                clearSession(channel);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -179,11 +210,8 @@ public class PremiumLoginListener extends PacketAdapter {
                 } catch (Exception ex) {
                     plugin.getLogger().warning("[PremiumLogin] safeDisconnect failed: " + ex.getMessage());
                 } finally {
-                    try {
-                        byte[] encToken = event.getPacket().getByteArrays().read(1);
-                        PremiumSession ss = sessionManager.findSessionByDecrypting(encToken);
-                        if (ss != null) sessionManager.removeSession(ss);
-                    } catch (Throwable ignored) {}
+                    removePendingSession(session);
+                    clearSession(channel);
                 }
             } finally {
                 if (cancelEvent) {
@@ -295,30 +323,186 @@ public class PremiumLoginListener extends PacketAdapter {
     }
 
     private boolean closeChannel(Object connection) {
+        if (connection == null) {
+            return false;
+        }
+
         try {
-            for (Class<?> current = connection.getClass(); current != null && current != Object.class; current = current.getSuperclass()) {
-                for (var field : current.getDeclaredFields()) {
-                    if (!field.getType().getName().equals("io.netty.channel.Channel")) {
-                        continue;
-                    }
-                    field.setAccessible(true);
-                    Object channel = field.get(connection);
-                    if (channel == null) {
-                        continue;
-                    }
-                    try {
-                        Method closeMethod = channel.getClass().getMethod("close");
-                        closeMethod.setAccessible(true);
-                        closeMethod.invoke(channel);
-                        return true;
-                    } catch (NoSuchMethodException ignored) {
-                    }
-                }
+            Channel channel = connectionResolver.findChannel(connection);
+            if (channel == null) {
+                return false;
             }
+            channel.close();
+            return true;
         } catch (Exception ex) {
             plugin.getLogger().warning("[PremiumLogin] Channel close failed: " + ex.getMessage());
         }
         return false;
+    }
+
+    private void ensureCloseCleanup(Channel channel) {
+        if (channel == null) {
+            return;
+        }
+
+        Boolean attached = channel.attr(PremiumConnectionKeys.CLEANUP_ATTACHED).get();
+        if (Boolean.TRUE.equals(attached)) {
+            return;
+        }
+
+        channel.attr(PremiumConnectionKeys.CLEANUP_ATTACHED).set(Boolean.TRUE);
+        channel.closeFuture().addListener(future -> clearChannelState(channel));
+    }
+
+    private void clearChannelState(Channel channel) {
+        if (channel == null) {
+            return;
+        }
+
+        clearSession(channel);
+        channel.attr(PremiumConnectionKeys.VERIFIED_PROFILE).set(null);
+        channel.attr(PremiumConnectionKeys.LOGIN_CONNECTION).set(null);
+        channel.attr(PremiumConnectionKeys.CLEANUP_ATTACHED).set(null);
+    }
+
+    private void registerPendingSession(PremiumSession session) {
+        if (session == null || session.username == null || session.username.isBlank()) {
+            return;
+        }
+
+        String key = session.username.toLowerCase(Locale.ROOT);
+        pendingSessions.compute(key, (k, queue) -> {
+            if (queue == null) {
+                queue = new ConcurrentLinkedQueue<>();
+            }
+            queue.add(session);
+            return queue;
+        });
+    }
+
+    private PremiumSession resolvePendingSession(Channel channel, String username, byte[] encToken) {
+        PremiumSession fromChannel = channel != null ? channel.attr(PremiumConnectionKeys.PREMIUM_SESSION).get() : null;
+        if (fromChannel != null) {
+            removePendingSession(fromChannel);
+            ensureCloseCleanup(channel);
+            return fromChannel;
+        }
+
+        PremiumSession matched = pollPendingSession(username, encToken);
+        if (matched != null && channel != null) {
+            channel.attr(PremiumConnectionKeys.PREMIUM_SESSION).set(matched);
+            ensureCloseCleanup(channel);
+        }
+        return matched;
+    }
+
+    private PremiumSession pollPendingSession(String username, byte[] encToken) {
+        if (encToken == null) {
+            return null;
+        }
+
+        if (username != null && !username.isBlank()) {
+            String key = username.toLowerCase(Locale.ROOT);
+            PremiumSession session = pollPendingSessionFromQueue(key, pendingSessions.get(key), encToken);
+            if (session != null) {
+                return session;
+            }
+        }
+
+        return pollPendingSessionFromAllQueues(encToken);
+    }
+
+    private PremiumSession pollPendingSessionFromQueue(String key, Queue<PremiumSession> queue, byte[] encToken) {
+        if (queue == null) {
+            return null;
+        }
+
+        PremiumSession matched = null;
+        long now = System.currentTimeMillis();
+        for (Iterator<PremiumSession> it = queue.iterator(); it.hasNext();) {
+            PremiumSession candidate = it.next();
+            if (matchesVerifyToken(candidate, encToken)) {
+                matched = candidate;
+                it.remove();
+                break;
+            }
+
+            if (now - candidate.createdAt > SESSION_EXPIRY_MILLIS) {
+                it.remove();
+            }
+        }
+
+        if (queue.isEmpty()) {
+            pendingSessions.remove(key, queue);
+        }
+
+        return matched;
+    }
+
+    private PremiumSession pollPendingSessionFromAllQueues(byte[] encToken) {
+        for (Map.Entry<String, ConcurrentLinkedQueue<PremiumSession>> entry : pendingSessions.entrySet()) {
+            PremiumSession matched = pollPendingSessionFromQueue(entry.getKey(), entry.getValue(), encToken);
+            if (matched != null) {
+                return matched;
+            }
+        }
+        return null;
+    }
+
+    private boolean matchesVerifyToken(PremiumSession session, byte[] encToken) {
+        if (session == null || encToken == null) {
+            return false;
+        }
+
+        try {
+            Cipher rsa = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            rsa.init(Cipher.DECRYPT_MODE, session.keyPair.getPrivate());
+            byte[] token = rsa.doFinal(encToken);
+            return Arrays.equals(token, session.verifyToken);
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    private void removePendingSession(PremiumSession session) {
+        if (session == null || session.username == null || session.username.isBlank()) {
+            return;
+        }
+
+        String key = session.username.toLowerCase(Locale.ROOT);
+        Queue<PremiumSession> queue = pendingSessions.get(key);
+        if (queue == null) {
+            return;
+        }
+
+        queue.remove(session);
+        if (queue.isEmpty()) {
+            pendingSessions.remove(key, queue);
+        }
+    }
+
+    private void discardPendingSessions(String username) {
+        if (username == null || username.isBlank()) {
+            return;
+        }
+
+        String key = username.toLowerCase(Locale.ROOT);
+        Queue<PremiumSession> queue = pendingSessions.remove(key);
+        if (queue != null) {
+            queue.clear();
+        }
+    }
+
+    private void clearSession(Channel channel) {
+        if (channel == null) {
+            return;
+        }
+
+        PremiumSession session = channel.attr(PremiumConnectionKeys.PREMIUM_SESSION).get();
+        if (session != null) {
+            removePendingSession(session);
+        }
+        channel.attr(PremiumConnectionKeys.PREMIUM_SESSION).set(null);
     }
 
     private record ChatComponentWrapper(Object instance) {
@@ -349,12 +533,22 @@ public class PremiumLoginListener extends PacketAdapter {
         }
     }
 
-    public MojangProfile consumeVerifiedProfile(String connKey) {
-        return sessionManager.consumeVerifiedProfile(connKey);
+    public MojangProfile consumeVerifiedProfile(PacketEvent event) {
+        Object connection = connectionResolver.findConnectionFor(event);
+        Channel channel = connectionResolver.resolveChannel(event, connection);
+        if (channel == null) {
+            return null;
+        }
+
+        MojangProfile profile = channel.attr(PremiumConnectionKeys.VERIFIED_PROFILE).get();
+        if (profile != null) {
+            channel.attr(PremiumConnectionKeys.VERIFIED_PROFILE).set(null);
+        }
+        return profile;
     }
 
     public void clearSessions() {
-        sessionManager.clearSessions();
+        pendingSessions.clear();
     }
 
     private void applyPremiumProfile(Object connection, MojangProfile profile, String username) {

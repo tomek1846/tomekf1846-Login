@@ -10,11 +10,13 @@ public class PremiumSession {
     public final KeyPair keyPair;
 
     public SecretKey sharedKey;
+    public final long createdAt;
 
     public PremiumSession(String username, String serverId, byte[] verifyToken, KeyPair keyPair) {
         this.username = username;
         this.serverId = serverId;
         this.verifyToken = verifyToken;
         this.keyPair = keyPair;
+        this.createdAt = System.currentTimeMillis();
     }
 }

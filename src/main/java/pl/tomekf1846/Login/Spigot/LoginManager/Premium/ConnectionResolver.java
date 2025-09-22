@@ -1,12 +1,14 @@
 package pl.tomekf1846.Login.Spigot.LoginManager.Premium;
 
 import com.comphenix.protocol.events.PacketEvent;
+import io.netty.channel.Channel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import javax.crypto.SecretKey;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
@@ -69,19 +71,7 @@ public class ConnectionResolver {
             Object mcServer = getServer.invoke(craftServer);
             if (mcServer == null) return null;
 
-            Object scl = null;
-            try {
-                Method m = mcServer.getClass().getMethod("getConnection");
-                if (m.getParameterCount() == 0 && !m.getReturnType().equals(void.class)) {
-                    scl = m.invoke(mcServer);
-                }
-            } catch (NoSuchMethodException ignored) {}
-            if (scl == null) {
-                scl = extractFieldType(mcServer, "net.minecraft.server.network.ServerConnectionListener");
-                if (scl == null) {
-                    scl = extractFieldType(mcServer, "net.minecraft.server.network.ServerConnection");
-                }
-            }
+            Object scl = resolveServerConnectionListener(mcServer);
             if (scl == null) return null;
 
             List<Object> connections = new ArrayList<>();
@@ -134,6 +124,110 @@ public class ConnectionResolver {
             plugin.getLogger().warning("[PremiumLogin] Nie udało się pobrać Connection: " + t.getMessage());
             t.printStackTrace();
         }
+        return null;
+    }
+
+    public Object findConnectionByChannel(Channel channel) {
+        if (channel == null) {
+            return null;
+        }
+
+        try {
+            Object craftServer = Bukkit.getServer();
+            Method getServer = craftServer.getClass().getMethod("getServer");
+            Object mcServer = getServer.invoke(craftServer);
+            if (mcServer == null) {
+                return null;
+            }
+
+            Object scl = resolveServerConnectionListener(mcServer);
+            if (scl == null) {
+                return null;
+            }
+
+            List<Object> connections = new ArrayList<>();
+            collectByFqcn(scl, "net.minecraft.network.Connection", 0, new IdentityHashMap<>(), connections);
+
+            for (Object conn : connections) {
+                Channel candidate = findChannel(conn);
+                if (candidate == channel) {
+                    return conn;
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        return null;
+    }
+
+    private Object resolveServerConnectionListener(Object mcServer) {
+        if (mcServer == null) {
+            return null;
+        }
+
+        Object scl = null;
+        try {
+            Method m = mcServer.getClass().getMethod("getConnection");
+            if (m.getParameterCount() == 0 && !m.getReturnType().equals(void.class)) {
+                scl = m.invoke(mcServer);
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {}
+        if (scl == null) {
+            scl = extractFieldType(mcServer, "net.minecraft.server.network.ServerConnectionListener");
+            if (scl == null) {
+                scl = extractFieldType(mcServer, "net.minecraft.server.network.ServerConnection");
+            }
+        }
+        return scl;
+    }
+
+    public Channel resolveChannel(PacketEvent event, Object currentConnection) {
+        Channel channel = findChannel(currentConnection);
+        if (channel != null) {
+            return channel;
+        }
+
+        Object resolved = currentConnection;
+        if (resolved == null) {
+            resolved = findConnectionFor(event);
+        }
+
+        return findChannel(resolved);
+    }
+
+    public Channel findChannel(Object connection) {
+        if (connection == null) {
+            return null;
+        }
+
+        try {
+            try {
+                Method channelMethod = connection.getClass().getMethod("channel");
+                if (Channel.class.isAssignableFrom(channelMethod.getReturnType())) {
+                    channelMethod.setAccessible(true);
+                    Object value = channelMethod.invoke(connection);
+                    if (value instanceof Channel ch) {
+                        return ch;
+                    }
+                }
+            } catch (NoSuchMethodException ignored) {
+            }
+
+            for (Class<?> current = connection.getClass(); current != null && current != Object.class; current = current.getSuperclass()) {
+                for (var field : current.getDeclaredFields()) {
+                    if (!field.getType().getName().equals("io.netty.channel.Channel")) {
+                        continue;
+                    }
+                    field.setAccessible(true);
+                    Object value = field.get(connection);
+                    if (value instanceof Channel ch) {
+                        return ch;
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
         return null;
     }
 

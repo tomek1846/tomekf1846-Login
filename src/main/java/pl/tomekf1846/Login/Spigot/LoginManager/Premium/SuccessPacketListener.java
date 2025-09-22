@@ -22,28 +22,9 @@ public class SuccessPacketListener extends PacketAdapter {
         this.loginListener = loginListener;
     }
 
-    private static String socketKey(SocketAddress sa) {
-        if (sa instanceof InetSocketAddress isa) {
-            String host = isa.getAddress() != null ? isa.getAddress().getHostAddress() : isa.getHostString();
-            return host + ":" + isa.getPort();
-        }
-        return sa != null ? sa.toString() : "null";
-    }
-
-    private String connKey(PacketEvent event) {
-        try {
-            Player p = event.getPlayer();
-            if (p != null && p.getAddress() != null) {
-                return socketKey(p.getAddress());
-            }
-        } catch (Exception ignored) {}
-        return String.valueOf(System.identityHashCode(event));
-    }
-
     @Override
     public void onPacketSending(PacketEvent event) {
-        String key = connKey(event);
-        MojangProfile profile = loginListener.consumeVerifiedProfile(key);
+        MojangProfile profile = loginListener.consumeVerifiedProfile(event);
         if (profile == null) return;
 
         try {
