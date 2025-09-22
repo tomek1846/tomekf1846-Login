@@ -1,4 +1,4 @@
-package pl.tomekf1846.Login.Spigot.LoginManager.Premium;
+package pl.tomekf1846.Login.Spigot.LoginManager.Premium.Auth;
 
 import java.util.List;
 import java.util.Map;

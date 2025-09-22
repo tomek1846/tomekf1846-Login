@@ -1,4 +1,6 @@
-package pl.tomekf1846.Login.Spigot.LoginManager.Premium;
+package pl.tomekf1846.Login.Spigot.LoginManager.Premium.State;
+
+import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Auth.MojangProfile;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -7,30 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public final class LoginStateUtil {
+public final class LoginStateController {
 
-    private LoginStateUtil() {
+    private LoginStateController() {
     }
 
     public static void setReadyToAccept(Object loginHandler) {
-        if (loginHandler == null) return;
+        if (loginHandler == null) {
+            return;
+        }
         try {
-            Field stateField = null;
-
-            for (Field f : loginHandler.getClass().getDeclaredFields()) {
-                if (f.getType().getName().contains("ServerLoginPacketListenerImpl$State")) {
-                    stateField = f;
-                    break;
-                }
-            }
-
-            if (stateField == null) {
-                try {
-                    stateField = loginHandler.getClass().getDeclaredField("state");
-                } catch (NoSuchFieldException ignored) {
-                }
-            }
-
+            Field stateField = resolveStateField(loginHandler);
             if (stateField == null) {
                 throw new IllegalStateException("Nie znaleziono pola state w ServerLoginPacketListenerImpl");
             }
@@ -49,6 +38,19 @@ public final class LoginStateUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static Field resolveStateField(Object loginHandler) {
+        for (Field field : loginHandler.getClass().getDeclaredFields()) {
+            if (field.getType().getName().contains("ServerLoginPacketListenerImpl$State")) {
+                return field;
+            }
+        }
+        try {
+            return loginHandler.getClass().getDeclaredField("state");
+        } catch (NoSuchFieldException ignored) {
+            return null;
         }
     }
 
@@ -135,7 +137,9 @@ public final class LoginStateUtil {
     }
 
     public static void setLoginGameProfile(Object loginHandler, MojangProfile profile) {
-        if (loginHandler == null || profile == null) return;
+        if (loginHandler == null || profile == null) {
+            return;
+        }
         try {
             Class<?> gpClass = Class.forName("com.mojang.authlib.GameProfile");
             Constructor<?> gpCtor = gpClass.getConstructor(UUID.class, String.class);

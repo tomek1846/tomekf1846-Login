@@ -1,14 +1,14 @@
-package pl.tomekf1846.Login.Spigot.LoginManager.Premium;
+package pl.tomekf1846.Login.Spigot.LoginManager.Premium.Listener;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.*;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Auth.MojangProfile;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,7 +25,9 @@ public class SuccessPacketListener extends PacketAdapter {
     @Override
     public void onPacketSending(PacketEvent event) {
         MojangProfile profile = loginListener.consumeVerifiedProfile(event);
-        if (profile == null) return;
+        if (profile == null) {
+            return;
+        }
 
         try {
             UUID uuid = profile.uuid;
@@ -35,22 +37,21 @@ public class SuccessPacketListener extends PacketAdapter {
 
             List<Map<String, String>> props = profile.properties;
             if (props != null) {
-                for (Map<String, String> p : props) {
-                    String pname = p.get("name");
-                    String value = p.get("value");
-                    String signature = p.get("signature");
+                for (Map<String, String> property : props) {
+                    String propertyName = property.get("name");
+                    String value = property.get("value");
+                    String signature = property.get("signature");
                     if (signature != null) {
-                        wrapped.getProperties().put(pname, new WrappedSignedProperty(pname, value, signature));
+                        wrapped.getProperties().put(propertyName, new WrappedSignedProperty(propertyName, value, signature));
                     } else {
-                        wrapped.getProperties().put(pname, new WrappedSignedProperty(pname, value, null));
+                        wrapped.getProperties().put(propertyName, new WrappedSignedProperty(propertyName, value, null));
                     }
                 }
             }
 
             event.getPacket().getGameProfiles().write(0, wrapped);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 }

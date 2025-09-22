@@ -1,4 +1,4 @@
-package pl.tomekf1846.Login.Spigot.LoginManager.Premium;
+package pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network;
 
 import com.comphenix.protocol.events.PacketEvent;
 import io.netty.channel.Channel;

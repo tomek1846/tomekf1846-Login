@@ -1,4 +1,4 @@
-package pl.tomekf1846.Login.Spigot.LoginManager.Premium;
+package pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session;
 
 import javax.crypto.SecretKey;
 import java.security.KeyPair;
