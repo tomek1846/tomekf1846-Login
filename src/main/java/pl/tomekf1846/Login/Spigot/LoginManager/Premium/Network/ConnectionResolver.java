@@ -18,9 +18,11 @@ import java.util.*;
 public class ConnectionResolver {
 
     private final Plugin plugin;
+    private final MinecraftVersionResolver versionResolver;
 
     public ConnectionResolver(Plugin plugin) {
         this.plugin = plugin;
+        this.versionResolver = MinecraftVersionResolver.get();
     }
 
     public String socketKey(SocketAddress sa) {
@@ -75,7 +77,7 @@ public class ConnectionResolver {
             if (scl == null) return null;
 
             List<Object> connections = new ArrayList<>();
-            collectByFqcn(scl, "net.minecraft.network.Connection", 0, new IdentityHashMap<>(), connections);
+            collectByFqcn(scl, versionResolver.getConnectionClassPrefixes(), 0, new IdentityHashMap<>(), connections);
 
             for (Object conn : connections) {
                 SocketAddress addr = null;
@@ -146,7 +148,7 @@ public class ConnectionResolver {
             }
 
             List<Object> connections = new ArrayList<>();
-            collectByFqcn(scl, "net.minecraft.network.Connection", 0, new IdentityHashMap<>(), connections);
+            collectByFqcn(scl, versionResolver.getConnectionClassPrefixes(), 0, new IdentityHashMap<>(), connections);
 
             for (Object conn : connections) {
                 Channel candidate = findChannel(conn);
@@ -173,10 +175,15 @@ public class ConnectionResolver {
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {}
         if (scl == null) {
-            scl = extractFieldType(mcServer, "net.minecraft.server.network.ServerConnectionListener");
-            if (scl == null) {
-                scl = extractFieldType(mcServer, "net.minecraft.server.network.ServerConnection");
-            }
+            try {
+                Method legacy = mcServer.getClass().getMethod("getServerConnection");
+                if (legacy.getParameterCount() == 0 && !legacy.getReturnType().equals(void.class)) {
+                    scl = legacy.invoke(mcServer);
+                }
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {}
+        }
+        if (scl == null) {
+            scl = extractFieldType(mcServer, versionResolver.getServerConnectionClassPrefixes());
         }
         return scl;
     }
@@ -231,24 +238,38 @@ public class ConnectionResolver {
         return null;
     }
 
-    public static Object extractFieldType(Object obj, String fqcnStartsWith) {
-        if (obj == null) return null;
+    public static Object extractFieldType(Object obj, String... fqcnStartsWith) {
+        if (obj == null || fqcnStartsWith == null || fqcnStartsWith.length == 0) {
+            return null;
+        }
         for (java.lang.reflect.Field f : obj.getClass().getDeclaredFields()) {
             try {
                 f.setAccessible(true);
                 Object v = f.get(obj);
-                if (v != null && v.getClass().getName().startsWith(fqcnStartsWith)) return v;
+                if (v == null) {
+                    continue;
+                }
+                String className = v.getClass().getName();
+                for (String prefix : fqcnStartsWith) {
+                    if (prefix != null && !prefix.isEmpty() && className.startsWith(prefix)) {
+                        return v;
+                    }
+                }
             } catch (Throwable ignored) {}
         }
         return null;
     }
 
-    private static void collectByFqcn(Object obj, String fqcnPrefix, int depth, IdentityHashMap<Object, Boolean> seen, List<Object> out) {
+    private static void collectByFqcn(Object obj,
+                                      String[] fqcnPrefixes,
+                                      int depth,
+                                      IdentityHashMap<Object, Boolean> seen,
+                                      List<Object> out) {
         if (obj == null || depth > 8 || seen.containsKey(obj)) return;
         seen.put(obj, Boolean.TRUE);
 
         Class<?> c = obj.getClass();
-        if (c.getName().startsWith(fqcnPrefix)) {
+        if (matchesAny(c.getName(), fqcnPrefixes)) {
             out.add(obj);
             return;
         }
@@ -257,19 +278,19 @@ public class ConnectionResolver {
             int len = Array.getLength(obj);
             for (int i = 0; i < len; i++) {
                 Object v = Array.get(obj, i);
-                collectByFqcn(v, fqcnPrefix, depth + 1, seen, out);
+                collectByFqcn(v, fqcnPrefixes, depth + 1, seen, out);
             }
             return;
         }
 
         if (obj instanceof Iterable<?>) {
             for (Object v : (Iterable<?>) obj) {
-                collectByFqcn(v, fqcnPrefix, depth + 1, seen, out);
+                collectByFqcn(v, fqcnPrefixes, depth + 1, seen, out);
             }
         }
         if (obj instanceof Map<?, ?>) {
             for (Object v : ((Map<?, ?>) obj).values()) {
-                collectByFqcn(v, fqcnPrefix, depth + 1, seen, out);
+                collectByFqcn(v, fqcnPrefixes, depth + 1, seen, out);
             }
         }
 
@@ -278,9 +299,24 @@ public class ConnectionResolver {
             try {
                 f.setAccessible(true);
                 Object v = f.get(obj);
-                collectByFqcn(v, fqcnPrefix, depth + 1, seen, out);
+                collectByFqcn(v, fqcnPrefixes, depth + 1, seen, out);
             } catch (Throwable ignored) {}
         }
+    }
+
+    private static boolean matchesAny(String className, String[] prefixes) {
+        if (prefixes == null) {
+            return false;
+        }
+        for (String prefix : prefixes) {
+            if (prefix == null || prefix.isEmpty()) {
+                continue;
+            }
+            if (className.startsWith(prefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void invokeSetupEncryption(Object connection, SecretKey secretKey) throws Exception {

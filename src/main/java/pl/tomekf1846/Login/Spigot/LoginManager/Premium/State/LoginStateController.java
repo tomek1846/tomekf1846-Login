@@ -42,16 +42,61 @@ public final class LoginStateController {
     }
 
     private static Field resolveStateField(Object loginHandler) {
+        Field candidate = null;
         for (Field field : loginHandler.getClass().getDeclaredFields()) {
-            if (field.getType().getName().contains("ServerLoginPacketListenerImpl$State")) {
+            Class<?> type = field.getType();
+            String typeName = type.getName();
+            if (type.isEnum() && enumContainsReadyConstant(type)) {
+                field.setAccessible(true);
+                return field;
+            }
+            if (typeName.contains("ServerLoginPacketListenerImpl$State")
+                    || typeName.contains("LoginListener")
+                    || typeName.contains("LoginState")) {
+                candidate = field;
+            }
+        }
+
+        if (candidate != null) {
+            candidate.setAccessible(true);
+            if (candidate.getType().isEnum() && enumContainsReadyConstant(candidate.getType())) {
+                return candidate;
+            }
+        }
+
+        try {
+            Field state = loginHandler.getClass().getDeclaredField("state");
+            state.setAccessible(true);
+            if (!state.getType().isEnum() || enumContainsReadyConstant(state.getType())) {
+                return state;
+            }
+        } catch (NoSuchFieldException ignored) {
+        }
+
+        for (Field field : loginHandler.getClass().getDeclaredFields()) {
+            if (field.getType().isEnum() && enumContainsReadyConstant(field.getType())) {
+                field.setAccessible(true);
                 return field;
             }
         }
-        try {
-            return loginHandler.getClass().getDeclaredField("state");
-        } catch (NoSuchFieldException ignored) {
-            return null;
+        return null;
+    }
+
+    private static boolean enumContainsReadyConstant(Class<?> enumClass) {
+        Object[] constants = enumClass.getEnumConstants();
+        if (constants == null) {
+            return false;
         }
+        for (Object constant : constants) {
+            if (!(constant instanceof Enum<?> enumConst)) {
+                continue;
+            }
+            String name = enumConst.name();
+            if (name.contains("READY") || name.contains("ACCEPT") || name.contains("JOIN")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static Object resolveReadyState(Class<?> stateClass) {

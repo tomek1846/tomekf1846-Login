@@ -11,11 +11,13 @@ public class LoginFinalizer {
     private final Plugin plugin;
     private final ConnectionResolver connectionResolver;
     private final Logger logger;
+    private final MinecraftVersionResolver versionResolver;
 
     public LoginFinalizer(Plugin plugin, ConnectionResolver connectionResolver) {
         this.plugin = plugin;
         this.connectionResolver = connectionResolver;
         this.logger = plugin.getLogger();
+        this.versionResolver = MinecraftVersionResolver.get();
     }
 
     public void apply(Object connection, MojangProfile profile, String username) {
@@ -23,7 +25,7 @@ public class LoginFinalizer {
             return;
         }
         plugin.getServer().getScheduler().runTask(plugin, () -> {
-            Object loginHandler = ConnectionResolver.extractFieldType(connection, "net.minecraft.server.network.ServerLoginPacketListenerImpl");
+            Object loginHandler = ConnectionResolver.extractFieldType(connection, versionResolver.getLoginHandlerClassPrefixes());
             if (loginHandler != null) {
                 LoginStateController.setLoginGameProfile(loginHandler, profile);
                 LoginStateController.setReadyToAccept(loginHandler);

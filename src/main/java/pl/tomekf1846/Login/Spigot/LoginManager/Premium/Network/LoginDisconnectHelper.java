@@ -17,11 +17,13 @@ public class LoginDisconnectHelper {
     private final ProtocolManager protocolManager;
     private final ConnectionResolver connectionResolver;
     private final Logger logger;
+    private final MinecraftVersionResolver versionResolver;
 
     public LoginDisconnectHelper(Plugin plugin, ProtocolManager protocolManager, ConnectionResolver connectionResolver) {
         this.protocolManager = protocolManager;
         this.connectionResolver = connectionResolver;
         this.logger = plugin.getLogger();
+        this.versionResolver = MinecraftVersionResolver.get();
     }
 
     public void disconnect(PacketEvent event, Object connection, String message) {
@@ -74,7 +76,7 @@ public class LoginDisconnectHelper {
     }
 
     private boolean invokeDisconnectOnLoginHandler(Object connection, String message) {
-        Object loginHandler = ConnectionResolver.extractFieldType(connection, "net.minecraft.server.network.ServerLoginPacketListenerImpl");
+        Object loginHandler = ConnectionResolver.extractFieldType(connection, versionResolver.getLoginHandlerClassPrefixes());
         if (loginHandler != null) {
             return invokeDisconnect(loginHandler, message);
         }
