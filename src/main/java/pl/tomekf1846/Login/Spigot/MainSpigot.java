@@ -20,7 +20,6 @@ import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Listener.PremiumLoginList
 import pl.tomekf1846.Login.Spigot.PlayerCommand.Other.PlayerCommandManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Listener.SuccessPacketListener;
 import pl.tomekf1846.Login.Spigot.PlayerCommand.Other.PlayerCommandTabCompleter;
-import pl.tomekf1846.Login.Spigot.PluginManager.LicenseManager;
 import pl.tomekf1846.Login.Spigot.PluginManager.PluginStart;
 
 import java.util.Objects;
@@ -43,7 +42,6 @@ public final class MainSpigot extends JavaPlugin {
         AdminCommandTabCompleter tabCompleter = new AdminCommandTabCompleter();
         PlayerCommandManager playerCommandManager = new PlayerCommandManager();
         PlayerCommandTabCompleter playerCommandTabCompleter = new PlayerCommandTabCompleter();
-        LicenseManager.CheckLicense();
         pluginStart.printPluginInfo();
 
         pluginStart.printLoadingCommand();

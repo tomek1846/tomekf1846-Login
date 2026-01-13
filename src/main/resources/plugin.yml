@@ -9,8 +9,6 @@ load: STARTUP
 softdepend:
   - SkinsRestorer
   - ProtocolLib
-depend:
-  - tomekf1846-API
 commands:
   alogin:
     description: Admin panel

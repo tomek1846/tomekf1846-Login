@@ -117,12 +117,5 @@
             <version>3.0.2</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>pl.tomekf1846</groupId>
-            <artifactId>tomekf1846-API</artifactId>
-            <version>1.2.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/tomekf1846-API-1.2.3.jar</systemPath>
-        </dependency>
     </dependencies>
 </project>
