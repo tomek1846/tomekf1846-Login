@@ -58,4 +58,8 @@ public class PremiumLoginListener extends PacketAdapter {
     public void clearSessions() {
         handshakeManager.clearSessions();
     }
+
+    public void clearPlayerCache(org.bukkit.entity.Player player) {
+        handshakeManager.clearPlayerCache(player);
+    }
 }
