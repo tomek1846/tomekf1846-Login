@@ -12,12 +12,13 @@ import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.ConnectionResolve
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.EncryptionRequestSender;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.LoginDisconnectHelper;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.LoginFinalizer;
+import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session.PremiumVerifiedProfileStore;
 
 public class PremiumLoginListener extends PacketAdapter {
 
     private final PremiumHandshakeManager handshakeManager;
 
-    public PremiumLoginListener(Plugin plugin, ProtocolManager protocolManager) {
+    public PremiumLoginListener(Plugin plugin, ProtocolManager protocolManager, PremiumVerifiedProfileStore profileStore) {
         super(plugin, ListenerPriority.HIGHEST,
                 PacketType.Login.Client.START,
                 PacketType.Login.Client.ENCRYPTION_BEGIN);
@@ -36,7 +37,8 @@ public class PremiumLoginListener extends PacketAdapter {
                 connectionResolver,
                 disconnectHelper,
                 loginFinalizer,
-                eligibilityChecker
+                eligibilityChecker,
+                profileStore
         );
     }
 
