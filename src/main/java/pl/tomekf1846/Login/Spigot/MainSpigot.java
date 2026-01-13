@@ -17,12 +17,11 @@ import pl.tomekf1846.Login.Spigot.Listener.PlayerLeaveListener;
 import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.PlayerRestrictions;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Listener.PremiumLoginListener;
-import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Listener.PremiumProfileListener;
 import pl.tomekf1846.Login.Spigot.PlayerCommand.Other.PlayerCommandManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Listener.SuccessPacketListener;
 import pl.tomekf1846.Login.Spigot.PlayerCommand.Other.PlayerCommandTabCompleter;
+import pl.tomekf1846.Login.Spigot.PluginManager.LicenseManager;
 import pl.tomekf1846.Login.Spigot.PluginManager.PluginStart;
-import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session.PremiumVerifiedProfileStore;
 
 import java.util.Objects;
 
@@ -32,7 +31,6 @@ public final class MainSpigot extends JavaPlugin {
 
     private PremiumLoginListener loginListener;
     private SuccessPacketListener successListener;
-    private PremiumVerifiedProfileStore verifiedProfileStore;
 
     @Override
     public void onEnable() {
@@ -45,6 +43,7 @@ public final class MainSpigot extends JavaPlugin {
         AdminCommandTabCompleter tabCompleter = new AdminCommandTabCompleter();
         PlayerCommandManager playerCommandManager = new PlayerCommandManager();
         PlayerCommandTabCompleter playerCommandTabCompleter = new PlayerCommandTabCompleter();
+        LicenseManager.CheckLicense();
         pluginStart.printPluginInfo();
 
         pluginStart.printLoadingCommand();
@@ -77,8 +76,7 @@ public final class MainSpigot extends JavaPlugin {
         pluginStart.printLoadingListener();
 
         ProtocolManager pm = ProtocolLibrary.getProtocolManager();
-        this.verifiedProfileStore = new PremiumVerifiedProfileStore();
-        this.loginListener = new PremiumLoginListener(this, pm, verifiedProfileStore);
+        this.loginListener = new PremiumLoginListener(this, pm);
         pm.addPacketListener(this.loginListener);
 
         this.successListener = new SuccessPacketListener(this, this.loginListener);
@@ -86,12 +84,11 @@ public final class MainSpigot extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new MainGuiListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerListGuiListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerLeaveListener(this.loginListener), this);
+        getServer().getPluginManager().registerEvents(new PlayerLeaveListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerRestrictions(), this);
         getServer().getPluginManager().registerEvents(new PlayerListSearch(), this);
         getServer().getPluginManager().registerEvents(new PlayerListSearchListener(), this);
-        getServer().getPluginManager().registerEvents(new PremiumProfileListener(this, verifiedProfileStore), this);
         pluginStart.printLoadingSuccess();
 
         pluginStart.printLoadingData();

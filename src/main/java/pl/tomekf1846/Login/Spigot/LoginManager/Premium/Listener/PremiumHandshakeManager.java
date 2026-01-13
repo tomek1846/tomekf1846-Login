@@ -11,11 +11,9 @@ import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.ConnectionResolve
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.EncryptionRequestSender;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.LoginDisconnectHelper;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.LoginFinalizer;
-import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.MinecraftVersionResolver;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session.PremiumSession;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session.PremiumSessionFactory;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session.PremiumSessionRegistry;
-import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session.PremiumVerifiedProfileStore;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.State.PremiumConnectionKeys;
 
 import javax.crypto.Cipher;
@@ -35,9 +33,7 @@ public class PremiumHandshakeManager {
     private final LoginDisconnectHelper disconnectHelper;
     private final LoginFinalizer loginFinalizer;
     private final PremiumEligibilityChecker eligibilityChecker;
-    private final PremiumVerifiedProfileStore profileStore;
     private final Logger logger;
-    private final MinecraftVersionResolver versionResolver;
 
     public PremiumHandshakeManager(Plugin plugin,
                                    EncryptionRequestSender encryptionRequestSender,
@@ -45,17 +41,14 @@ public class PremiumHandshakeManager {
                                    ConnectionResolver connectionResolver,
                                    LoginDisconnectHelper disconnectHelper,
                                    LoginFinalizer loginFinalizer,
-                                   PremiumEligibilityChecker eligibilityChecker,
-                                   PremiumVerifiedProfileStore profileStore) {
+                                   PremiumEligibilityChecker eligibilityChecker) {
         this.encryptionRequestSender = encryptionRequestSender;
         this.mojangAuthClient = mojangAuthClient;
         this.connectionResolver = connectionResolver;
         this.disconnectHelper = disconnectHelper;
         this.loginFinalizer = loginFinalizer;
         this.eligibilityChecker = eligibilityChecker;
-        this.profileStore = profileStore;
         this.logger = plugin.getLogger();
-        this.versionResolver = MinecraftVersionResolver.get();
     }
 
     public void handleLoginStart(PacketEvent event) {
@@ -165,9 +158,7 @@ public class PremiumHandshakeManager {
                 return;
             }
 
-            if (versionResolver.isAtLeast(1, 20, 5)) {
-                profileStore.store(session.username, ip, profile);
-            } else if (channel != null) {
+            if (channel != null) {
                 channel.attr(PremiumConnectionKeys.VERIFIED_PROFILE).set(profile);
             }
 
@@ -196,22 +187,6 @@ public class PremiumHandshakeManager {
 
     public void clearSessions() {
         sessionRegistry.clear();
-        profileStore.clear();
-    }
-
-    public void clearPlayerCache(Player player) {
-        if (player == null) {
-            return;
-        }
-        String username = player.getName();
-        sessionRegistry.discard(username);
-        profileStore.discard(username);
-
-        Object connection = connectionResolver.findConnectionFor(player);
-        Channel channel = connectionResolver.findChannel(connection);
-        if (channel != null) {
-            clearChannelState(channel);
-        }
     }
 
     private PremiumSession getSession(Channel channel) {

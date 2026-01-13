@@ -12,13 +12,12 @@ import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.ConnectionResolve
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.EncryptionRequestSender;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.LoginDisconnectHelper;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Network.LoginFinalizer;
-import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session.PremiumVerifiedProfileStore;
 
 public class PremiumLoginListener extends PacketAdapter {
 
     private final PremiumHandshakeManager handshakeManager;
 
-    public PremiumLoginListener(Plugin plugin, ProtocolManager protocolManager, PremiumVerifiedProfileStore profileStore) {
+    public PremiumLoginListener(Plugin plugin, ProtocolManager protocolManager) {
         super(plugin, ListenerPriority.HIGHEST,
                 PacketType.Login.Client.START,
                 PacketType.Login.Client.ENCRYPTION_BEGIN);
@@ -37,8 +36,7 @@ public class PremiumLoginListener extends PacketAdapter {
                 connectionResolver,
                 disconnectHelper,
                 loginFinalizer,
-                eligibilityChecker,
-                profileStore
+                eligibilityChecker
         );
     }
 
@@ -57,9 +55,5 @@ public class PremiumLoginListener extends PacketAdapter {
 
     public void clearSessions() {
         handshakeManager.clearSessions();
-    }
-
-    public void clearPlayerCache(org.bukkit.entity.Player player) {
-        handshakeManager.clearPlayerCache(player);
     }
 }

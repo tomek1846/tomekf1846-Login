@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class PluginStart {
+    public static Object printError;
     private final JavaPlugin plugin;
     private static Logger logger;
     private static LanguageManager languageManager;
@@ -102,6 +103,7 @@ public class PluginStart {
     public void printLoadingData() { printBanner("messages.startmessages.banners.loading_data", AnsiColor.GOLD); }
     public void printLoadingSuccess() { printBanner("messages.startmessages.banners.loading_success", AnsiColor.LIGHT_GREEN); }
     public void printPluginShutdown() { printBanner("messages.startmessages.banners.plugin_shutdown", AnsiColor.LIGHT_GREEN); }
+    public static void printlicenseAPI() { printBanner("License Verified by tomekf1846-API", AnsiColor.LIGHT_GREEN); }
     public static void printError() { printBanner("messages.startmessages.banners.error", AnsiColor.RED); }
 
     public void startkickall() {
