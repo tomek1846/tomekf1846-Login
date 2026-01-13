@@ -159,6 +159,22 @@ public final class MinecraftVersionResolver {
         return false;
     }
 
+    public boolean isAtLeast(int major, int minor, int patch) {
+        if (this.major > major) {
+            return true;
+        }
+        if (this.major < major) {
+            return false;
+        }
+        if (this.minor > minor) {
+            return true;
+        }
+        if (this.minor < minor) {
+            return false;
+        }
+        return this.patch >= patch;
+    }
+
     private static int[] parseVersionNumbers(String version) {
         Matcher matcher = VERSION_PATTERN.matcher(Objects.toString(version, ""));
         if (!matcher.find()) {
