@@ -199,21 +199,6 @@ public class PremiumHandshakeManager {
         profileStore.clear();
     }
 
-    public void clearPlayerCache(Player player) {
-        if (player == null) {
-            return;
-        }
-        String username = player.getName();
-        sessionRegistry.discard(username);
-        profileStore.discard(username);
-
-        Object connection = connectionResolver.findConnectionFor(player);
-        Channel channel = connectionResolver.findChannel(connection);
-        if (channel != null) {
-            clearChannelState(channel);
-        }
-    }
-
     private PremiumSession getSession(Channel channel) {
         if (channel == null) {
             return null;
