@@ -86,7 +86,7 @@ public final class MainSpigot extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new MainGuiListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerListGuiListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerLeaveListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerLeaveListener(this.loginListener), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerRestrictions(), this);
         getServer().getPluginManager().registerEvents(new PlayerListSearch(), this);

@@ -43,6 +43,14 @@ public class PremiumVerifiedProfileStore {
         return entry.profile;
     }
 
+    public void discard(String username) {
+        if (username == null || username.isBlank()) {
+            return;
+        }
+        String key = normalize(username);
+        verifiedProfiles.remove(key);
+    }
+
     public void clear() {
         verifiedProfiles.clear();
     }

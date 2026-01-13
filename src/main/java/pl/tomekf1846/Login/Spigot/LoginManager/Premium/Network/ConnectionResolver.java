@@ -65,9 +65,24 @@ public class ConnectionResolver {
     public Object findConnectionFor(PacketEvent event) {
         try {
             Player p = event.getPlayer();
-            if (p == null || p.getAddress() == null) return null;
-            InetSocketAddress target = p.getAddress();
+            if (p == null) {
+                return null;
+            }
+            return findConnectionFor(p);
+        } catch (Throwable t) {
+            plugin.getLogger().warning("[PremiumLogin] Nie udało się pobrać Connection: " + t.getMessage());
+            t.printStackTrace();
+        }
+        return null;
+    }
 
+    public Object findConnectionFor(Player player) {
+        if (player == null || player.getAddress() == null) {
+            return null;
+        }
+        InetSocketAddress target = player.getAddress();
+
+        try {
             Object craftServer = Bukkit.getServer();
             Method getServer = craftServer.getClass().getMethod("getServer");
             Object mcServer = getServer.invoke(craftServer);
