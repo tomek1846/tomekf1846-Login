@@ -62,6 +62,21 @@ public class PlayerLoginManager {
         LoginMessagesManager.LoginTitle(player);
     }
 
+    public static void forceLoginPlayer(Player player) {
+        if (isPlayerLoggedIn(player)) {
+            return;
+        }
+
+        UUID playerUUID = player.getUniqueId();
+        wrongPasswordAttempts.remove(playerUUID);
+        PlayerRestrictions.unblockPlayer(player);
+        PlayerDataSave.saveLoginAttempt(player, true, null, 0);
+        player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.successfully_logged_in"));
+        playerLoginStatus.put(player, true);
+        SessionCrackedManager.incrementLoginCount(playerUUID);
+        LoginMessagesManager.LoginTitle(player);
+    }
+
     private static boolean isPlayerRegistered(Player player) {
         return PlayerDataSave.loadPlayerData(player.getUniqueId()) != null;
     }
