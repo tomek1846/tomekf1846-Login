@@ -184,6 +184,9 @@ messages:
   gui:
     frist-page: "&cDies ist die erste Seite. Du kannst nicht weiter zurück."
     no-data: "&cNicht definiert"
+    cancel-button:
+      text: "&c[Abbrechen]"
+      hover: "&7Klicken zum Abbrechen"
     Maingui:
       name: "&e&lHauptmenü"
       filling:
@@ -267,10 +270,10 @@ messages:
         layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
         name: "&b&lSpieler-Suchergebnisse"
         no-player-data: "&cKeine Spieler mit diesem Nickname gefunden."
-        search-message: "&aGib einen Nickname zur Suche ein (&fcancel&a zum Abbrechen)"
+        search-message: "&aGib einen Nickname zur Suche ein"
         search-title:
           title: "&6Nickname eingeben"
-          subtitle: "&eIm Chat nach Spieler suchen (&fcancel&e zum Abbrechen)"
+          subtitle: "&eIm Chat nach Spieler suchen"
         buttons:
           Close:
             material: BARRIER
@@ -337,13 +340,13 @@ messages:
             - "&7Rechtsklick/Linksklick zum Schließen der GUI"
       input:
         email:
-          message: "&aGib die neue E-Mail für &f{player}&a im Chat ein (&fcancel&a zum Abbrechen)."
+          message: "&aGib die neue E-Mail für &f{player}&a im Chat ein."
           title: "&6E-Mail eingeben"
-          subtitle: "&eIm Chat eingeben (&fcancel&e zum Abbrechen)"
+          subtitle: "&eIm Chat eingeben"
         password:
-          message: "&aGib das neue Passwort für &f{player}&a im Chat ein (&fcancel&a zum Abbrechen)."
+          message: "&aGib das neue Passwort für &f{player}&a im Chat ein."
           title: "&6Passwort eingeben"
-          subtitle: "&eIm Chat eingeben (&fcancel&e zum Abbrechen)"
+          subtitle: "&eIm Chat eingeben"
       Language:
         name: "&9&lSprache: {player}"
         layout: "ABCABCABCBLLLLLLLBABCAXCABC"

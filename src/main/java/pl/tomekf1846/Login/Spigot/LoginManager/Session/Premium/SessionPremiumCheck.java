@@ -14,36 +14,42 @@ import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.function.Consumer;
 
 public class SessionPremiumCheck {
 
-    public static boolean isPlayerPremium(String nickname) {
-            try {
-                URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + nickname);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                InputStreamReader reader = new InputStreamReader(connection.getInputStream());
-                JsonObject response = JsonParser.parseReader(reader).getAsJsonObject();
-                String name = response.get("name").getAsString();
-                return name != null && !name.isEmpty();
-            } catch (Exception e) {
-                return false;
-        }
+    public static void checkPremiumAsync(String nickname, Consumer<Boolean> callback) {
+        MainSpigot plugin = MainSpigot.getInstance();
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            boolean premium = isPlayerPremium(nickname);
+            plugin.getServer().getScheduler().runTask(plugin, () -> callback.accept(premium));
+        });
     }
 
-    public static boolean handlePremiumRegister(Player player) {
-        if (!PlayerRegisterManager.isPlayerRegistered(player)) {
-                if (isPlayerPremium(player.getName())) {
-                    PasswordSecurity.encodeAsync(MainSpigot.getInstance(), "none", encodedPassword -> {
-                        PlayerDataSave.savePlayerData(player, encodedPassword);
-                        LanguageAutoDetect.applyAutoDetectOnFirstJoin(player);
-                        PlayerDataSave.setPlayerSession(player.getName(), true);
-                        PlayerRestrictions.unblockPlayer(player);
-                        LoginMessagesManager.PremiumRegisterTitle(player);
-                    });
-                    return true;
-                }
+    public static void registerPremiumPlayer(Player player) {
+        if (PlayerRegisterManager.isPlayerRegistered(player)) {
+            return;
         }
-        return false;
+        PasswordSecurity.encodeAsync(MainSpigot.getInstance(), "none", encodedPassword -> {
+            PlayerDataSave.savePlayerData(player, encodedPassword);
+            LanguageAutoDetect.applyAutoDetectOnFirstJoin(player);
+            PlayerDataSave.setPlayerSession(player.getName(), true);
+            PlayerRestrictions.unblockPlayer(player);
+            LoginMessagesManager.PremiumRegisterTitle(player);
+        });
+    }
+
+    private static boolean isPlayerPremium(String nickname) {
+        try {
+            URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + nickname);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            InputStreamReader reader = new InputStreamReader(connection.getInputStream());
+            JsonObject response = JsonParser.parseReader(reader).getAsJsonObject();
+            String name = response.get("name").getAsString();
+            return name != null && !name.isEmpty();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

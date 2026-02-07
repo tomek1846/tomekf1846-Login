@@ -8,6 +8,8 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import pl.tomekf1846.Login.Spigot.AdminCommand.Command.*;
 import pl.tomekf1846.Login.Spigot.GUI.MainGui.MainGui;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerList.Search.PlayerListSearch;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageState;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.PlayerRestrictions;
 import pl.tomekf1846.Login.Spigot.LoginManager.Session.Cracked.SessionCrackedManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
@@ -39,6 +41,21 @@ public class AdminCommandManager implements CommandExecutor {
                     return true;
                 }
                 MainGui.openGUI((Player) sender);
+                return true;
+
+            case "cancel":
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(prefix + languageManager.getMessage(sender, "messages.admin-commands.only_players_gui"));
+                    return true;
+                }
+                Player player = (Player) sender;
+                boolean canceled = PlayerManageState.cancelInput(player);
+                if (!canceled) {
+                    canceled = PlayerListSearch.cancelSearch(player);
+                }
+                if (!canceled) {
+                    sender.sendMessage(prefix + languageManager.getMessage(sender, "messages.admin-commands.unknown_command"));
+                }
                 return true;
 
             case "about":

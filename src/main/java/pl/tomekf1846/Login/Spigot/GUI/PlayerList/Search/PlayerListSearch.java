@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.GUI.GuiChatHelper;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerList.Other.PlayerListPageManager;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerList.PlayerListGui;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageState;
@@ -28,8 +29,8 @@ public class PlayerListSearch implements Listener {
 
     public static void startSearch(Player player) {
         searchingPlayer = player;
-        searchingPlayer.sendMessage(LanguageManager.getMessage(player, "messages.prefix.main-prefix")
-                + LanguageManager.getMessage(player, "messages.gui.Playerlist.Search.search-message"));
+        GuiChatHelper.sendMessageWithCancelButton(player,
+                LanguageManager.getMessage(player, "messages.gui.Playerlist.Search.search-message"));
         sendSearchTitle(player);
     }
 
@@ -95,6 +96,18 @@ public class PlayerListSearch implements Listener {
         }
 
         searchingPlayer = null;
+    }
+
+    public static boolean cancelSearch(Player player) {
+        if (searchingPlayer == null || !searchingPlayer.equals(player)) {
+            return false;
+        }
+        searchingPlayer = null;
+        Bukkit.getScheduler().runTask(MainSpigot.getInstance(), () -> PlayerListGui.openGUI(
+                player,
+                PlayerListPageManager.playerPages.getOrDefault(player.getUniqueId(), 1)
+        ));
+        return true;
     }
 
 
@@ -176,11 +189,6 @@ public class PlayerListSearch implements Listener {
             event.setCancelled(true);
 
             Bukkit.getScheduler().runTask(MainSpigot.getInstance(), () -> {
-                if ("cancel".equalsIgnoreCase(message.trim())) {
-                    searchingPlayer = null;
-                    PlayerListGui.openGUI(player, PlayerListPageManager.playerPages.getOrDefault(player.getUniqueId(), 1));
-                    return;
-                }
                 searchAndDisplay(message);
             });
         }

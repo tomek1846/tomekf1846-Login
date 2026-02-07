@@ -1,7 +1,8 @@
 package pl.tomekf1846.Login.Spigot.LoginManager.Other;
 
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
+import pl.tomekf1846.Login.Spigot.FileManager.LanguageAutoDetect;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
@@ -40,18 +41,33 @@ public class MainLoginManager {
                 player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.login-message"));
             }
         } else {
-            if (SessionPremiumCheck.isPlayerPremium(playerName)) {
-                if (isPremiumCommandEnabled) {
-                    SessionPremiumCheck.handlePremiumRegister(player);
+            handleUnregisteredPlayer(player, isPremiumCommandEnabled);
+        }
+    }
+
+    private static void handleUnregisteredPlayer(Player player, boolean isPremiumCommandEnabled) {
+        LanguageAutoDetect.applyAutoDetectOnFirstJoin(player, () -> {
+            if (!player.isOnline() || PlayerRegisterManager.isPlayerRegistered(player)) {
+                return;
+            }
+            String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
+            if (!isPremiumCommandEnabled) {
+                PlayerRestrictions.blockPlayer(player);
+                player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.register-message"));
+                return;
+            }
+            SessionPremiumCheck.checkPremiumAsync(player.getName(), premium -> {
+                if (!player.isOnline() || PlayerRegisterManager.isPlayerRegistered(player)) {
+                    return;
+                }
+                if (premium) {
+                    SessionPremiumCheck.registerPremiumPlayer(player);
                 } else {
                     PlayerRestrictions.blockPlayer(player);
                     player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.register-message"));
                 }
-            } else {
-                PlayerRestrictions.blockPlayer(player);
-                player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.register-message"));
-            }
-        }
+            });
+        });
     }
 
     private static String generateRandomPassword() {
