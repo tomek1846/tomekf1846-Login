@@ -17,6 +17,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
     private final String playerTable;
     private final String securityTable;
     private final String historyTable;
+    private final String loginAttemptsTable;
     private final SqlDialect dialect;
     public JdbcPlayerDataStorage(JavaPlugin plugin, HikariDataSource dataSource, StorageTableNames tableNames, SqlDialect dialect) {
         this.plugin = plugin;
@@ -24,6 +25,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
         this.playerTable = tableNames.getPlayerTable();
         this.securityTable = tableNames.getSecurityTable();
         this.historyTable = tableNames.getIpHistoryTable();
+        this.loginAttemptsTable = tableNames.getLoginAttemptsTable();
         this.dialect = dialect;
         ensureTables();
     }
@@ -32,6 +34,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
         String quotedPlayers = dialect.quote(playerTable);
         String quotedSecurity = dialect.quote(securityTable);
         String quotedHistory = dialect.quote(historyTable);
+        String quotedLoginAttempts = dialect.quote(loginAttemptsTable);
         String playerSql = "CREATE TABLE IF NOT EXISTS " + quotedPlayers + " ("
                 + "uuid VARCHAR(36) PRIMARY KEY,"
                 + "nick VARCHAR(32),"
@@ -55,11 +58,22 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
                 + "ip_entry TEXT,"
                 + "created_at VARCHAR(32)"
                 + ")";
+        String loginSql = "CREATE TABLE IF NOT EXISTS " + quotedLoginAttempts + " ("
+                + "entry_id VARCHAR(36) PRIMARY KEY,"
+                + "uuid VARCHAR(36),"
+                + "created_at VARCHAR(32),"
+                + "success VARCHAR(5),"
+                + "attempted_password VARCHAR(255),"
+                + "wrong_attempts INT,"
+                + "ip_address VARCHAR(45),"
+                + "snapshot_json TEXT"
+                + ")";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute(playerSql);
             statement.execute(securitySql);
             statement.execute(historySql);
+            statement.execute(loginSql);
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, "Unable to create player data tables.", ex);
         }
@@ -140,6 +154,30 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
             touchUpdatedAt(uuid);
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.WARNING, "Failed saving leave time for " + uuid, ex);
+        }
+    }
+
+    @Override
+    public void saveLoginAttempt(LoginAttemptRecord attempt) {
+        if (attempt == null) {
+            return;
+        }
+        String sql = "INSERT INTO " + dialect.quote(loginAttemptsTable)
+                + " (entry_id, uuid, created_at, success, attempted_password, wrong_attempts, ip_address, snapshot_json)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, UUID.randomUUID().toString());
+            statement.setString(2, attempt.getUuid().toString());
+            statement.setString(3, attempt.getTimestamp());
+            statement.setString(4, String.valueOf(attempt.isSuccess()));
+            statement.setString(5, attempt.getAttemptedPassword());
+            statement.setInt(6, attempt.getWrongAttempts());
+            statement.setString(7, attempt.getIpAddress());
+            statement.setString(8, attempt.getSnapshotJson());
+            statement.executeUpdate();
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.WARNING, "Failed saving login attempt for " + attempt.getUuid(), ex);
         }
     }
 

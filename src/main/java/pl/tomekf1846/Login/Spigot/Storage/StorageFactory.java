@@ -19,8 +19,6 @@ public class StorageFactory {
                 return new JsonPlayerDataStorage(plugin, new File(plugin.getDataFolder(), "JSON"));
             case H2:
                 return createH2Storage(plugin, config);
-            case TOMEKDATA:
-                return new TomekDataStorage(plugin);
             case MYSQL:
                 return createRemoteStorage(plugin, config, StorageType.MYSQL);
             case MARIADB:
@@ -83,7 +81,8 @@ public class StorageFactory {
         String playerTable = config.getString(prefix + ".Tables.Players", legacyName);
         String securityTable = config.getString(prefix + ".Tables.Security", legacyName + "_security");
         String ipHistoryTable = config.getString(prefix + ".Tables.Ip-History", legacyName + "_ip_history");
-        return new StorageTableNames(playerTable, securityTable, ipHistoryTable);
+        String loginAttemptsTable = config.getString(prefix + ".Tables.Login-Attempts", legacyName + "_login_attempts");
+        return new StorageTableNames(playerTable, securityTable, ipHistoryTable, loginAttemptsTable);
     }
 
     private static String buildJdbcUrl(StorageType type, String host, int port, String database, boolean useSSL, String extra) {

@@ -113,6 +113,31 @@ public class YamlPlayerDataStorage extends AbstractFilePlayerDataStorage {
     }
 
     @Override
+    public void saveLoginAttempt(LoginAttemptRecord attempt) {
+        if (attempt == null) {
+            return;
+        }
+        UUID uuid = attempt.getUuid();
+        File playerFile = fileFor(uuid, ".yml");
+        if (!playerFile.exists()) {
+            return;
+        }
+        FileConfiguration config = YamlConfiguration.loadConfiguration(playerFile);
+        List<Map<String, Object>> attempts = new ArrayList<>();
+        List<?> existing = config.getList("LoginAttempts");
+        if (existing != null) {
+            for (Object entry : existing) {
+                if (entry instanceof Map) {
+                    attempts.add(new LinkedHashMap<>((Map<String, Object>) entry));
+                }
+            }
+        }
+        attempts.add(attempt.toMap());
+        config.set("LoginAttempts", attempts);
+        saveConfigSafely(config, playerFile);
+    }
+
+    @Override
     public void setPlayerPassword(UUID uuid, String newPassword) {
         if (uuid == null || newPassword == null || newPassword.isEmpty()) {
             return;

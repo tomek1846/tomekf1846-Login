@@ -17,6 +17,8 @@ public interface PlayerDataStorage {
 
     void savePlayerLeaveTime(Player player);
 
+    void saveLoginAttempt(LoginAttemptRecord attempt);
+
     void setPlayerPassword(UUID uuid, String newPassword);
 
     void setPlayerEmail(UUID uuid, String newEmail);

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
+import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.LoginMessagesManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.PlayerRestrictions;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
@@ -29,6 +30,7 @@ public class AdminCommandForceLogin {
         }
 
         PlayerRestrictions.unblockPlayer(player);
+        PlayerDataSave.saveLoginAttempt(player, true, null, 0);
         LoginMessagesManager.LoginAdminTitle(player);
         player.sendMessage(prefix + languageManager.getMessage("messages.player-commands.successfully_logged_in"));
         sender.sendMessage(prefix + languageManager.getMessage("messages.admin-commands.force_login_success").replace("{player}", player.getName()));

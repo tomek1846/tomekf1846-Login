@@ -6,7 +6,6 @@ public enum StorageType {
     YML,
     JSON,
     H2,
-    TOMEKDATA,
     MYSQL,
     MARIADB,
     POSTGRESQL;

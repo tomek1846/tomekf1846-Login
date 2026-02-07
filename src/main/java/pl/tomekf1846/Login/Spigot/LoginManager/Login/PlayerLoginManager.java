@@ -16,6 +16,7 @@ public class PlayerLoginManager {
 
     private static final String PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
     private static final Map<Player, Boolean> playerLoginStatus = new HashMap<>();
+    private static final Map<UUID, Integer> wrongPasswordAttempts = new HashMap<>();
 
     public static boolean isPlayerLoggedIn(Player player) {
         return !PlayerRestrictions.isPlayerBlocked(player);
@@ -41,6 +42,9 @@ public class PlayerLoginManager {
         String savedPassword = config.get("Password");
         boolean kickOnWrongPassword = MainSpigot.getInstance().getConfig().getBoolean("Main-Settings.Wrong-kick-password");
         if (savedPassword == null || !savedPassword.equals(password)) {
+            int wrongAttempts = wrongPasswordAttempts.getOrDefault(playerUUID, 0) + 1;
+            wrongPasswordAttempts.put(playerUUID, wrongAttempts);
+            PlayerDataSave.saveLoginAttempt(player, false, password, wrongAttempts);
             if (kickOnWrongPassword) {
                 player.kickPlayer(LanguageManager.getMessage("messages.player-commands.incorrect-password"));
             } else {
@@ -49,7 +53,9 @@ public class PlayerLoginManager {
             return;
         }
 
+        wrongPasswordAttempts.remove(playerUUID);
         PlayerRestrictions.unblockPlayer(player);
+        PlayerDataSave.saveLoginAttempt(player, true, null, 0);
         player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.successfully_logged_in"));
         playerLoginStatus.put(player, true);
         SessionCrackedManager.incrementLoginCount(playerUUID);
@@ -72,5 +78,6 @@ public class PlayerLoginManager {
 
     public static void removeAllPlayerLoginStatus() {
         playerLoginStatus.clear();
+        wrongPasswordAttempts.clear();
     }
 }

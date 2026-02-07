@@ -18,6 +18,7 @@ public class PlayerRecord {
     private String password;
     private int version;
     private List<String> playerIP;
+    private List<LoginAttemptRecord> loginAttempts;
 
     public static PlayerRecord fromDefaults(UUID uuid, String nick, String firstIp, String password) {
         PlayerRecord record = new PlayerRecord();
@@ -139,5 +140,16 @@ public class PlayerRecord {
 
     public void setPlayerIP(List<String> playerIP) {
         this.playerIP = playerIP;
+    }
+
+    public List<LoginAttemptRecord> getLoginAttempts() {
+        if (loginAttempts == null) {
+            loginAttempts = new ArrayList<>();
+        }
+        return loginAttempts;
+    }
+
+    public void setLoginAttempts(List<LoginAttemptRecord> loginAttempts) {
+        this.loginAttempts = loginAttempts;
     }
 }
