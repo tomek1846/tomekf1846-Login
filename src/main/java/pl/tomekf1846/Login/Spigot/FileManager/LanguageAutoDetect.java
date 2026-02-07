@@ -1,5 +1,6 @@
 package pl.tomekf1846.Login.Spigot.FileManager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 
@@ -19,44 +20,67 @@ public final class LanguageAutoDetect {
     private LanguageAutoDetect() {}
 
     public static void applyAutoDetectOnFirstJoin(Player player) {
+        applyAutoDetectOnFirstJoin(player, null);
+    }
+
+    public static void applyAutoDetectOnFirstJoin(Player player, Runnable onComplete) {
         if (player == null) {
+            if (onComplete != null) {
+                onComplete.run();
+            }
             return;
         }
         if (!LanguageSettings.isPerPlayerLanguageEnabled()
                 || !LanguageSettings.isAutoDetectOnFirstJoinEnabled()) {
+            if (onComplete != null) {
+                onComplete.run();
+            }
             return;
         }
         String currentLanguage = PlayerDataSave.getPlayerLanguage(player.getUniqueId());
         if (currentLanguage != null && !currentLanguage.isBlank()) {
+            if (onComplete != null) {
+                onComplete.run();
+            }
             return;
         }
         String ipAddress = player.getAddress() != null && player.getAddress().getAddress() != null
                 ? player.getAddress().getAddress().getHostAddress()
                 : null;
         if (ipAddress == null || ipAddress.isBlank()) {
+            if (onComplete != null) {
+                onComplete.run();
+            }
             return;
         }
-        String countryCode = lookupCountryCode(ipAddress);
-        if (countryCode == null || countryCode.isBlank()) {
-            return;
-        }
-        String languageKey = mapCountryToLanguage(countryCode);
-        if (languageKey == null || languageKey.isBlank()) {
-            return;
-        }
-        Map<String, LanguageSettings.LanguageOption> options = LanguageSettings.getLanguageOptions();
-        if (!options.containsKey(languageKey)) {
-            return;
-        }
-        PlayerDataSave.setPlayerLanguage(player.getUniqueId(), languageKey);
-        String languageName = languageKey;
-        LanguageSettings.LanguageOption option = options.get(languageKey);
-        if (option != null) {
-            languageName = option.commandName();
-        }
-        String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
-        player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.language_auto_detected")
-                .replace("{language}", languageName));
+        Bukkit.getScheduler().runTaskAsynchronously(MainSpigot.getInstance(), () -> {
+            String countryCode = lookupCountryCode(ipAddress);
+            String languageKey = countryCode == null ? null : mapCountryToLanguage(countryCode);
+            Map<String, LanguageSettings.LanguageOption> options = LanguageSettings.getLanguageOptions();
+            boolean hasOption = languageKey != null && !languageKey.isBlank() && options.containsKey(languageKey);
+            Bukkit.getScheduler().runTask(MainSpigot.getInstance(), () -> {
+                if (!player.isOnline()) {
+                    if (onComplete != null) {
+                        onComplete.run();
+                    }
+                    return;
+                }
+                if (hasOption) {
+                    PlayerDataSave.setPlayerLanguage(player.getUniqueId(), languageKey);
+                    String languageName = languageKey;
+                    LanguageSettings.LanguageOption option = options.get(languageKey);
+                    if (option != null) {
+                        languageName = option.commandName();
+                    }
+                    String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
+                    player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.language_auto_detected")
+                            .replace("{language}", languageName));
+                }
+                if (onComplete != null) {
+                    onComplete.run();
+                }
+            });
+        });
     }
 
     private static String lookupCountryCode(String ipAddress) {

@@ -20,17 +20,9 @@ public class PlayerManageChatListener implements Listener {
         }
 
         event.setCancelled(true);
+        event.getRecipients().clear();
         String targetName = PlayerManageState.getTarget(player);
         String message = event.getMessage();
-        if ("cancel".equalsIgnoreCase(message.trim())) {
-            PlayerManageState.clearInput(player);
-            Bukkit.getScheduler().runTask(MainSpigot.getInstance(), () -> {
-                if (targetName != null && !targetName.isBlank()) {
-                    PlayerManageGui.openGUI(player, targetName);
-                }
-            });
-            return;
-        }
 
         PlayerManageState.clearInput(player);
 

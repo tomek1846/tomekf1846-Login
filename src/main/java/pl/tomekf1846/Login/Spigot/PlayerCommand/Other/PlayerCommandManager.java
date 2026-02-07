@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageSettings;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerList.Search.PlayerListSearch;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageGui;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageState;
 import pl.tomekf1846.Login.Spigot.GUI.Language.LanguageGui;
 import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Register.PlayerRegisterManager;
@@ -103,6 +106,9 @@ public class PlayerCommandManager implements CommandExecutor {
             case "lang":
                 return handleLanguageCommand(player, args);
 
+            case "logincancel":
+                return handleCancelInput(player);
+
             default:
                 player.sendMessage(LanguageManager.getMessage(player, "messages.prefix.main-prefix")
                         + LanguageManager.getMessage(player, "messages.player-commands.unknown_command"));
@@ -154,5 +160,23 @@ public class PlayerCommandManager implements CommandExecutor {
         player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.language_changed")
                 .replace("{language}", LanguageSettings.getLanguageOption(normalized).commandName()));
         return true;
+    }
+
+    private boolean handleCancelInput(Player player) {
+        boolean handled = false;
+        if (PlayerListSearch.searchingPlayer != null && player.equals(PlayerListSearch.searchingPlayer)) {
+            PlayerListSearch.cancelSearch(player);
+            handled = true;
+        }
+        PlayerManageState.InputMode mode = PlayerManageState.getInputMode(player);
+        if (mode != null) {
+            String targetName = PlayerManageState.getTarget(player);
+            PlayerManageState.clearInput(player);
+            if (targetName != null && !targetName.isBlank()) {
+                PlayerManageGui.openGUI(player, targetName);
+            }
+            handled = true;
+        }
+        return handled;
     }
 }

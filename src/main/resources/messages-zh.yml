@@ -184,6 +184,9 @@ messages:
   gui:
     frist-page: "&c这是第一页，不能再退回去了。"
     no-data: "&c未定义"
+    cancel-button:
+      text: "&c[取消]"
+      hover: "&7点击取消"
     Maingui:
       name: "&e&l主菜单"
       filling:
@@ -266,10 +269,10 @@ messages:
         layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
         name: "&b&l玩家搜索结果"
         no-player-data: "&c没有找到匹配的玩家。"
-        search-message: "&a请输入昵称进行搜索（&fcancel&a 取消）"
+        search-message: "&a请输入昵称进行搜索。"
         search-title:
           title: "&6请输入昵称"
-          subtitle: "&e在聊天框中搜索玩家（&fcancel&e 取消）"
+          subtitle: "&e在聊天框中搜索玩家"
         buttons:
           Close:
             material: BARRIER
@@ -336,13 +339,13 @@ messages:
             - "&7右键/左键点击关闭GUI"
       input:
         email:
-          message: "&a请在聊天中输入 &f{player}&a 的新邮箱（&fcancel&a 取消）。"
+          message: "&a请在聊天中输入 &f{player}&a 的新邮箱。"
           title: "&6输入邮箱"
-          subtitle: "&e在聊天中输入（&fcancel&e 取消）"
+          subtitle: "&e在聊天中输入"
         password:
-          message: "&a请在聊天中输入 &f{player}&a 的新密码（&fcancel&a 取消）。"
+          message: "&a请在聊天中输入 &f{player}&a 的新密码。"
           title: "&6输入密码"
-          subtitle: "&e在聊天中输入（&fcancel&e 取消）"
+          subtitle: "&e在聊天中输入"
       Language:
         name: "&9&l语言: {player}"
         layout: "ABCABCABCBLLLLLLLBABCAXCABC"

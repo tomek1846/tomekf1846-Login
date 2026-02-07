@@ -47,3 +47,5 @@ commands:
     description: Change language or open language GUI
   lang:
     description: Alias for /language
+  logincancel:
+    description: Cancel chat input from login GUIs

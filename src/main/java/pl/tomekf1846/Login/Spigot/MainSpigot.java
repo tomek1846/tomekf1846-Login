@@ -92,6 +92,7 @@ public final class MainSpigot extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("language")).setTabCompleter(playerCommandTabCompleter);
         Objects.requireNonNull(this.getCommand("lang")).setExecutor(playerCommandManager);
         Objects.requireNonNull(this.getCommand("lang")).setTabCompleter(playerCommandTabCompleter);
+        Objects.requireNonNull(this.getCommand("logincancel")).setExecutor(playerCommandManager);
         pluginStart.printLoadingSuccess();
 
         pluginStart.printLoadingListener();

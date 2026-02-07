@@ -12,6 +12,7 @@ import org.bukkit.potion.PotionEffectType;
 import pl.tomekf1846.Login.Spigot.AdminCommand.Command.AdminCommandForceLogin;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.GUI.ChatCancelButton;
 import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 
@@ -55,6 +56,7 @@ public class PlayerManageGuiListener implements Listener {
             viewer.sendMessage(LanguageManager.getMessage(viewer, "messages.prefix.main-prefix")
                     + LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.input.email.message")
                     .replace("{player}", targetName));
+            ChatCancelButton.send(viewer);
             return;
         }
 
@@ -64,6 +66,7 @@ public class PlayerManageGuiListener implements Listener {
             viewer.sendMessage(LanguageManager.getMessage(viewer, "messages.prefix.main-prefix")
                     + LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.input.password.message")
                     .replace("{player}", targetName));
+            ChatCancelButton.send(viewer);
             return;
         }
 

@@ -2,6 +2,7 @@ package pl.tomekf1846.Login.Spigot.LoginManager.Other;
 
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.entity.Player;
+import pl.tomekf1846.Login.Spigot.FileManager.LanguageAutoDetect;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
@@ -18,6 +19,10 @@ public class MainLoginManager {
 
     public static void LoginRegisterMainManger(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        LanguageAutoDetect.applyAutoDetectOnFirstJoin(player, () -> handleLoginOrRegister(player));
+    }
+
+    private static void handleLoginOrRegister(Player player) {
         String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
         String playerName = player.getName();
         UUID playerUUID = player.getUniqueId();
