@@ -127,13 +127,23 @@ public class LanguageGui {
             meta.setDisplayName(name);
             meta.setLore(lore);
             if (owner != null && !owner.isBlank()) {
-                meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+                applyOwnerProfile(meta, owner);
             } else if (texture != null && !texture.isBlank()) {
                 applyTexture(meta, texture);
             }
             head.setItemMeta(meta);
         }
         return head;
+    }
+
+    private static void applyOwnerProfile(SkullMeta meta, String owner) {
+        try {
+            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID(), owner);
+            profile.complete();
+            meta.setOwnerProfile(profile);
+        } catch (Exception e) {
+            meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+        }
     }
 
     public static void applyTexture(SkullMeta meta, String base64Texture) {
