@@ -4,6 +4,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.entity.Player;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Session.Premium.SessionPremiumCheck;
 import pl.tomekf1846.Login.Spigot.LoginManager.Register.PlayerRegisterManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
@@ -28,11 +29,10 @@ public class MainLoginManager {
                     LoginMessagesManager.PremiumLogin(player);
                 } else {
                     String newPassword = generateRandomPassword();
-                    PlayerRestrictions.blockPlayer(player);
                     PlayerDataSave.setPlayerPassword(playerUUID, newPassword);
                     PlayerDataSave.setPlayerSession(playerName, false);
-
                     player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.premium-login-disabled").replace("{new_password}", newPassword));
+                    PlayerLoginManager.forceLoginPlayer(player);
                 }
             } else {
                 PlayerRestrictions.blockPlayer(player);
