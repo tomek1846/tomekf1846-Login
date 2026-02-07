@@ -1,7 +1,7 @@
 package pl.tomekf1846.Login.Spigot.GUI.Language;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -11,16 +11,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageSettings;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class LanguageGui {
     public static final NamespacedKey LANGUAGE_KEY = new NamespacedKey(MainSpigot.getInstance(), "language_key");
@@ -135,14 +136,42 @@ public class LanguageGui {
         return head;
     }
 
-    private static void applyTexture(SkullMeta meta, String texture) {
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        profile.getProperties().put("textures", new Property("textures", texture));
+    public static void applyTexture(SkullMeta meta, String base64Texture) {
+        String skinUrl = extractSkinUrlFromBase64(base64Texture);
+        if (skinUrl == null) return;
+
+        PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
+        PlayerTextures textures = profile.getTextures();
+
         try {
-            Field profileField = meta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(meta, profile);
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            textures.setSkin(new URL(skinUrl));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        profile.setTextures(textures);
+        meta.setOwnerProfile(profile);
+    }
+
+    private static String extractSkinUrlFromBase64(String base64Texture) {
+        try {
+            String cleaned = base64Texture.trim().replace("\n", "").replace("\r", "");
+
+            String json = new String(Base64.getDecoder().decode(cleaned), StandardCharsets.UTF_8);
+
+            JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+            JsonObject textures = root.getAsJsonObject("textures");
+            if (textures == null) return null;
+
+            JsonObject skin = textures.getAsJsonObject("SKIN");
+            if (skin == null) return null;
+
+            if (!skin.has("url")) return null;
+            return skin.get("url").getAsString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
