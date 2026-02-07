@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,7 @@ public class YamlPlayerDataStorage extends AbstractFilePlayerDataStorage {
         config.set("Email", "none");
         config.set("Premium", "");
         config.set("Password", password);
+        config.set("Language", LanguageManager.getDefaultLanguageKey());
         config.set("Version", 1);
         if (!config.contains("PlayerIP")) {
             config.set("PlayerIP", new ArrayList<>());
@@ -80,6 +82,7 @@ public class YamlPlayerDataStorage extends AbstractFilePlayerDataStorage {
         playerData.put("Email", config.getString("Email"));
         playerData.put("Premium", config.getString("Premium"));
         playerData.put("Password", config.getString("Password"));
+        playerData.put("Language", config.getString("Language"));
         return playerData;
     }
 
@@ -163,6 +166,33 @@ public class YamlPlayerDataStorage extends AbstractFilePlayerDataStorage {
         FileConfiguration config = YamlConfiguration.loadConfiguration(playerFile);
         config.set("Email", newEmail);
         saveConfigSafely(config, playerFile);
+    }
+
+    @Override
+    public void setPlayerLanguage(UUID uuid, String language) {
+        if (uuid == null || language == null || language.isEmpty()) {
+            return;
+        }
+        File playerFile = fileFor(uuid, ".yml");
+        if (!playerFile.exists()) {
+            return;
+        }
+        FileConfiguration config = YamlConfiguration.loadConfiguration(playerFile);
+        config.set("Language", language);
+        saveConfigSafely(config, playerFile);
+    }
+
+    @Override
+    public String getPlayerLanguage(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+        File playerFile = fileFor(uuid, ".yml");
+        if (!playerFile.exists()) {
+            return null;
+        }
+        FileConfiguration config = YamlConfiguration.loadConfiguration(playerFile);
+        return config.getString("Language");
     }
 
     @Override

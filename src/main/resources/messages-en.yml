@@ -40,6 +40,8 @@ messages:
     cracked_usage: "&cUsage: /cracked (new-password)"
     changepass_usage: "&cUsage: /changepass (old-password) (new-password)"
     email_usage: "&cUsage: /email (email)"
+    language_not_found: "&cUnknown language. Use /language gui or /language <language>."
+    language_changed: "&aYour language has been changed to {language}."
     unknown_command: "&cUnknown command. Use /login-help for available commands."
     help:
       available_commands: "&cAvailable commands:"
@@ -53,7 +55,10 @@ messages:
       changepass_command: "&e/changepass (old-password) (new-password)"
       changepassword_command: "&e/changepassword (old-password) (new-password)"
       email_command: "&e/email (email) (password)"
+      language_command: "&e/language (language/gui)"
       login_help_command: "&e/login-help"
+      userlogin_command: "&e/userlogin"
+      ulogin_command: "&e/ulogin"
     premium-player: "&cYou cannot change your password because you are a premium player!"
     data-not-found: "&cYour data file was not found!"
     incorrect-old-password: "&cIncorrect current password!"
@@ -151,7 +156,10 @@ messages:
     usage_email: "&cUsage: /alogin email (player) (email or none)"
     usage_forcelogin: "&cUsage: /alogin forcelogin (player)"
     usage_ip: "&cUsage: /alogin ip (player)"
+    usage_language: "&cUsage: /alogin language (player) (language)"
     usage_reload: "&cUsage: /alogin reload"
+    language_not_found: "&cUnknown language."
+    language_changed: "&aChanged language for {player} to {language}."
     unknown_command: "&cUnknown command. Try /alogin."
     help:
       available_commands: "&cAvailable commands:"
@@ -166,7 +174,17 @@ messages:
       email_command: "&e/alogin email (player) (email or none)"
       forcelogin_command: "&e/alogin forcelogin (player)"
       ip_command: "&e/alogin ip (player)"
+      language_command: "&e/alogin language (player) (language)"
       reload_command: "&e/alogin reload"
+  languages:
+    english:
+      name: "&bEnglish"
+    polish:
+      name: "&cPolish"
+    spanish:
+      name: "&eSpanish"
+    chinese:
+      name: "&aChinese"
   gui:
     frist-page: "&cThis is the first page. You cannot go back any further."
     no-data: "&cUndefined"
@@ -200,6 +218,45 @@ messages:
           name: "&c&lClose GUI"
           lore:
             - "&7Click RMB/LMB to close the GUI"
+    Language:
+      name: "&b&lLanguage Selection"
+      size: "27"
+      filling:
+        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+        filling-B: "BLACK_STAINED_GLASS_PANE"
+        filling-C: "BLUE_STAINED_GLASS_PANE"
+      buttons:
+        Close:
+          material: BARRIER
+          slot: "22"
+          name: "&c&lClose GUI"
+          lore:
+            - "&7Click RMB/LMB to close the menu"
+      languages:
+        english:
+          slot: "11"
+          texture: "none"
+          name: "&bEnglish"
+          lore:
+            - "&7Click to set English"
+        polish:
+          slot: "12"
+          texture: "none"
+          name: "&cPolish"
+          lore:
+            - "&7Click to set Polish"
+        spanish:
+          slot: "13"
+          texture: "none"
+          name: "&eSpanish"
+          lore:
+            - "&7Click to set Spanish"
+        chinese:
+          slot: "14"
+          texture: "none"
+          name: "&aChinese"
+          lore:
+            - "&7Click to set Chinese"
     Playerlist:
       name: "&d&lPlayer List"
       layout: "ABCBABCBA00000000000000000000000000000000000012AB3AB45"

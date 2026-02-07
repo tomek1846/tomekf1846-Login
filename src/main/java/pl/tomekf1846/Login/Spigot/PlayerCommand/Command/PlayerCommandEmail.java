@@ -8,12 +8,10 @@ import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import java.util.UUID;
 
 public class PlayerCommandEmail {
-    private static final String PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
-
     public static void changeEmail(CommandSender sender, String playerName, String newEmail) {
         UUID uuid = NickUuidCheck.getUUIDFromNick(playerName);
         if (uuid == null) {
-            sender.sendMessage(PREFIX + LanguageManager.getMessage("messages.admin-commands.player_not_found"));
+            sender.sendMessage(getPrefix(sender) + LanguageManager.getMessage(sender, "messages.admin-commands.player_not_found"));
             return;
         }
 
@@ -28,13 +26,17 @@ public class PlayerCommandEmail {
                 atIndex > lastDotIndex ||
                 lastDotIndex - atIndex < 3
         ) {
-            sender.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.invalid-email-format"));
+            sender.sendMessage(getPrefix(sender) + LanguageManager.getMessage(sender, "messages.player-commands.invalid-email-format"));
             return;
         }
 
         PlayerDataSave.setPlayerEmail(uuid, newEmail);
-        sender.sendMessage(PREFIX + LanguageManager.getMessage("messages.admin-commands.email_changed")
+        sender.sendMessage(getPrefix(sender) + LanguageManager.getMessage(sender, "messages.admin-commands.email_changed")
                 .replace("{player}", playerName)
                 .replace("{email}", newEmail));
+    }
+
+    private static String getPrefix(CommandSender sender) {
+        return LanguageManager.getMessage(sender, "messages.prefix.main-prefix");
     }
 }

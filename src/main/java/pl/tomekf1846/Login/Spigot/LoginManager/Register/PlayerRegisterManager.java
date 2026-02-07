@@ -14,36 +14,39 @@ import java.util.List;
 
 public class PlayerRegisterManager {
 
-    private static final String PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
-
     public static void registerPlayer(Player player, String password, String confirmPassword) {
         if (isPlayerRegistered(player)) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.already_registered"));
+            player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.already_registered"));
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.passwords-do-not-match"));
+            player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.passwords-do-not-match"));
             return;
         }
 
         FileConfiguration config = MainSpigot.getInstance().getConfig();
         int minPasswordLength = config.getInt("Main-Settings.Password-Requirements.Minimum-length");
         if (password.length() < minPasswordLength) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.password-too-short").replace("{min-length}", String.valueOf(minPasswordLength)));
+            player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.password-too-short")
+                    .replace("{min-length}", String.valueOf(minPasswordLength)));
             return;
         }
 
         if (isPasswordTooSimple(password)) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.password-too-simple"));
+            player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.password-too-simple"));
             return;
         }
 
         PlayerDataSave.savePlayerData(player, password);
         PlayerRestrictions.unblockPlayer(player);
         PlayerDataSave.setPlayerSession(player.getName(), false);
-        player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.registration-success"));
+        player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.registration-success"));
         LoginMessagesManager.CrackedRegisterTitle(player);
+    }
+
+    private static String getPrefix(Player player) {
+        return LanguageManager.getMessage(player, "messages.prefix.main-prefix");
     }
 
     public static boolean isPlayerRegistered(Player player) {

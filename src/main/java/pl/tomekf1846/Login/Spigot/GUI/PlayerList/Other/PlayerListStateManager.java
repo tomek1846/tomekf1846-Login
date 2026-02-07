@@ -12,15 +12,15 @@ public class PlayerListStateManager {
 
     public static boolean isOnline = true;
 
-    public ItemStack getOnlineItem() {
+    public ItemStack getOnlineItem(Player viewer) {
         String path = isOnline ? "messages.gui.Playerlist.buttons.Onlinedye"
                 : "messages.gui.Playerlist.buttons.Offlinedye";
-        Material material = Material.matchMaterial(LanguageManager.getMessage(path + ".material"));
+        Material material = Material.matchMaterial(LanguageManager.getMessage(viewer, path + ".material"));
         if (material == null) {
             material = isOnline ? Material.LIME_DYE : Material.GRAY_DYE;
         }
-        String name = LanguageManager.getMessage(path + ".name");
-        List<String> lore = LanguageManager.getMessageList(path + ".lore");
+        String name = LanguageManager.getMessage(viewer, path + ".name");
+        List<String> lore = LanguageManager.getMessageList(viewer, path + ".lore");
         return createItem(material, name, lore);
     }
 

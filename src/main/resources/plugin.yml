@@ -39,3 +39,11 @@ commands:
     description: Set email
   login-help:
     description: Display help menu
+  ulogin:
+    description: Display help menu
+  userlogin:
+    description: Display help menu
+  language:
+    description: Change your language
+  lang:
+    description: Alias for /language
