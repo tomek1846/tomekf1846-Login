@@ -103,7 +103,6 @@ public class PluginStart {
     public void printLoadingData() { printBanner("messages.startmessages.banners.loading_data", AnsiColor.GOLD); }
     public void printLoadingSuccess() { printBanner("messages.startmessages.banners.loading_success", AnsiColor.LIGHT_GREEN); }
     public void printPluginShutdown() { printBanner("messages.startmessages.banners.plugin_shutdown", AnsiColor.LIGHT_GREEN); }
-    public static void printlicenseAPI() { printBanner("License Verified by tomekf1846-API", AnsiColor.LIGHT_GREEN); }
     public static void printError() { printBanner("messages.startmessages.banners.error", AnsiColor.RED); }
 
     public void startkickall() {
@@ -127,9 +126,5 @@ public class PluginStart {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = sdf.format(now);
         StartTime.put("start_time", formattedDate);
-    }
-
-    public static String getServerStartTime() {
-        return StartTime.get("start_time");
     }
 }
