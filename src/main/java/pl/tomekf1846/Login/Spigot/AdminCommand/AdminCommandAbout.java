@@ -10,11 +10,9 @@ import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 public class AdminCommandAbout implements CommandExecutor {
 
     private final Plugin plugin;
-    private final LanguageManager languageManager;
 
     public AdminCommandAbout(Plugin plugin, LanguageManager languageManager) {
         this.plugin = plugin;
-        this.languageManager = languageManager;
     }
 
     @Override
@@ -24,14 +22,14 @@ public class AdminCommandAbout implements CommandExecutor {
     }
 
     private void sendPluginInfo(CommandSender sender) {
-        String prefix = languageManager.getMessage("messages.prefix.main-prefix");
+        String prefix = LanguageManager.getMessage(sender, "messages.prefix.main-prefix");
         String version = plugin.getDescription().getVersion();
         String author = plugin.getDescription().getAuthors().isEmpty() ? "Unknown" : String.join(", ", plugin.getDescription().getAuthors());
         String website = plugin.getDescription().getWebsite() != null ? plugin.getDescription().getWebsite() : "None";
 
-        sender.sendMessage(prefix + languageManager.getMessage("messages.startmessages.plugin_info.info"));
-        sender.sendMessage(prefix + languageManager.getMessage("messages.startmessages.plugin_info.version_prefix") + version);
-        sender.sendMessage(prefix + languageManager.getMessage("messages.startmessages.plugin_info.author_prefix") + author);
-        sender.sendMessage(prefix + languageManager.getMessage("messages.startmessages.plugin_info.website_prefix") + website);
+        sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.startmessages.plugin_info.info"));
+        sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.startmessages.plugin_info.version_prefix") + version);
+        sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.startmessages.plugin_info.author_prefix") + author);
+        sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.startmessages.plugin_info.website_prefix") + website);
     }
 }

@@ -93,6 +93,16 @@ public class PlayerDataSave {
         storage.setPlayerEmail(uuid, newEmail);
     }
 
+    public static void setPlayerLanguage(UUID uuid, String language) {
+        ensureStorage();
+        storage.setPlayerLanguage(uuid, language);
+    }
+
+    public static String getPlayerLanguage(UUID uuid) {
+        ensureStorage();
+        return storage.getPlayerLanguage(uuid);
+    }
+
     public static boolean isPlayerPremium(String nick) {
         UUID uuid = findUUIDByNick(nick);
         if (uuid == null) {

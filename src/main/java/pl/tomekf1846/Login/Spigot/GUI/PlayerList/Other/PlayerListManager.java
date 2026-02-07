@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class PlayerListManager {
 
-    public static ItemStack[] getPlayerHeads() {
+    public static ItemStack[] getPlayerHeads(Player viewer) {
         Map<UUID, Map<String, String>> allPlayerData = PlayerDataSave.loadAllPlayerData();
         boolean showOnlineOnly = PlayerListStateManager.isOnline;
 
@@ -37,26 +37,26 @@ public class PlayerListManager {
             String email = getOrDefault(playerData.get("Email"));
             String premium = getOrDefault(playerData.get("Premium"));
 
-            playerHeads.add(createPlayerHead(nick, playerUUID, uuid, password, firstIP, lastIP, email, premium));
+            playerHeads.add(createPlayerHead(viewer, nick, playerUUID, uuid, password, firstIP, lastIP, email, premium));
         }
 
         return playerHeads.toArray(new ItemStack[0]);
     }
 
-    private static ItemStack createPlayerHead(String nick, UUID playerUUID, String uuid, String password, String firstIP, String lastIP, String email, String premium) {
+    private static ItemStack createPlayerHead(Player viewer, String nick, UUID playerUUID, String uuid, String password, String firstIP, String lastIP, String email, String premium) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName(LanguageManager.getMessage("messages.gui.Playerlist.Players.name").replace("{player}", nick));
+            meta.setDisplayName(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.name").replace("{player}", nick));
 
             List<String> lore = new ArrayList<>();
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.uuid").replace("{uuid}", getOrDefault(uuid)));
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.password").replace("{password}", getOrDefault(password)));
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.fristip").replace("{fristip}", getOrDefault(firstIP)));
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.lastip").replace("{lastip}", getOrDefault(lastIP)));
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.email").replace("{email}", getOrDefault(email)));
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.premium").replace("{premium}", getOrDefault(premium)));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.uuid").replace("{uuid}", getOrDefault(viewer, uuid)));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.password").replace("{password}", getOrDefault(viewer, password)));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.fristip").replace("{fristip}", getOrDefault(viewer, firstIP)));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.lastip").replace("{lastip}", getOrDefault(viewer, lastIP)));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.email").replace("{email}", getOrDefault(viewer, email)));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.premium").replace("{premium}", getOrDefault(viewer, premium)));
 
             meta.setLore(lore);
 
@@ -69,7 +69,7 @@ public class PlayerListManager {
         return head;
     }
 
-    private static String getOrDefault(String value) {
-        return (value == null || value.trim().isEmpty()) ? LanguageManager.getMessage("messages.gui.no-data") : value;
+    private static String getOrDefault(Player viewer, String value) {
+        return (value == null || value.trim().isEmpty()) ? LanguageManager.getMessage(viewer, "messages.gui.no-data") : value;
     }
 }

@@ -4,6 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -26,7 +27,7 @@ public class JsonPlayerDataStorage extends AbstractFilePlayerDataStorage {
         String firstIP = (player.isOnline() && player.getPlayer() != null)
                 ? player.getPlayer().getAddress().getAddress().getHostAddress()
                 : "offline";
-        PlayerRecord record = PlayerRecord.fromDefaults(uuid, playerName, firstIP, password);
+        PlayerRecord record = PlayerRecord.fromDefaults(uuid, playerName, firstIP, password, LanguageManager.getDefaultLanguageKey());
         writeRecord(uuid, record);
     }
 
@@ -35,7 +36,7 @@ public class JsonPlayerDataStorage extends AbstractFilePlayerDataStorage {
         UUID uuid = player.getUniqueId();
         PlayerRecord record = readRecord(uuid);
         if (record == null) {
-            record = PlayerRecord.fromDefaults(uuid, player.getName(), "offline", "none");
+            record = PlayerRecord.fromDefaults(uuid, player.getName(), "offline", "none", LanguageManager.getDefaultLanguageKey());
         }
         String currentIP = player.getAddress().getAddress().getHostAddress();
         String timestamp = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date());
@@ -127,6 +128,28 @@ public class JsonPlayerDataStorage extends AbstractFilePlayerDataStorage {
         }
         record.setEmail(newEmail);
         writeRecord(uuid, record);
+    }
+
+    @Override
+    public void setPlayerLanguage(UUID uuid, String language) {
+        if (uuid == null || language == null || language.isEmpty()) {
+            return;
+        }
+        PlayerRecord record = readRecord(uuid);
+        if (record == null) {
+            return;
+        }
+        record.setLanguage(language);
+        writeRecord(uuid, record);
+    }
+
+    @Override
+    public String getPlayerLanguage(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+        PlayerRecord record = readRecord(uuid);
+        return record != null ? record.getLanguage() : null;
     }
 
     @Override

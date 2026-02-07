@@ -40,6 +40,8 @@ messages:
     cracked_usage: "&cUso: /cracked (nueva contraseña)"
     changepass_usage: "&cUso: /changepass (contraseña antigua) (nueva contraseña)"
     email_usage: "&cUso: /email (correo electrónico)"
+    language_not_found: "&cIdioma desconocido. Usa /language gui o /language <idioma>."
+    language_changed: "&aTu idioma se cambió a {language}."
     unknown_command: "&cComando desconocido. Usa /login-help para ver los comandos disponibles."
     help:
       available_commands: "&cComandos disponibles:"
@@ -53,7 +55,10 @@ messages:
       changepass_command: "&e/changepass (contraseña-antigua) (contraseña-nueva)"
       changepassword_command: "&e/changepassword (contraseña-antigua) (contraseña-nueva)"
       email_command: "&e/email (email) (contraseña)"
+      language_command: "&e/language (idioma/gui)"
       login_help_command: "&e/login-help"
+      userlogin_command: "&e/userlogin"
+      ulogin_command: "&e/ulogin"
     premium-player: "&cNo puedes cambiar la contraseña porque eres un jugador premium."
     data-not-found: "&cNo se encontró el archivo de datos de inicio de sesión."
     incorrect-old-password: "&c¡La contraseña antigua no es correcta!"
@@ -151,7 +156,10 @@ messages:
     usage_email: "&cUso: /alogin email (jugador) (correo electrónico o"
     usage_forcelogin: "&cUso: /alogin forcelogin (jugador)"
     usage_ip: "&cUso: /alogin ip (jugador)"
+    usage_language: "&cUso: /alogin language (jugador) (idioma)"
     usage_reload: "&cUso: /alogin reload"
+    language_not_found: "&cIdioma desconocido."
+    language_changed: "&aIdioma de {player} cambiado a {language}."
     unknown_command: "&cComando desconocido. Intenta con /alogin."
     help:
       available_commands: "&cComandos disponibles:"
@@ -166,7 +174,17 @@ messages:
       email_command: "&e/alogin email (jugador) (correo electrónico o none)"
       forcelogin_command: "&e/alogin forcelogin (jugador)"
       ip_command: "&e/alogin ip (jugador)"
+      language_command: "&e/alogin language (jugador) (idioma)"
       reload_command: "&e/alogin reload"
+  languages:
+    english:
+      name: "&bInglés"
+    polish:
+      name: "&cPolaco"
+    spanish:
+      name: "&eEspañol"
+    chinese:
+      name: "&aChino"
 gui:
   frist-page: "&cEsta es la primera página, no puedes volver atrás."
   no-data: "&cNo definido"
@@ -200,6 +218,45 @@ gui:
         name: "&c&lCerrar GUI"
         lore:
           - "&7Haz clic derecho/izquierdo para cerrar el menú"
+  Language:
+    name: "&b&lSelección de Idioma"
+    size: "27"
+    filling:
+      filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+      filling-B: "BLACK_STAINED_GLASS_PANE"
+      filling-C: "BLUE_STAINED_GLASS_PANE"
+    buttons:
+      Close:
+        material: BARRIER
+        slot: "22"
+        name: "&c&lCerrar GUI"
+        lore:
+          - "&7Haz clic derecho/izquierdo para cerrar el menú"
+    languages:
+      english:
+        slot: "11"
+        texture: "none"
+        name: "&bInglés"
+        lore:
+          - "&7Haz clic para configurar inglés"
+      polish:
+        slot: "12"
+        texture: "none"
+        name: "&cPolaco"
+        lore:
+          - "&7Haz clic para configurar polaco"
+      spanish:
+        slot: "13"
+        texture: "none"
+        name: "&eEspañol"
+        lore:
+          - "&7Haz clic para configurar español"
+      chinese:
+        slot: "14"
+        texture: "none"
+        name: "&aChino"
+        lore:
+          - "&7Haz clic para configurar chino"
   Playerlist:
     name: "&d&lLista de jugadores"
     layout: "ABCBABCBA00000000000000000000000000000000000012AB3AB45"

@@ -14,7 +14,6 @@ import java.util.*;
 import static pl.tomekf1846.Login.Spigot.LoginManager.Register.PlayerRegisterManager.isPasswordTooSimple;
 
 public class PlayerCommandPremiumCracked {
-    private static final String PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
     private static final Map<UUID, String> pendingConfirmations = new HashMap<>();
     private static final Map<UUID, Boolean> confirmationType = new HashMap<>();
 
@@ -26,12 +25,13 @@ public class PlayerCommandPremiumCracked {
         FileConfiguration config = MainSpigot.getInstance().getConfig();
         int minPasswordLength = config.getInt("Main-Settings.Password-Requirements.Minimum-length");
         if (password.length() < minPasswordLength) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.password-too-short").replace("{min-length}", String.valueOf(minPasswordLength)));
+            player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.password-too-short")
+                    .replace("{min-length}", String.valueOf(minPasswordLength)));
             return;
         }
 
         if (isPasswordTooSimple(password)) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.password-too-simple"));
+            player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.password-too-simple"));
             return;
         }
 
@@ -44,19 +44,20 @@ public class PlayerCommandPremiumCracked {
         if (premiumStatus) {
             Map<String, String> playerData = PlayerDataSave.loadPlayerData(playerUUID);
             if (playerData == null) {
-                player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.data-not-found"));
+                player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.data-not-found"));
                 return;
             }
 
             String storedPassword = playerData.get("Password");
             if (storedPassword == null || !storedPassword.equals(password)) {
-                player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.incorrect-password"));
+                player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.incorrect-password"));
                 return;
             }
         }
 
         if (isAlreadySetToDesiredStatus(playerUUID, premiumStatus)) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.account-already-set").replace("{account_status}", premiumStatus ? "premium" : "cracked"));
+            player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.account-already-set")
+                    .replace("{account_status}", premiumStatus ? "premium" : "cracked"));
             return;
         }
 
@@ -72,7 +73,7 @@ public class PlayerCommandPremiumCracked {
 
                 setPlayerStatus(player, premiumStatus);
             } else {
-                player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.passwords-do-not-match"));
+                player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.passwords-do-not-match"));
                 pendingConfirmations.remove(playerUUID);
                 confirmationType.remove(playerUUID);
             }
@@ -81,7 +82,8 @@ public class PlayerCommandPremiumCracked {
 
         pendingConfirmations.put(playerUUID, password);
         confirmationType.put(playerUUID, premiumStatus);
-        player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.confirmation-requested").replace("{mode}", premiumStatus ? "premium" : "cracked"));
+        player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.confirmation-requested")
+                .replace("{mode}", premiumStatus ? "premium" : "cracked"));
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(MainSpigot.getInstance(), () -> {
             pendingConfirmations.remove(playerUUID);
@@ -101,7 +103,7 @@ public class PlayerCommandPremiumCracked {
     private static void setPlayerStatus(Player player, boolean premiumStatus) {
         UUID playerUUID = player.getUniqueId();
         if (!PlayerDataSave.setPlayerSession(player.getName(), premiumStatus)) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.data-not-found"));
+            player.sendMessage(getPrefix(player) + LanguageManager.getMessage(player, "messages.player-commands.data-not-found"));
             return;
         }
 
@@ -109,9 +111,13 @@ public class PlayerCommandPremiumCracked {
         SessionCrackedManager.clearLoginCount(player.getUniqueId());
 
         String kickMessage = premiumStatus
-                ? LanguageManager.getMessage("messages.admin-commands.player_kicked_premium")
-                : LanguageManager.getMessage("messages.admin-commands.player_kicked_cracked");
+                ? LanguageManager.getMessage(player, "messages.admin-commands.player_kicked_premium")
+                : LanguageManager.getMessage(player, "messages.admin-commands.player_kicked_cracked");
 
         player.kickPlayer(kickMessage);
+    }
+
+    private static String getPrefix(Player player) {
+        return LanguageManager.getMessage(player, "messages.prefix.main-prefix");
     }
 }

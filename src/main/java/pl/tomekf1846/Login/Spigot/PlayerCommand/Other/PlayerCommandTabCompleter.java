@@ -4,6 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,11 @@ public class PlayerCommandTabCompleter implements TabCompleter {
                 case "changepass":
                 case "changepassword":
                     suggestions.add("(old-password)");
+                    break;
+                case "language":
+                case "lang":
+                    suggestions.add("gui");
+                    suggestions.addAll(LanguageManager.getSupportedLanguageKeys());
                     break;
             }
         }

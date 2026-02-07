@@ -40,6 +40,8 @@ messages:
     cracked_usage: "&c用法: /cracked (新密码)"
     changepass_usage: "&c用法: /changepass (旧密码) (新密码)"
     email_usage: "&c用法: /email (邮箱)"
+    language_not_found: "&c未知语言。使用 /language gui 或 /language <语言>."
+    language_changed: "&a你的语言已切换为 {language}."
     unknown_command: "&c未知命令。请使用 /login-help 查看可用命令。"
     help:
       available_commands: "&c可用命令:"
@@ -53,7 +55,10 @@ messages:
       changepass_command: "&e/changepass (旧密码) (新密码)"
       changepassword_command: "&e/changepassword (旧密码) (新密码)"
       email_command: "&e/email (电子邮件) (密码)"
+      language_command: "&e/language (语言/gui)"
       login_help_command: "&e/login-help"
+      userlogin_command: "&e/userlogin"
+      ulogin_command: "&e/ulogin"
     premium-player: "&c由于您是 premium 玩家，无法更改密码！"
     data-not-found: "&c未找到登录数据文件！"
     incorrect-old-password: "&c旧密码不正确！"
@@ -151,7 +156,10 @@ messages:
     usage_email: "&c用法: /alogin email (玩家) (邮箱或 none)"
     usage_forcelogin: "&c用法: /alogin forcelogin (玩家)"
     usage_ip: "&c用法: /alogin ip (玩家)"
+    usage_language: "&c用法: /alogin language (玩家) (语言)"
     usage_reload: "&c用法: /alogin reload"
+    language_not_found: "&c未知语言。"
+    language_changed: "&a已将 {player} 的语言切换为 {language}."
     unknown_command: "&c未知命令。请尝试 /alogin。"
     help:
       available_commands: "&c可用命令:"
@@ -160,13 +168,23 @@ messages:
       cracked_command: "&e/alogin cracked (玩家)"
       premium_command: "&e/alogin premium (玩家)"
       changepass_command: "&e/alogin changepass (玩家) (密码)"
-changepassword_command: "&e/alogin changepassword (玩家) (密码)"
-unregister_command: "&e/alogin unregister (玩家)"
-register_command: "&e/alogin register (玩家) (密码)"
-email_command: "&e/alogin email (玩家) (邮箱或 none)"
-forcelogin_command: "&e/alogin forcelogin (玩家)"
-ip_command: "&e/alogin ip (玩家)"
-reload_command: "&e/alogin reload"
+      changepassword_command: "&e/alogin changepassword (玩家) (密码)"
+      unregister_command: "&e/alogin unregister (玩家)"
+      register_command: "&e/alogin register (玩家) (密码)"
+      email_command: "&e/alogin email (玩家) (邮箱或 none)"
+      forcelogin_command: "&e/alogin forcelogin (玩家)"
+      ip_command: "&e/alogin ip (玩家)"
+      language_command: "&e/alogin language (玩家) (语言)"
+      reload_command: "&e/alogin reload"
+  languages:
+    english:
+      name: "&b英语"
+    polish:
+      name: "&c波兰语"
+    spanish:
+      name: "&e西班牙语"
+    chinese:
+      name: "&a中文"
 gui:
   frist-page: "&c这是第一页，不能再退回去了。"
   name: "&d&l球员名单"
@@ -201,6 +219,45 @@ gui:
         name: "&c&l关闭GUI"
         lore:
           - "&7右键/左键点击关闭菜单"
+  Language:
+    name: "&b&l语言选择"
+    size: "27"
+    filling:
+      filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+      filling-B: "BLACK_STAINED_GLASS_PANE"
+      filling-C: "BLUE_STAINED_GLASS_PANE"
+    buttons:
+      Close:
+        material: BARRIER
+        slot: "22"
+        name: "&c&l关闭GUI"
+        lore:
+          - "&7右键/左键点击关闭菜单"
+    languages:
+      english:
+        slot: "11"
+        texture: "none"
+        name: "&b英语"
+        lore:
+          - "&7点击切换为英语"
+      polish:
+        slot: "12"
+        texture: "none"
+        name: "&c波兰语"
+        lore:
+          - "&7点击切换为波兰语"
+      spanish:
+        slot: "13"
+        texture: "none"
+        name: "&e西班牙语"
+        lore:
+          - "&7点击切换为西班牙语"
+      chinese:
+        slot: "14"
+        texture: "none"
+        name: "&a中文"
+        lore:
+          - "&7点击切换为中文"
   Playerlist:
     layout: "ABCBABCBA00000000000000000000000000000000000012AB3AB45"
     filling:

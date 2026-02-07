@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -41,6 +42,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
                 + "premium_uuid VARCHAR(36),"
                 + "email VARCHAR(100),"
                 + "premium VARCHAR(5),"
+                + "language VARCHAR(32),"
                 + "version INT,"
                 + "created_at VARCHAR(32),"
                 + "updated_at VARCHAR(32)"
@@ -74,6 +76,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
             statement.execute(securitySql);
             statement.execute(historySql);
             statement.execute(loginSql);
+            ensureLanguageColumn();
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, "Unable to create player data tables.", ex);
         }
@@ -86,7 +89,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
         String firstIP = (player.isOnline() && player.getPlayer() != null)
                 ? player.getPlayer().getAddress().getAddress().getHostAddress()
                 : "offline";
-        PlayerRecord record = PlayerRecord.fromDefaults(uuid, playerName, firstIP, password);
+        PlayerRecord record = PlayerRecord.fromDefaults(uuid, playerName, firstIP, password, LanguageManager.getDefaultLanguageKey());
         upsertRecord(uuid, record, nowTimestamp());
     }
 
@@ -95,7 +98,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
         UUID uuid = player.getUniqueId();
         PlayerRecord record = readRecord(uuid);
         if (record == null) {
-            record = PlayerRecord.fromDefaults(uuid, player.getName(), "offline", "none");
+            record = PlayerRecord.fromDefaults(uuid, player.getName(), "offline", "none", LanguageManager.getDefaultLanguageKey());
         }
         String currentIP = player.getAddress().getAddress().getHostAddress();
         String timestamp = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date());
@@ -122,7 +125,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
     @Override
     public Map<UUID, Map<String, String>> loadAllPlayerData() {
         Map<UUID, Map<String, String>> allPlayerData = new HashMap<>();
-        String sql = "SELECT p.uuid, p.nick, p.premium_uuid, s.first_ip, s.last_ip, s.leave_time, p.email, p.premium, s.password, p.version "
+        String sql = "SELECT p.uuid, p.nick, p.premium_uuid, s.first_ip, s.last_ip, s.leave_time, p.email, p.premium, p.language, s.password, p.version "
                 + "FROM " + dialect.quote(playerTable) + " p "
                 + "LEFT JOIN " + dialect.quote(securityTable) + " s ON p.uuid = s.uuid";
         Map<UUID, List<String>> historyMap = loadAllIpHistory();
@@ -216,6 +219,43 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
     }
 
     @Override
+    public void setPlayerLanguage(UUID uuid, String language) {
+        if (uuid == null || language == null || language.isEmpty()) {
+            return;
+        }
+        String sql = "UPDATE " + dialect.quote(playerTable) + " SET language=? WHERE uuid=?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, language);
+            statement.setString(2, uuid.toString());
+            statement.executeUpdate();
+            touchUpdatedAt(uuid);
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.WARNING, "Failed updating language for " + uuid, ex);
+        }
+    }
+
+    @Override
+    public String getPlayerLanguage(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+        String sql = "SELECT language FROM " + dialect.quote(playerTable) + " WHERE uuid=?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, uuid.toString());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("language");
+                }
+            }
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.WARNING, "Failed reading language for " + uuid, ex);
+        }
+        return null;
+    }
+
+    @Override
     public boolean setPlayerSession(String nick, boolean isPremium) {
         UUID uuid = findUUIDByNick(nick);
         if (uuid == null) {
@@ -288,7 +328,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
 
     private PlayerRecord readRecord(UUID uuid) {
         String sql = "SELECT p.uuid, p.nick, p.premium_uuid, s.first_ip, s.last_ip, s.leave_time, "
-                + "p.email, p.premium, s.password, p.version "
+                + "p.email, p.premium, p.language, s.password, p.version "
                 + "FROM " + dialect.quote(playerTable) + " p "
                 + "LEFT JOIN " + dialect.quote(securityTable) + " s ON p.uuid = s.uuid "
                 + "WHERE p.uuid=?";
@@ -335,8 +375,8 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
 
     private void insertRecord(UUID uuid, PlayerRecord record, String timestamp) {
         String playerSql = "INSERT INTO " + dialect.quote(playerTable)
-                + " (uuid, nick, premium_uuid, email, premium, version, created_at, updated_at)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                + " (uuid, nick, premium_uuid, email, premium, language, version, created_at, updated_at)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String securitySql = "INSERT INTO " + dialect.quote(securityTable)
                 + " (uuid, password, first_ip, last_ip, leave_time, last_login)"
                 + " VALUES (?, ?, ?, ?, ?, ?)";
@@ -354,7 +394,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
 
     private void updateRecord(UUID uuid, PlayerRecord record, String timestamp) {
         String playerSql = "UPDATE " + dialect.quote(playerTable)
-                + " SET nick=?, premium_uuid=?, email=?, premium=?, version=?, updated_at=?"
+                + " SET nick=?, premium_uuid=?, email=?, premium=?, language=?, version=?, updated_at=?"
                 + " WHERE uuid=?";
         String securitySql = "UPDATE " + dialect.quote(securityTable)
                 + " SET password=?, first_ip=?, last_ip=?, leave_time=?"
@@ -366,9 +406,10 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
             playerStatement.setString(2, record.getPremiumUuid());
             playerStatement.setString(3, record.getEmail());
             playerStatement.setString(4, record.getPremium());
-            playerStatement.setInt(5, record.getVersion());
-            playerStatement.setString(6, timestamp);
-            playerStatement.setString(7, uuid.toString());
+            playerStatement.setString(5, record.getLanguage());
+            playerStatement.setInt(6, record.getVersion());
+            playerStatement.setString(7, timestamp);
+            playerStatement.setString(8, uuid.toString());
             playerStatement.executeUpdate();
 
             securityStatement.setString(1, record.getPassword());
@@ -388,9 +429,10 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
         statement.setString(3, record.getPremiumUuid());
         statement.setString(4, record.getEmail());
         statement.setString(5, record.getPremium());
-        statement.setInt(6, record.getVersion());
-        statement.setString(7, timestamp);
+        statement.setString(6, record.getLanguage());
+        statement.setInt(7, record.getVersion());
         statement.setString(8, timestamp);
+        statement.setString(9, timestamp);
     }
 
     private void fillSecurityStatement(PreparedStatement statement, UUID uuid, PlayerRecord record, String lastLogin) throws SQLException {
@@ -412,9 +454,20 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
         record.setLeaveTime(resultSet.getString("leave_time"));
         record.setEmail(resultSet.getString("email"));
         record.setPremium(resultSet.getString("premium"));
+        record.setLanguage(resultSet.getString("language"));
         record.setPassword(resultSet.getString("password"));
         record.setVersion(resultSet.getInt("version"));
         return record;
+    }
+
+    private void ensureLanguageColumn() {
+        String sql = "ALTER TABLE " + dialect.quote(playerTable) + " ADD COLUMN language VARCHAR(32)";
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        } catch (SQLException ignored) {
+            // column already exists or cannot be added
+        }
     }
 
     private void updateSecurityLogin(UUID uuid, PlayerRecord record, String loginTimestamp) {

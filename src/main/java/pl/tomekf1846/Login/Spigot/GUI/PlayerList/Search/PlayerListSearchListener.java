@@ -11,7 +11,8 @@ public class PlayerListSearchListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        String searchTitle = LanguageManager.getMessage("messages.gui.Playerlist.Search.name");
+        Player player = (Player) event.getWhoClicked();
+        String searchTitle = LanguageManager.getMessage(player, "messages.gui.Playerlist.Search.name");
 
         if (event.getView().getTitle().equals(searchTitle)) {
             event.setCancelled(true);
@@ -19,7 +20,6 @@ public class PlayerListSearchListener implements Listener {
             if (event.getCurrentItem() == null) return;
 
             Material clicked = event.getCurrentItem().getType();
-            Player player = (Player) event.getWhoClicked();
 
             if (clicked == Material.BARRIER) {
                 player.closeInventory();

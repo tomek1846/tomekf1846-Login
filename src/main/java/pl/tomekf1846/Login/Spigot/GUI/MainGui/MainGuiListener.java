@@ -20,23 +20,23 @@ public class MainGuiListener implements Listener {
         buttonActions.put("messages.gui.Maingui.buttons.Close.material", Player::closeInventory);
         buttonActions.put("messages.gui.Maingui.buttons.Player-Accounts.material", PlayerListGui::openFirstPage);
         buttonActions.put("messages.gui.Maingui.buttons.Player-Login-History.material",
-                player -> player.sendMessage(LanguageManager.getMessage("messages.gui.Maingui.buttons.Player-Login-History.name"))); // Logika dla przycsisku 1
+                player -> player.sendMessage(LanguageManager.getMessage(player, "messages.gui.Maingui.buttons.Player-Login-History.name")));
         buttonActions.put("messages.gui.Maingui.buttons.Settings.material",
-                player -> player.sendMessage(LanguageManager.getMessage("messages.gui.Maingui.buttons.Settings.name")));  // Logika dla przycsisku 2
+                player -> player.sendMessage(LanguageManager.getMessage(player, "messages.gui.Maingui.buttons.Settings.name")));
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getView().getTitle().equals(LanguageManager.getMessage("messages.gui.Maingui.name"))) {
+        Player player = (Player) event.getWhoClicked();
+        if (event.getView().getTitle().equals(LanguageManager.getMessage(player, "messages.gui.Maingui.name"))) {
             event.setCancelled(true);
 
             if (event.getCurrentItem() == null) return;
 
             Material clicked = event.getCurrentItem().getType();
-            Player player = (Player) event.getWhoClicked();
 
             buttonActions.forEach((configPath, action) -> {
-                if (clicked == Material.valueOf(LanguageManager.getMessage(configPath))) {
+                if (clicked == Material.valueOf(LanguageManager.getMessage(player, configPath))) {
                     action.accept(player);
                 }
             });
