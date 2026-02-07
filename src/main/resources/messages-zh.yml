@@ -43,6 +43,7 @@ messages:
     email_usage: "&c用法: /email (邮箱)"
     language_unknown: "&c未知语言。请使用 /language gui 或 /language <语言>。"
     language_changed: "&a语言已更改为 {language}。"
+    language_auto_detected: "&a已自动检测到语言 {language} 并已设置。你可以使用 /lang 更改。"
     unknown_command: "&c未知命令。请使用 /login-help 查看可用命令。"
     help:
       available_commands: "&c可用命令:"

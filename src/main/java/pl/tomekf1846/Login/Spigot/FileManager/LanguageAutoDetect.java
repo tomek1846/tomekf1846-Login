@@ -49,6 +49,14 @@ public final class LanguageAutoDetect {
             return;
         }
         PlayerDataSave.setPlayerLanguage(player.getUniqueId(), languageKey);
+        String languageName = languageKey;
+        LanguageSettings.LanguageOption option = options.get(languageKey);
+        if (option != null) {
+            languageName = option.commandName();
+        }
+        String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
+        player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.language_auto_detected")
+                .replace("{language}", languageName));
     }
 
     private static String lookupCountryCode(String ipAddress) {

@@ -43,6 +43,7 @@ messages:
     email_usage: "&cUtilisation : /email (email)"
     language_unknown: "&cLangue inconnue. Utilisez /language gui ou /language <langue>."
     language_changed: "&aVotre langue a été changée en {language}."
+    language_auto_detected: "&aLangue {language} détectée automatiquement et définie. Vous pouvez la changer avec /lang."
     unknown_command: "&cCommande inconnue. Utilisez /login-help pour voir les commandes disponibles."
     help:
       available_commands: "&cCommandes disponibles :"
