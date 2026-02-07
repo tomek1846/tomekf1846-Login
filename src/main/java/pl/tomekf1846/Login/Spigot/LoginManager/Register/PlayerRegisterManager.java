@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.FileManager.LanguageAutoDetect;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.LoginMessagesManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.PlayerRestrictions;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
@@ -39,6 +40,7 @@ public class PlayerRegisterManager {
         }
 
         PlayerDataSave.savePlayerData(player, password);
+        LanguageAutoDetect.applyAutoDetectOnFirstJoin(player);
         PlayerRestrictions.unblockPlayer(player);
         PlayerDataSave.setPlayerSession(player.getName(), false);
         player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.registration-success"));

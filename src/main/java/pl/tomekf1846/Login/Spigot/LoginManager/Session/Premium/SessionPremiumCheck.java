@@ -3,6 +3,7 @@ package pl.tomekf1846.Login.Spigot.LoginManager.Session.Premium;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
+import pl.tomekf1846.Login.Spigot.FileManager.LanguageAutoDetect;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.LoginMessagesManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.PlayerRestrictions;
@@ -30,8 +31,9 @@ public class SessionPremiumCheck {
 
     public static boolean handlePremiumRegister(Player player) {
         if (!PlayerRegisterManager.isPlayerRegistered(player)) {
-            if (isPlayerPremium(player.getName())) {
+                if (isPlayerPremium(player.getName())) {
                     PlayerDataSave.savePlayerData(player, "none");
+                    LanguageAutoDetect.applyAutoDetectOnFirstJoin(player);
                     PlayerDataSave.setPlayerSession(player.getName(), true);
                     PlayerRestrictions.unblockPlayer(player);
                     LoginMessagesManager.PremiumRegisterTitle(player);

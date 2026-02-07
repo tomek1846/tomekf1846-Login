@@ -14,6 +14,14 @@ import java.util.Map;
 public final class LanguageSettings {
     private LanguageSettings() {}
 
+    public static boolean isPerPlayerLanguageEnabled() {
+        return MainSpigot.getInstance().getConfig().getBoolean("Main-Settings.Language-Per-Player", true);
+    }
+
+    public static boolean isAutoDetectOnFirstJoinEnabled() {
+        return MainSpigot.getInstance().getConfig().getBoolean("Main-Settings.Language-Auto-Detect-On-First-Join", true);
+    }
+
     public static Map<String, LanguageOption> getLanguageOptions() {
         FileConfiguration config = MainSpigot.getInstance().getConfig();
         ConfigurationSection section = config.getConfigurationSection("Main-Settings.Language-Options");

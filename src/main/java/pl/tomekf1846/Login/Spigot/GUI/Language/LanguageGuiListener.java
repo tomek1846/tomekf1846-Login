@@ -25,6 +25,12 @@ public class LanguageGuiListener implements Listener {
         }
 
         event.setCancelled(true);
+        if (!LanguageSettings.isPerPlayerLanguageEnabled()) {
+            String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
+            player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.language_command_disabled"));
+            player.closeInventory();
+            return;
+        }
         ItemStack item = event.getCurrentItem();
         if (item == null) {
             return;

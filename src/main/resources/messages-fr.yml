@@ -34,6 +34,7 @@ messages:
   player-commands:
     only_players: "&cSeuls les joueurs peuvent utiliser cette commande."
     command_disabled: "&cLa commande premium/cracked est désactivée."
+    language_command_disabled: "&cLa sélection de la langue du joueur est désactivée dans la configuration."
     register_usage: "&cUtilisation : /register (mot de passe) (confirmer le mot de passe)"
     login_usage: "&cUtilisation : /login (mot de passe)"
     premium_usage: "&cUtilisation : /premium (mot de passe)"
@@ -131,6 +132,7 @@ messages:
     force_login_success: "&aLe joueur {player} a été forcé à se connecter avec succès."
     cannot_change_own_status: "&cVous ne pouvez pas changer le statut de votre propre compte."
     premium_command_disabled: "&cLa commande Premium/Cracked est désactivée."
+    language_command_disabled: "&cLa sélection de la langue du joueur est désactivée dans la configuration."
     player_file_not_found: "&cFichier de données du joueur introuvable."
     already_premium: "&cLe joueur est déjà Premium !"
     already_cracked: "&cLe joueur est déjà Cracked !"

@@ -12,6 +12,7 @@ import pl.tomekf1846.Login.Spigot.LoginManager.Other.PlayerRestrictions;
 import pl.tomekf1846.Login.Spigot.LoginManager.Session.Cracked.SessionCrackedManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
+import pl.tomekf1846.Login.Spigot.FileManager.LanguageSettings;
 
 public class AdminCommandManager implements CommandExecutor {
 
@@ -110,6 +111,10 @@ public class AdminCommandManager implements CommandExecutor {
 
             case "language":
             case "lang":
+                if (!LanguageSettings.isPerPlayerLanguageEnabled()) {
+                    sender.sendMessage(prefix + languageManager.getMessage(sender, "messages.admin-commands.language_command_disabled"));
+                    return true;
+                }
                 if (args.length < 3) {
                     sender.sendMessage(prefix + languageManager.getMessage(sender, "messages.admin-commands.usage_language"));
                     return true;

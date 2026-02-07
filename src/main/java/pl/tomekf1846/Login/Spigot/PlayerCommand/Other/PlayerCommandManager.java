@@ -132,6 +132,10 @@ public class PlayerCommandManager implements CommandExecutor {
 
     private boolean handleLanguageCommand(Player player, String[] args) {
         String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
+        if (!LanguageSettings.isPerPlayerLanguageEnabled()) {
+            player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.language_command_disabled"));
+            return true;
+        }
         if (args.length == 0) {
             LanguageGui.openGUI(player);
             return true;

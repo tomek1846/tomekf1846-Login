@@ -27,6 +27,11 @@ public class LanguageGui {
     public static final NamespacedKey LANGUAGE_KEY = new NamespacedKey(MainSpigot.getInstance(), "language_key");
 
     public static void openGUI(Player player) {
+        if (!LanguageSettings.isPerPlayerLanguageEnabled()) {
+            String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
+            player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.language_command_disabled"));
+            return;
+        }
         String title = LanguageManager.getMessage(player, "messages.gui.Language.name");
         String layout = LanguageManager.getMessage(player, "messages.gui.Language.layout");
         int size = layout.length();
@@ -81,9 +86,14 @@ public class LanguageGui {
     private static List<ItemStack> buildLanguageItems(Player player) {
         Map<String, LanguageSettings.LanguageOption> options = LanguageSettings.getLanguageOptions();
         List<ItemStack> items = new ArrayList<>();
-        String storedLanguage = PlayerDataSave.getPlayerLanguage(player.getUniqueId());
-        String playerLanguage = storedLanguage;
-        if (playerLanguage == null || playerLanguage.isBlank()) {
+        String playerLanguage;
+        if (LanguageSettings.isPerPlayerLanguageEnabled()) {
+            String storedLanguage = PlayerDataSave.getPlayerLanguage(player.getUniqueId());
+            playerLanguage = storedLanguage;
+            if (playerLanguage == null || playerLanguage.isBlank()) {
+                playerLanguage = MainSpigot.getInstance().getConfig().getString("Main-Settings.Language", "English");
+            }
+        } else {
             playerLanguage = MainSpigot.getInstance().getConfig().getString("Main-Settings.Language", "English");
         }
         playerLanguage = LanguageSettings.normalizeLanguage(playerLanguage);
@@ -126,10 +136,10 @@ public class LanguageGui {
         if (meta != null) {
             meta.setDisplayName(name);
             meta.setLore(lore);
-            if (owner != null && !owner.isBlank()) {
-                meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
-            } else if (texture != null && !texture.isBlank()) {
+            if (texture != null && !texture.isBlank()) {
                 applyTexture(meta, texture);
+            } else if (owner != null && !owner.isBlank()) {
+                meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
             }
             head.setItemMeta(meta);
         }

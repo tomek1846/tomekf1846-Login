@@ -34,6 +34,7 @@ messages:
   player-commands:
     only_players: "&cOnly players can use this command."
     command_disabled: "&cThe premium/cracked commands are disabled in the configuration."
+    language_command_disabled: "&cPlayer language selection is disabled in the configuration."
     register_usage: "&cUsage: /register (password) (repeat_password)"
     login_usage: "&cUsage: /login (password)"
     premium_usage: "&cUsage: /premium (password)"
@@ -131,6 +132,7 @@ messages:
     force_login_success: "&aSuccessfully logged in {player}."
     cannot_change_own_status: "&cYou cannot change your own account status!"
     premium_command_disabled: "&cThe premium/cracked commands are disabled in the configuration."
+    language_command_disabled: "&cPlayer language selection is disabled in the configuration."
     player_file_not_found: "&cPlayer file not found!"
     already_premium: "&cThis player is already set as premium!"
     already_cracked: "&cThis player is already set as cracked!"

@@ -34,6 +34,7 @@ messages:
   player-commands:
     only_players: "&cNur Spieler können diesen Befehl verwenden."
     command_disabled: "&cDer Premium/Cracked-Befehl ist deaktiviert."
+    language_command_disabled: "&cDie Sprachwahl für Spieler ist in der Konfiguration deaktiviert."
     register_usage: "&cVerwendung: /register (passwort) (passwort bestätigen)"
     login_usage: "&cVerwendung: /login (passwort)"
     premium_usage: "&cVerwendung: /premium (passwort)"
@@ -131,6 +132,7 @@ messages:
     force_login_success: "&aSpieler {player} wurde erfolgreich zwangsweise eingeloggt."
     cannot_change_own_status: "&cDu kannst den Status deines eigenen Kontos nicht ändern."
     premium_command_disabled: "&cPremium/Cracked-Befehl ist deaktiviert."
+    language_command_disabled: "&cDie Sprachwahl für Spieler ist in der Konfiguration deaktiviert."
     player_file_not_found: "&cSpielerdaten-Datei nicht gefunden."
     already_premium: "&cDer Spieler ist bereits Premium!"
     already_cracked: "&cDer Spieler ist bereits Cracked!"

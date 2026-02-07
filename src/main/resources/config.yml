@@ -39,6 +39,12 @@ Main-Settings:
   # Language defaults to English
   # Supported languages: Polish, English, Spanish, Chinese, German, French, Portuguese
   Language: English
+  # Allow per-player language selection and language commands (/lang, /language, admin language command).
+  Language-Per-Player: true
+  # Detect language by IP on first join (only when Language-Per-Player is enabled).
+  Language-Auto-Detect-On-First-Join: true
+  # GeoIP provider URL used for auto detection (must return a 2-letter country code).
+  Language-GeoIP-Url: "https://ipapi.co/{ip}/country/"
 
   # Premium account registration !NOT IMPLEMENTED!
   Premium-Command: false
@@ -73,14 +79,14 @@ Main-Settings:
         - "english"
         - "en"
       Skull-Texture: ""
-      Skull-Owner: "MHF_USA"
+      Skull-Owner: ""
     Polish:
       Aliases:
         - "polish"
         - "pl"
         - "polski"
       Skull-Texture: ""
-      Skull-Owner: "MHF_Poland"
+      Skull-Owner: ""
     Spanish:
       Aliases:
         - "spanish"
@@ -88,21 +94,21 @@ Main-Settings:
         - "espanol"
         - "español"
       Skull-Texture: ""
-      Skull-Owner: "MHF_Spain"
+      Skull-Owner: ""
     Chinese:
       Aliases:
         - "chinese"
         - "zh"
         - "中文"
       Skull-Texture: ""
-      Skull-Owner: "MHF_China"
+      Skull-Owner: ""
     German:
       Aliases:
         - "german"
         - "de"
         - "deutsch"
       Skull-Texture: ""
-      Skull-Owner: "MHF_Germany"
+      Skull-Owner: ""
     French:
       Aliases:
         - "french"
@@ -110,7 +116,7 @@ Main-Settings:
         - "francais"
         - "français"
       Skull-Texture: ""
-      Skull-Owner: "MHF_France"
+      Skull-Owner: ""
     Portuguese:
       Aliases:
         - "portuguese"
@@ -120,7 +126,7 @@ Main-Settings:
         - "pt-br"
         - "pt-pt"
       Skull-Texture: ""
-      Skull-Owner: "MHF_Portugal"
+      Skull-Owner: ""
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #   _____ _
