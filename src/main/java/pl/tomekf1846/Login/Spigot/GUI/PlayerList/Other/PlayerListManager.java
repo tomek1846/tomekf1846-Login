@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
+import pl.tomekf1846.Login.Spigot.PluginManager.SkinsRestorerHook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,9 +61,12 @@ public class PlayerListManager {
 
             meta.setLore(lore);
 
-            try {
-                meta.setOwningPlayer(Bukkit.getOfflinePlayer(playerUUID));
-            } catch (Exception ignored) {}
+            boolean applied = SkinsRestorerHook.applySkullTexture(head, meta, nick);
+            if (!applied) {
+                try {
+                    meta.setOwningPlayer(Bukkit.getOfflinePlayer(playerUUID));
+                } catch (Exception ignored) {}
+            }
 
             head.setItemMeta(meta);
         }

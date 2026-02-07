@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
+import pl.tomekf1846.Login.Spigot.PluginManager.SkinsRestorerHook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,9 +115,12 @@ public class PlayerListSearch implements Listener {
         if (meta != null) {
             meta.setDisplayName(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.name").replace("{player}", nick));
 
-            try {
-                meta.setOwningPlayer(Bukkit.getOfflinePlayer(nick));
-            } catch (Exception ignored) {
+            boolean applied = SkinsRestorerHook.applySkullTexture(head, meta, nick);
+            if (!applied) {
+                try {
+                    meta.setOwningPlayer(Bukkit.getOfflinePlayer(nick));
+                } catch (Exception ignored) {
+                }
             }
 
             List<String> lore = new ArrayList<>();
