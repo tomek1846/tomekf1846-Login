@@ -154,7 +154,7 @@ messages:
     usage_changepass: "&cUso: /alogin changepass (jugador) (contraseña)"
     usage_unregister: "&cUso: /alogin unregister (jugador)"
     usage_register: "&cUso: /alogin register (jugador) (contraseña)"
-    usage_email: "&cUso: /alogin email (jugador) (correo electrónico o"
+    usage_email: "&cUso: /alogin email (jugador) (correo electrónico o none)"
     usage_forcelogin: "&cUso: /alogin forcelogin (jugador)"
     usage_ip: "&cUso: /alogin ip (jugador)"
     usage_reload: "&cUso: /alogin reload"
@@ -178,138 +178,154 @@ messages:
       language_command: "&e/alogin language (jugador) (idioma)"
       lang_command: "&e/alogin lang (jugador) (idioma)"
       reload_command: "&e/alogin reload"
-gui:
-  frist-page: "&cEsta es la primera página, no puedes volver atrás."
-  no-data: "&cNo definido"
-  Maingui:
-    name: "&e&lMenú principal"
-    filling:
-      filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-      filling-B: "BLACK_STAINED_GLASS_PANE"
-      filling-C: "BLUE_STAINED_GLASS_PANE"
-    buttons:
-      Player-Accounts:
-        material: "PAPER"
-        name: "&d&lCuentas de jugador"
+  gui:
+    frist-page: "&cEsta es la primera página, no puedes volver atrás."
+    no-data: "&cNo definido"
+    Maingui:
+      name: "&e&lMenú principal"
+      filling:
+        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+        filling-B: "BLACK_STAINED_GLASS_PANE"
+        filling-C: "BLUE_STAINED_GLASS_PANE"
+      buttons:
+        Player-Accounts:
+          material: "PAPER"
+          name: "&d&lCuentas de jugador"
+          lore:
+            - "&7Aquí puedes gestionar las cuentas,"
+            - "&7editar contraseñas, etc."
+        Player-Login-History:
+          material: "BOOK"
+          name: "&b&lHistorial de inicio de sesión"
+          lore:
+            - "&7Aquí puedes ver"
+            - "&7el historial de inicio de sesión de los jugadores"
+        Settings:
+          material: COMPARATOR
+          name: "&a&lConfiguración"
+          lore:
+            - "&7Aquí puedes ver"
+            - "&7configuraciones del plugin y el estado de la base de datos"
+        Close:
+          material: BARRIER
+          name: "&c&lCerrar GUI"
+          lore:
+            - "&7Haz clic derecho/izquierdo para cerrar el menú"
+    Playerlist:
+      name: "&d&lLista de jugadores"
+      layout: "ABCBABCBA00000000000000000000000000000000000012AB3AB45"
+      filling:
+        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+        filling-B: "BLACK_STAINED_GLASS_PANE"
+        filling-C: "BLUE_STAINED_GLASS_PANE"
+      buttons:
+        Search-player:
+          material: OAK_SIGN
+          name: "&eBuscar jugador"
+          lore:
+            - "&7Busca un jugador por nombre."
+        Previous-page:
+          material: ARROW
+          name: "&e&lPágina anterior"
+          lore:
+            - "&7Pasa a la página anterior de la lista de jugadores"
+            - "&7Página actual: {page}"
+        Next-page:
+          material: ARROW
+          name: "&e&lPágina siguiente"
+          lore:
+            - "&7Pasa a la página siguiente de la lista de jugadores"
+            - "&7Página actual: {page}"
+        Close:
+          material: BARRIER
+          name: "&c&lCerrar GUI"
+          lore:
+            - "&7Haz clic derecho/izquierdo para cerrar el GUI"
+        Onlinedye:
+          material: LIME_DYE
+          name: "&a&lJugador en línea"
+          lore:
+            - "&7Viendo jugadores en línea"
+        Offlinedye:
+          material: GRAY_DYE
+          name: "&7&lJugador desconectado"
+          lore:
+            - "&7Ver jugadores desconectados"
+      Players:
+        name: "&dJugador {player}"
         lore:
-          - "&7Aquí puedes gestionar las cuentas,"
-          - "&7editar contraseñas, etc."
-      Player-Login-History:
-        material: "BOOK"
-        name: "&b&lHistorial de inicio de sesión"
-        lore:
-          - "&7Aquí puedes ver"
-          - "&7el historial de inicio de sesión de los jugadores"
-      Settings:
-        material: COMPARATOR
-        name: "&a&lConfiguración"
-        lore:
-          - "&7Aquí puedes ver"
-          - "&7configuraciones del plugin y el estado de la base de datos"
-      Close:
-        material: BARRIER
-        name: "&c&lCerrar GUI"
-        lore:
-          - "&7Haz clic derecho/izquierdo para cerrar el menú"
-  Playerlist:
-    name: "&d&lLista de jugadores"
-    layout: "ABCBABCBA00000000000000000000000000000000000012AB3AB45"
-    filling:
-      filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-      filling-B: "BLACK_STAINED_GLASS_PANE"
-      filling-C: "BLUE_STAINED_GLASS_PANE"
-    buttons:
-      Search-player:
-        material: OAK_SIGN
-        name: "&eBuscar jugador"
-        lore:
-          - "&7Busca un jugador por nombre."
-      Previous-page:
-  material: ARROW
-  name: "&e&lPágina anterior"
-  lore:
-    - "&7Pasa a la página anterior de la lista de jugadores"
-    - "&7Página actual: {page}"
-Next-page:
-  material: ARROW
-  name: "&e&lPágina siguiente"
-  lore:
-    - "&7Pasa a la página siguiente de la lista de jugadores"
-    - "&7Página actual: {page}"
-Close:
-  material: BARRIER
-  name: "&c&lCerrar GUI"
-  lore:
-    - "&7Haz clic derecho/izquierdo para cerrar el GUI"
-Onlinedye:
-  material: LIME_DYE
-  name: "&a&lJugador en línea"
-  lore:
-    - "&7Ver jugadores en línea"
-Offlinedye:
-  material: GRAY_DYE
-  name: "&7&lJugador desconectado"
-  lore:
-    - "&7Ver jugadores desconectados"
-Players:
-  name: "&dJugador {player}"
-  lore:
-    uuid: "&7UUID: &f{uuid}"
-    password: "&7Contraseña: &f{password}"
-    fristip: "&7IP inicial: &f{fristip}"
-    lastip: "&7Última IP: &f{lastip}"
-    email: "&7Correo electrónico: &f{email}"
-    premium: "&7Premium: &f{premium}"
-Search:
-  layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
-  name: "&b&lResultados de búsqueda de jugadores"
-  no-player-data: "&cNo se encontraron jugadores coincidentes."
-  search-message: "&aIntroduce un nombre para buscar"
-  search-title:
-    title: "&6Introduce un nombre"
-    subtitle: "&eBusca un jugador en el chat"
-  buttons:
-    Close:
-      material: BARRIER
-      name: "&c&lCerrar GUI"
-      lore:
-        - "&7Haz clic derecho/izquierdo para cerrar el GUI"
-  Language:
-    name: "&9&lIdioma"
-    layout: "ABCABCABCBLLLLLBBBABCAXCABC"
-    status:
-      current: "&aSeleccionado"
-      available: "&eHaz clic para seleccionar"
-    filling:
-      filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-      filling-B: "BLACK_STAINED_GLASS_PANE"
-      filling-C: "BLUE_STAINED_GLASS_PANE"
-    buttons:
-      Close:
-        material: BARRIER
-        name: "&c&lCerrar GUI"
-        lore:
-          - "&7Haz clic derecho/izquierdo para cerrar el GUI"
-    languages:
-      english:
-        name: "&aEnglish"
-        lore:
-          - "&7Idioma: &fEnglish"
-          - "{status}"
-      polish:
-        name: "&cPolish"
-        lore:
-          - "&7Idioma: &fPolish"
-          - "{status}"
-      spanish:
-        name: "&eEspañol"
-        lore:
-          - "&7Idioma: &fEspañol"
-          - "{status}"
-      chinese:
-        name: "&b中文"
-        lore:
-          - "&7Idioma: &f中文"
-          - "{status}"
+          uuid: "&7UUID: &f{uuid}"
+          password: "&7Contraseña: &f{password}"
+          fristip: "&7IP inicial: &f{fristip}"
+          lastip: "&7Última IP: &f{lastip}"
+          email: "&7Correo electrónico: &f{email}"
+          premium: "&7Premium: &f{premium}"
+      Search:
+        layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
+        name: "&b&lResultados de búsqueda de jugadores"
+        no-player-data: "&cNo se encontraron jugadores coincidentes."
+        search-message: "&aIntroduce un nombre para buscar"
+        search-title:
+          title: "&6Introduce un nombre"
+          subtitle: "&eBusca un jugador en el chat"
+        buttons:
+          Close:
+            material: BARRIER
+            name: "&c&lCerrar GUI"
+            lore:
+              - "&7Haz clic derecho/izquierdo para cerrar el GUI"
+    Language:
+      name: "&9&lIdioma"
+      layout: "ABCABCABCBLLLLLBBBABCAXCABC"
+      status:
+        current: "&aSeleccionado"
+        available: "&eHaz clic para seleccionar"
+      filling:
+        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+        filling-B: "BLACK_STAINED_GLASS_PANE"
+        filling-C: "BLUE_STAINED_GLASS_PANE"
+      buttons:
+        Close:
+          material: BARRIER
+          name: "&c&lCerrar GUI"
+          lore:
+            - "&7Haz clic derecho/izquierdo para cerrar el GUI"
+      languages:
+        english:
+          name: "&aInglés"
+          lore:
+            - "&7Idioma: &fInglés"
+            - "{status}"
+        polish:
+          name: "&cPolaco"
+          lore:
+            - "&7Idioma: &fPolaco"
+            - "{status}"
+        spanish:
+          name: "&eEspañol"
+          lore:
+            - "&7Idioma: &fEspañol"
+            - "{status}"
+        chinese:
+          name: "&bChino"
+          lore:
+            - "&7Idioma: &fChino"
+            - "{status}"
+        german:
+          name: "&6Alemán"
+          lore:
+            - "&7Idioma: &fAlemán"
+            - "{status}"
+        french:
+          name: "&dFrancés"
+          lore:
+            - "&7Idioma: &fFrancés"
+            - "{status}"
+        portuguese:
+          name: "&2Portugués"
+          lore:
+            - "&7Idioma: &fPortugués"
+            - "{status}"
+
 Config-Version: 1.0.0 #NO CAMBIES
 #Generado por tomekf1846-Login

@@ -37,7 +37,7 @@
 #                                                      |___/
 Main-Settings:
   # Language defaults to English
-  # Supported languages: Polish, English, Spanish, Chinese
+  # Supported languages: Polish, English, Spanish, Chinese, German, French, Portuguese
   Language: English
   Language-Options:
     English:
@@ -45,14 +45,14 @@ Main-Settings:
         - "english"
         - "en"
       Skull-Texture: ""
-      Skull-Owner: ""
+      Skull-Owner: "MHF_USA"
     Polish:
       Aliases:
         - "polish"
         - "pl"
         - "polski"
       Skull-Texture: ""
-      Skull-Owner: ""
+      Skull-Owner: "MHF_Poland"
     Spanish:
       Aliases:
         - "spanish"
@@ -60,14 +60,39 @@ Main-Settings:
         - "espanol"
         - "español"
       Skull-Texture: ""
-      Skull-Owner: ""
+      Skull-Owner: "MHF_Spain"
     Chinese:
       Aliases:
         - "chinese"
         - "zh"
         - "中文"
       Skull-Texture: ""
-      Skull-Owner: ""
+      Skull-Owner: "MHF_China"
+    German:
+      Aliases:
+        - "german"
+        - "de"
+        - "deutsch"
+      Skull-Texture: ""
+      Skull-Owner: "MHF_Germany"
+    French:
+      Aliases:
+        - "french"
+        - "fr"
+        - "francais"
+        - "français"
+      Skull-Texture: ""
+      Skull-Owner: "MHF_France"
+    Portuguese:
+      Aliases:
+        - "portuguese"
+        - "pt"
+        - "portugues"
+        - "português"
+        - "pt-br"
+        - "pt-pt"
+      Skull-Texture: ""
+      Skull-Owner: "MHF_Portugal"
 
   # Premium account registration !NOT IMPLEMENTED!
   Premium-Command: false

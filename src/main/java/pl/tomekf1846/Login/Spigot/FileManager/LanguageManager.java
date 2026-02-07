@@ -23,6 +23,9 @@ public class LanguageManager {
     private static final String POLISH_FILE_NAME = "messages-pl.yml";
     private static final String SPANISH_FILE_NAME = "messages-es.yml";
     private static final String CHINESE_FILE_NAME = "messages-zh.yml";
+    private static final String GERMAN_FILE_NAME = "messages-de.yml";
+    private static final String FRENCH_FILE_NAME = "messages-fr.yml";
+    private static final String PORTUGUESE_FILE_NAME = "messages-pt.yml";
 
     public LanguageManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -57,6 +60,9 @@ public class LanguageManager {
         saveDefaultLanguageFile(POLISH_FILE_NAME);
         saveDefaultLanguageFile(SPANISH_FILE_NAME);
         saveDefaultLanguageFile(CHINESE_FILE_NAME);
+        saveDefaultLanguageFile(GERMAN_FILE_NAME);
+        saveDefaultLanguageFile(FRENCH_FILE_NAME);
+        saveDefaultLanguageFile(PORTUGUESE_FILE_NAME);
 
         String language = plugin.getConfig().getString("Main-Settings.Language");
         defaultLanguage = LanguageSettings.normalizeLanguage(Objects.requireNonNullElse(language, "english"));
@@ -65,6 +71,9 @@ public class LanguageManager {
         loadLanguageConfig(languagesDir, "polish", POLISH_FILE_NAME);
         loadLanguageConfig(languagesDir, "spanish", SPANISH_FILE_NAME);
         loadLanguageConfig(languagesDir, "chinese", CHINESE_FILE_NAME);
+        loadLanguageConfig(languagesDir, "german", GERMAN_FILE_NAME);
+        loadLanguageConfig(languagesDir, "french", FRENCH_FILE_NAME);
+        loadLanguageConfig(languagesDir, "portuguese", PORTUGUESE_FILE_NAME);
     }
 
     public static void configReload(JavaPlugin plugin) {
