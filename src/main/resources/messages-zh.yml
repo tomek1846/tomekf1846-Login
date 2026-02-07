@@ -169,111 +169,110 @@ messages:
       cracked_command: "&e/alogin cracked (玩家)"
       premium_command: "&e/alogin premium (玩家)"
       changepass_command: "&e/alogin changepass (玩家) (密码)"
-changepassword_command: "&e/alogin changepassword (玩家) (密码)"
-unregister_command: "&e/alogin unregister (玩家)"
-register_command: "&e/alogin register (玩家) (密码)"
-email_command: "&e/alogin email (玩家) (邮箱或 none)"
-forcelogin_command: "&e/alogin forcelogin (玩家)"
-ip_command: "&e/alogin ip (玩家)"
-language_command: "&e/alogin language (玩家) (语言)"
-lang_command: "&e/alogin lang (玩家) (语言)"
-reload_command: "&e/alogin reload"
-gui:
-  frist-page: "&c这是第一页，不能再退回去了。"
-  name: "&d&l球员名单"
-  no-data: "&c未定义"
-  Maingui:
-    name: "&e&l主菜单"
-    filling:
-      filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-      filling-B: "BLACK_STAINED_GLASS_PANE"
-      filling-C: "BLUE_STAINED_GLASS_PANE"
-    buttons:
-      Player-Accounts:
-        material: "PAPER"
-        name: "&d&l玩家账户"
-        lore:
-          - "&7在这里你可以管理账户，"
-          - "&7编辑密码等。"
-      Player-Login-History:
-        material: "BOOK"
-        name: "&b&l登录历史"
-        lore:
-          - "&7在这里你可以查看"
-          - "&7玩家的登录历史"
-      Settings:
-        material: COMPARATOR
-        name: "&a&l设置"
-        lore:
-          - "&7在这里你可以查看"
-          - "&7插件设置和数据库状态"
-      Close:
-        material: BARRIER
-        name: "&c&l关闭GUI"
-        lore:
-          - "&7右键/左键点击关闭菜单"
-  Playerlist:
-    layout: "ABCBABCBA00000000000000000000000000000000000012AB3AB45"
-    filling:
-      filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-      filling-B: "BLACK_STAINED_GLASS_PANE"
-      filling-C: "BLUE_STAINED_GLASS_PANE"
-    buttons:
-      Search-player:
-        material: OAK_SIGN
-        name: "&b&l搜索玩家"
-        lore:
-          - "&7通过昵称搜索玩家"
-      Previous-page:
-        material: ARROW
-        name: "&e&l上一页"
-        lore:
-          - "&7跳转到玩家列表的上一页"
-          - "&7当前页: {page}"
-      Next-page:
-        material: ARROW
-        name: "&e&l下一页"
-        lore:
-          - "&7跳转到玩家列表的下一页"
-          - "&7当前页: {page}"
-      Close:
-        material: BARRIER
-        name: "&c&l关闭GUI"
-        lore:
-          - "&7右键/左键点击关闭GUI"
-      Onlinedye:
-        material: LIME_DYE
-        name: "&a&l在线玩家"
-        lore:
-          - "&7查看在线玩家"
-      Offlinedye:
-        material: GRAY_DYE
-        name: "&7&l离线玩家"
-        lore:
-          - "&7查看离线玩家"
-    Players:
-      name: "&d玩家 {player}"
-      lore:
-        uuid: "&7UUID: &f{uuid}"
-        password: "&7密码: &f{password}"
-        fristip: "&7首次IP: &f{fristip}"
-        lastip: "&7最后IP: &f{lastip}"
-        email: "&7邮箱: &f{email}"
-        premium: "&7Premium: &f{premium}"
-    Search:
-      layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
-      name: "&b&l玩家搜索结果"
-      no-player-data: "&c没有找到匹配的玩家。"
-      search-message: "&a请输入昵称进行搜索"
-      search-title:
-        title: "&6请输入昵称"
-        subtitle: "&e在聊天框中搜索玩家"
+      changepassword_command: "&e/alogin changepassword (玩家) (密码)"
+      unregister_command: "&e/alogin unregister (玩家)"
+      register_command: "&e/alogin register (玩家) (密码)"
+      email_command: "&e/alogin email (玩家) (邮箱或 none)"
+      forcelogin_command: "&e/alogin forcelogin (玩家)"
+      ip_command: "&e/alogin ip (玩家)"
+      language_command: "&e/alogin language (玩家) (语言)"
+      lang_command: "&e/alogin lang (玩家) (语言)"
+      reload_command: "&e/alogin reload"
+  gui:
+    frist-page: "&c这是第一页，不能再退回去了。"
+    no-data: "&c未定义"
+    Maingui:
+      name: "&e&l主菜单"
+      filling:
+        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+        filling-B: "BLACK_STAINED_GLASS_PANE"
+        filling-C: "BLUE_STAINED_GLASS_PANE"
       buttons:
+        Player-Accounts:
+          material: "PAPER"
+          name: "&d&l玩家账户"
+          lore:
+            - "&7在这里你可以管理账户，"
+            - "&7编辑密码等。"
+        Player-Login-History:
+          material: "BOOK"
+          name: "&b&l登录历史"
+          lore:
+            - "&7在这里你可以查看"
+            - "&7玩家的登录历史"
+        Settings:
+          material: COMPARATOR
+          name: "&a&l设置"
+          lore:
+            - "&7在这里你可以查看"
+            - "&7插件设置和数据库状态"
+        Close:
+          material: BARRIER
+          name: "&c&l关闭GUI"
+          lore:
+            - "&7右键/左键点击关闭菜单"
+    Playerlist:
+      layout: "ABCBABCBA00000000000000000000000000000000000012AB3AB45"
+      filling:
+        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+        filling-B: "BLACK_STAINED_GLASS_PANE"
+        filling-C: "BLUE_STAINED_GLASS_PANE"
+      buttons:
+        Search-player:
+          material: OAK_SIGN
+          name: "&b&l搜索玩家"
+          lore:
+            - "&7通过昵称搜索玩家"
+        Previous-page:
+          material: ARROW
+          name: "&e&l上一页"
+          lore:
+            - "&7跳转到玩家列表的上一页"
+            - "&7当前页: {page}"
+        Next-page:
+          material: ARROW
+          name: "&e&l下一页"
+          lore:
+            - "&7跳转到玩家列表的下一页"
+            - "&7当前页: {page}"
         Close:
           material: BARRIER
           name: "&c&l关闭GUI"
           lore:
             - "&7右键/左键点击关闭GUI"
+        Onlinedye:
+          material: LIME_DYE
+          name: "&a&l在线玩家"
+          lore:
+            - "&7查看在线玩家"
+        Offlinedye:
+          material: GRAY_DYE
+          name: "&7&l离线玩家"
+          lore:
+            - "&7查看离线玩家"
+      Players:
+        name: "&d玩家 {player}"
+        lore:
+          uuid: "&7UUID: &f{uuid}"
+          password: "&7密码: &f{password}"
+          fristip: "&7首次IP: &f{fristip}"
+          lastip: "&7最后IP: &f{lastip}"
+          email: "&7邮箱: &f{email}"
+          premium: "&7Premium: &f{premium}"
+      Search:
+        layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
+        name: "&b&l玩家搜索结果"
+        no-player-data: "&c没有找到匹配的玩家。"
+        search-message: "&a请输入昵称进行搜索"
+        search-title:
+          title: "&6请输入昵称"
+          subtitle: "&e在聊天框中搜索玩家"
+        buttons:
+          Close:
+            material: BARRIER
+            name: "&c&l关闭GUI"
+            lore:
+              - "&7右键/左键点击关闭GUI"
     Language:
       name: "&9&l语言"
       layout: "ABCABCABCBLLLLLBBBABCAXCABC"
@@ -311,5 +310,21 @@ gui:
           lore:
             - "&7语言: &f中文"
             - "{status}"
+        german:
+          name: "&6德语"
+          lore:
+            - "&7语言: &f德语"
+            - "{status}"
+        french:
+          name: "&d法语"
+          lore:
+            - "&7语言: &f法语"
+            - "{status}"
+        portuguese:
+          name: "&2葡萄牙语"
+          lore:
+            - "&7语言: &f葡萄牙语"
+            - "{status}"
+
 Config-Version: 1.0.0 #不要更改
 #由tomekf1846-Login生成

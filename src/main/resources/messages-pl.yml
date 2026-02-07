@@ -308,5 +308,20 @@ messages:
           lore:
             - "&7Język: &f中文"
             - "{status}"
+        german:
+          name: "&6Niemiecki"
+          lore:
+            - "&7Język: &fNiemiecki"
+            - "{status}"
+        french:
+          name: "&dFrancuski"
+          lore:
+            - "&7Język: &fFrancuski"
+            - "{status}"
+        portuguese:
+          name: "&2Portugalski"
+          lore:
+            - "&7Język: &fPortugalski"
+            - "{status}"
 Config-Version: 1.0.0 #NIE ZMIENIAJ
 #Wygenerowano przez tomekf1846-Login

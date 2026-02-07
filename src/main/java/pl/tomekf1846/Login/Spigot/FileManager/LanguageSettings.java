@@ -32,6 +32,9 @@ public final class LanguageSettings {
             options.put("polish", new LanguageOption("Polish", List.of("polish", "pl", "polski"), "", ""));
             options.put("spanish", new LanguageOption("Spanish", List.of("spanish", "es", "espanol", "español"), "", ""));
             options.put("chinese", new LanguageOption("Chinese", List.of("chinese", "zh", "中文"), "", ""));
+            options.put("german", new LanguageOption("German", List.of("german", "de", "deutsch"), "", ""));
+            options.put("french", new LanguageOption("French", List.of("french", "fr", "francais", "français"), "", ""));
+            options.put("portuguese", new LanguageOption("Portuguese", List.of("portuguese", "pt", "portugues", "português", "pt-br", "pt-pt"), "", ""));
         }
         return options;
     }
