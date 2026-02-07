@@ -180,7 +180,7 @@ public class PlayerManageGui {
 
     private static ItemStack buildPremiumItem(Player viewer, String premium) {
         boolean isPremium = premium != null && premium.equalsIgnoreCase("true");
-        Material material = isPremium ? Material.TORCHFLOWER : Material.CACTUS_FLOWER;
+        Material material = isPremium ? Material.TORCHFLOWER : Material.DEAD_BUSH;
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {

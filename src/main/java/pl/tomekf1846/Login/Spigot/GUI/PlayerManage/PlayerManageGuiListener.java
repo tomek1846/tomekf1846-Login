@@ -86,7 +86,7 @@ public class PlayerManageGuiListener implements Listener {
             return;
         }
 
-        if ((material == Material.CACTUS_FLOWER || material == Material.TORCHFLOWER)
+        if ((material == Material.DEAD_BUSH || material == Material.TORCHFLOWER)
                 && name.equals(LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.buttons.Premium.name"))) {
             togglePremium(viewer, targetName);
         }
