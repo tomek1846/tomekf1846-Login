@@ -8,9 +8,9 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.boss.BarStyle;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
+import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -168,13 +168,8 @@ public class LoginMessagesManager {
         messageTask.runTaskTimer(MainSpigot.getInstance(), 0L, 100L);
     }
 
-private static boolean hasPlayerDataFile(Player player) {
-        File dataFolder = new File(MainSpigot.getInstance().getDataFolder(), "Data");
-        if (!dataFolder.exists()) {
-            dataFolder.mkdirs();
-        }
-        File playerFile = new File(dataFolder, player.getUniqueId() + ".yml");
-        return playerFile.exists();
+    private static boolean hasPlayerDataFile(Player player) {
+        return PlayerDataSave.loadPlayerData(player.getUniqueId()) != null;
     }
     public static void PremiumLogin(Player player) {
         sendTitle(player, "messages.title.premium-login.title", "messages.title.premium-login.subtitle");

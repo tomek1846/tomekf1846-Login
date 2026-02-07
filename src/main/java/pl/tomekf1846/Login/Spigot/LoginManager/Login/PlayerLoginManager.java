@@ -1,14 +1,13 @@
 package pl.tomekf1846.Login.Spigot.LoginManager.Login;
 
 import org.bukkit.entity.Player;
-import org.bukkit.configuration.file.YamlConfiguration;
+import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.LoginMessagesManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.PlayerRestrictions;
 import pl.tomekf1846.Login.Spigot.LoginManager.Session.Cracked.SessionCrackedManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -16,7 +15,6 @@ import java.util.UUID;
 public class PlayerLoginManager {
 
     private static final String PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
-    private static final String PLAYER_DATA_FOLDER = "plugins/tomekf1846-Login/Data/";
     private static final Map<Player, Boolean> playerLoginStatus = new HashMap<>();
 
     public static boolean isPlayerLoggedIn(Player player) {
@@ -34,10 +32,13 @@ public class PlayerLoginManager {
             return;
         }
 
-        File playerFile = new File(PLAYER_DATA_FOLDER + player.getUniqueId() + ".yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(playerFile);
+        Map<String, String> config = PlayerDataSave.loadPlayerData(player.getUniqueId());
+        if (config == null) {
+            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.not_registered"));
+            return;
+        }
         UUID playerUUID = player.getUniqueId();
-        String savedPassword = config.getString("Password");
+        String savedPassword = config.get("Password");
         boolean kickOnWrongPassword = MainSpigot.getInstance().getConfig().getBoolean("Main-Settings.Wrong-kick-password");
         if (savedPassword == null || !savedPassword.equals(password)) {
             if (kickOnWrongPassword) {
@@ -56,8 +57,7 @@ public class PlayerLoginManager {
     }
 
     private static boolean isPlayerRegistered(Player player) {
-        File playerDataFile = new File(PLAYER_DATA_FOLDER + player.getUniqueId() + ".yml");
-        return playerDataFile.exists();
+        return PlayerDataSave.loadPlayerData(player.getUniqueId()) != null;
     }
 
     public static boolean hasPlayerLoggedIn(Player player) {

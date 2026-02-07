@@ -6,6 +6,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.tomekf1846.Login.Spigot.FileManager.BlockedPasswordManager;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
+import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.GUI.MainGui.MainGuiListener;
 import pl.tomekf1846.Login.Spigot.AdminCommand.AdminCommandManager;
 import pl.tomekf1846.Login.Spigot.AdminCommand.AdminCommandTabCompleter;
@@ -36,6 +37,7 @@ public final class MainSpigot extends JavaPlugin {
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
+        PlayerDataSave.initialize(this);
         LanguageManager languageManager = new LanguageManager(this);
         PluginStart pluginStart = new PluginStart(this, languageManager);
         AdminCommandManager commandManager = new AdminCommandManager(this, languageManager);
@@ -116,6 +118,7 @@ public final class MainSpigot extends JavaPlugin {
         if (successListener != null) {
             pm.removePacketListener(successListener);
         }
+        PlayerDataSave.shutdown();
     }
 
     public static MainSpigot getInstance() {

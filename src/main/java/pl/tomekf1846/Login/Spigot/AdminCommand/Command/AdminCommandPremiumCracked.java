@@ -10,17 +10,11 @@ import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.List;
 import java.util.UUID;
 
 public class AdminCommandPremiumCracked {
     private static final LanguageManager languageManager = new LanguageManager(MainSpigot.getInstance());
     private static final String PREFIX = languageManager.getMessage("messages.prefix.main-prefix");
-    private static final String PLAYER_DATA_FOLDER = "plugins/tomekf1846-Login/Data/";
 
     public static void setPlayerPremium(CommandSender sender, String playerName) {
         setPlayerStatus(sender, playerName, true, null);
@@ -55,61 +49,39 @@ public class AdminCommandPremiumCracked {
             return;
         }
 
-        File playerFile = new File(PLAYER_DATA_FOLDER, playerUUID + ".yml");
-        if (!playerFile.exists()) {
+        var playerData = PlayerDataSave.loadPlayerData(playerUUID);
+        if (playerData == null) {
             sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.player_file_not_found"));
             return;
         }
 
-        try {
-            List<String> lines = Files.readAllLines(playerFile.toPath());
-            boolean alreadySet = false;
-            boolean updated = false;
-            String newStatus = "Premium: " + premiumStatus;
+        String currentPremium = playerData.get("Premium");
+        if (currentPremium != null && currentPremium.equalsIgnoreCase(String.valueOf(premiumStatus))) {
+            sender.sendMessage(PREFIX + languageManager.getMessage(
+                    premiumStatus ? "messages.admin-commands.already_premium" : "messages.admin-commands.already_cracked"
+            ));
+            return;
+        }
 
-            for (int i = 0; i < lines.size(); i++) {
-                if (lines.get(i).startsWith("Premium: ")) {
-                    if (lines.get(i).equals(newStatus)) {
-                        alreadySet = true;
-                        break;
-                    }
-                    lines.set(i, newStatus);
-                    updated = true;
-                    break;
-                }
-            }
+        if (!premiumStatus && newPassword != null) {
+            PlayerDataSave.setPlayerPassword(playerUUID, newPassword);
+        }
 
-            if (alreadySet) {
-                sender.sendMessage(PREFIX + languageManager.getMessage(
-                        premiumStatus ? "messages.admin-commands.already_premium" : "messages.admin-commands.already_cracked"
+        if (PlayerDataSave.setPlayerSession(playerName, premiumStatus)) {
+            sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.player_status_updated")
+                    .replace("{status}", premiumStatus ? "Premium" : "Cracked")
+                    .replace("{player}", playerName));
+
+            Player player = Bukkit.getPlayer(playerName);
+            if (player != null) player.removePotionEffect(PotionEffectType.BLINDNESS);
+            if (player != null && player.isOnline()) {
+                player.kickPlayer(languageManager.getMessage(
+                        premiumStatus ? "messages.admin-commands.player_kicked_premium" : "messages.admin-commands.player_kicked_cracked"
                 ));
-                return;
+                PlayerLoginManager.removePlayerLoginStatus(player);
             }
-
-            if (!premiumStatus && newPassword != null) {
-                PlayerDataSave.setPlayerPassword(playerUUID, newPassword);
-            }
-
-            if (updated) {
-                Files.write(playerFile.toPath(), lines, StandardOpenOption.TRUNCATE_EXISTING);
-                sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.player_status_updated")
-                        .replace("{status}", premiumStatus ? "Premium" : "Cracked")
-                        .replace("{player}", playerName));
-
-                Player player = Bukkit.getPlayer(playerName);
-                if (player != null) player.removePotionEffect(PotionEffectType.BLINDNESS);
-                if (player != null && player.isOnline()) {
-                    player.kickPlayer(languageManager.getMessage(
-                            premiumStatus ? "messages.admin-commands.player_kicked_premium" : "messages.admin-commands.player_kicked_cracked"
-                    ));
-                    PlayerLoginManager.removePlayerLoginStatus(player);
-                }
-            } else {
-                sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.failed_to_update_player"));
-            }
-        } catch (IOException e) {
-            sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.error_updating_player_file"));
-            e.printStackTrace();
+        } else {
+            sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.failed_to_update_player"));
         }
     }
 }
