@@ -10,6 +10,7 @@ import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.GUI.MainGui.MainGuiListener;
 import pl.tomekf1846.Login.Spigot.AdminCommand.AdminCommandManager;
 import pl.tomekf1846.Login.Spigot.AdminCommand.AdminCommandTabCompleter;
+import pl.tomekf1846.Login.Spigot.Api.LoginApi;
 import pl.tomekf1846.Login.Spigot.GUI.Language.LanguageGuiListener;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageChatListener;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageConfirmGuiListener;
@@ -40,6 +41,7 @@ public final class MainSpigot extends JavaPlugin {
 
     private PremiumLoginListener loginListener;
     private SuccessPacketListener successListener;
+    private final LoginApi api = new LoginApi();
 
     @Override
     public void onEnable() {
@@ -147,6 +149,10 @@ public final class MainSpigot extends JavaPlugin {
 
     public static MainSpigot getInstance() {
         return instance;
+    }
+
+    public LoginApi getApi() {
+        return api;
     }
 
     private void installCommandLogFilter() {
