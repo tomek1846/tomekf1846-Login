@@ -7,7 +7,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageGui;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageState;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerList.Other.PlayerListPageManager;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerList.Other.PlayerListStateManager;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerList.Search.PlayerListSearch;
@@ -46,6 +50,12 @@ public class PlayerListGuiListener implements Listener {
             } else if (clickedMaterial == Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Previous-page.material")) &&
                     clickedName.equals(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Previous-page.name"))) {
                 PlayerListPageManager.previousPage(player);
+            } else {
+                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+                String targetName = container.get(PlayerManageState.TARGET_PLAYER_KEY, PersistentDataType.STRING);
+                if (targetName != null && !targetName.isBlank()) {
+                    PlayerManageGui.openGUI(player, targetName);
+                }
             }
         }
     }

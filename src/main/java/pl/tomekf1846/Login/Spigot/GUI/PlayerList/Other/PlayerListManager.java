@@ -5,8 +5,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageState;
 import pl.tomekf1846.Login.Spigot.PluginManager.SkinsRestorerHook;
 import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
@@ -62,6 +64,9 @@ public class PlayerListManager {
             lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.premium").replace("{premium}", getOrDefault(viewer, premium)));
 
             meta.setLore(lore);
+            if (rawNick != null && !rawNick.isBlank()) {
+                meta.getPersistentDataContainer().set(PlayerManageState.TARGET_PLAYER_KEY, PersistentDataType.STRING, rawNick);
+            }
 
             boolean applied = false;
             if (rawNick != null && !rawNick.isBlank()) {

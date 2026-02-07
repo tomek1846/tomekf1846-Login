@@ -9,8 +9,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageState;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
@@ -135,6 +137,7 @@ public class PlayerListSearch implements Listener {
                     .replace("{premium}", getPlayerData(viewer, nick, "Premium")));
 
             meta.setLore(lore);
+            meta.getPersistentDataContainer().set(PlayerManageState.TARGET_PLAYER_KEY, PersistentDataType.STRING, nick);
             head.setItemMeta(meta);
         }
         return head;

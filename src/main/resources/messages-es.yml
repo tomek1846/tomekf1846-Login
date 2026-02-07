@@ -277,6 +277,143 @@ messages:
             name: "&c&lCerrar GUI"
             lore:
               - "&7Haz clic derecho/izquierdo para cerrar el GUI"
+    PlayerManage:
+      name: "&d&lGestión del jugador: {player}"
+      layout: "ABCB1BCBABCBACABCBCB2B3B4BCABC5A6CBAB7BACAB8BCBAB9BABC"
+      filling:
+        filling-A: LIGHT_BLUE_STAINED_GLASS_PANE
+        filling-B: BLACK_STAINED_GLASS_PANE
+        filling-C: BLUE_STAINED_GLASS_PANE
+      player:
+        name: "&dJugador {player}"
+        lore:
+          uuid: "&7UUID: &f{uuid}"
+          password: "&7Contraseña: &f{password}"
+          fristip: "&7Primera IP: &f{fristip}"
+          lastip: "&7Última IP: &f{lastip}"
+          email: "&7Correo: &f{email}"
+          premium: "&7Premium: &f{premium}"
+      buttons:
+        Email:
+          name: "&b&lCorreo"
+          lore:
+            - "&7Actual: &f{email}"
+            - "&7Haz clic para cambiar el correo."
+        Forcelogin:
+          name: "&a&lForzar login"
+          lore:
+            - "&7Inicia sesión al jugador al instante"
+            - "&7sin escribir /login."
+        Password:
+          name: "&e&lContraseña"
+          lore:
+            - "&7Actual: &f{password}"
+            - "&7Haz clic para establecer una nueva contraseña."
+        Language:
+          name: "&6&lIdioma"
+          lore:
+            - "&7Actual: &f{language}"
+            - "&7Haz clic para cambiar el idioma."
+        IP-List:
+          name: "&c&lLista de IP"
+          lore:
+            - "&7El historial de IP estará disponible pronto."
+        Premium:
+          name: "&d&lTipo de cuenta"
+          status:
+            premium: "&aPremium"
+            cracked: "&cCracked"
+          lore:
+            - "&7Estado: {status}"
+            - "&7Haz clic para cambiar el tipo de cuenta."
+        Unregister:
+          name: "&4&lDesregistrar"
+          lore:
+            - "&7Elimina los datos y desregistra al jugador."
+            - "&cEsta acción es irreversible."
+        Close:
+          name: "&c&lCerrar GUI"
+          lore:
+            - "&7Haz clic derecho/izquierdo para cerrar el GUI"
+      input:
+        email:
+          message: "&aEscribe el nuevo correo para &f{player}&a en el chat."
+          title: "&6Introduce el correo"
+          subtitle: "&eEscríbelo en el chat"
+        password:
+          message: "&aEscribe la nueva contraseña para &f{player}&a en el chat."
+          title: "&6Introduce la contraseña"
+          subtitle: "&eEscríbela en el chat"
+      Language:
+        name: "&9&lIdioma: {player}"
+        layout: "ABCABCABCBLLLLLLLBABCAXCABC"
+        status:
+          current: "&aSeleccionado"
+          available: "&eHaz clic para seleccionar"
+        filling:
+          filling-A: LIGHT_BLUE_STAINED_GLASS_PANE
+          filling-B: BLACK_STAINED_GLASS_PANE
+          filling-C: BLUE_STAINED_GLASS_PANE
+        buttons:
+          Close:
+            material: BARRIER
+            name: "&c&lCerrar GUI"
+            lore:
+              - "&7Haz clic derecho/izquierdo para cerrar el GUI"
+        languages:
+          english:
+            name: "&aInglés"
+            lore:
+              - "&7Idioma: &fInglés"
+              - "{status}"
+          polish:
+            name: "&cPolaco"
+            lore:
+              - "&7Idioma: &fPolaco"
+              - "{status}"
+          spanish:
+            name: "&eEspañol"
+            lore:
+              - "&7Idioma: &fEspañol"
+              - "{status}"
+          chinese:
+            name: "&bChino"
+            lore:
+              - "&7Idioma: &fChino"
+              - "{status}"
+          german:
+            name: "&6Alemán"
+            lore:
+              - "&7Idioma: &fAlemán"
+              - "{status}"
+          french:
+            name: "&dFrancés"
+            lore:
+              - "&7Idioma: &fFrancés"
+              - "{status}"
+          portuguese:
+            name: "&2Portugués"
+            lore:
+              - "&7Idioma: &fPortugués"
+              - "{status}"
+      ConfirmUnregister:
+        name: "&4&lConfirmar desregistro: {player}"
+        layout: "RRRRRRRRRRRCAARYRRRRRRRRRRR"
+        filling:
+          filling-A: LIGHT_BLUE_STAINED_GLASS_PANE
+          filling-R: RED_CONCRETE
+          filling-G: GREEN_CONCRETE
+        buttons:
+          Cancel:
+            material: RED_CONCRETE
+            name: "&c&lCancelar"
+            lore:
+              - "&7Volver sin cambios."
+          Confirm:
+            material: GREEN_CONCRETE
+            name: "&a&lConfirmar"
+            lore:
+              - "&7Desregistrar a este jugador."
     Language:
       name: "&9&lIdioma"
       layout: "ABCABCABCBLLLLLLLBABCAXCABC"

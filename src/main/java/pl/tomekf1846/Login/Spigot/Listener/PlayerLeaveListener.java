@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageState;
 
 import static pl.tomekf1846.Login.Spigot.GUI.PlayerList.Search.PlayerListSearch.searchingPlayer;
 
@@ -16,6 +17,8 @@ public class PlayerLeaveListener implements Listener {
         if (searchingPlayer != null && searchingPlayer.equals(event.getPlayer())) {
             searchingPlayer = null;
         }
+        PlayerManageState.clearInput(player);
+        PlayerManageState.clearTarget(player);
         PlayerDataSave.savePlayerLeaveTime(player);
 
     }
