@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.ProfileProperty;
 import org.bukkit.profile.PlayerTextures;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageSettings;
@@ -136,12 +137,18 @@ public class LanguageGui {
         if (meta != null) {
             meta.setDisplayName(name);
             meta.setLore(lore);
-            if (texture != null && !texture.isBlank()) {
-                if (!applyTexture(meta, texture) && owner != null && !owner.isBlank()) {
+            boolean applied = false;
+            if (owner != null && !owner.isBlank()) {
+                applied = applySkinsRestorerSkin(meta, owner);
+                if (!applied) {
                     meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+                    applied = true;
                 }
-            } else if (owner != null && !owner.isBlank()) {
-                meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+            }
+            if (!applied && texture != null && !texture.isBlank()) {
+                if (!applySkinsRestorerSkin(meta, texture)) {
+                    applyTexture(meta, texture);
+                }
             }
             head.setItemMeta(meta);
         }
@@ -199,5 +206,56 @@ public class LanguageGui {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static boolean applySkinsRestorerSkin(SkullMeta meta, String skinName) {
+        if (!Bukkit.getPluginManager().isPluginEnabled("SkinsRestorer")) {
+            return false;
+        }
+        if (skinName == null || skinName.isBlank()) {
+            return false;
+        }
+        try {
+            Class<?> providerClass = Class.forName("net.skinsrestorer.api.SkinsRestorerProvider");
+            Object skinsRestorer = providerClass.getMethod("get").invoke(null);
+            Object skinStorage = skinsRestorer.getClass().getMethod("getSkinStorage").invoke(skinsRestorer);
+            Object skinOptional = skinStorage.getClass().getMethod("getSkinData", String.class).invoke(skinStorage, skinName);
+            if (!(skinOptional instanceof Optional<?> optional) || optional.isEmpty()) {
+                return false;
+            }
+            Object skinData = optional.get();
+            Object property = skinData.getClass().getMethod("getProperty").invoke(skinData);
+            if (property == null) {
+                return false;
+            }
+            String value = invokeString(property, "getValue", "value");
+            String signature = invokeString(property, "getSignature", "signature");
+            if (value == null || value.isBlank()) {
+                return false;
+            }
+            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
+            ProfileProperty texturesProperty = signature == null || signature.isBlank()
+                    ? new ProfileProperty("textures", value)
+                    : new ProfileProperty("textures", value, signature);
+            profile.setProperty(texturesProperty);
+            meta.setOwnerProfile(profile);
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    private static String invokeString(Object target, String... candidates) {
+        for (String candidate : candidates) {
+            try {
+                Object value = target.getClass().getMethod(candidate).invoke(target);
+                if (value instanceof String stringValue) {
+                    return stringValue;
+                }
+            } catch (Exception ignored) {
+                // try next
+            }
+        }
+        return null;
     }
 }
