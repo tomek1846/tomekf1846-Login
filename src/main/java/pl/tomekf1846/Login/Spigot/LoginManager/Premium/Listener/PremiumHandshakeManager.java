@@ -4,6 +4,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import io.netty.channel.Channel;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.slf4j.LoggerFactory;
+import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Auth.MojangAuthClient;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Auth.MojangProfile;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Auth.ServerHashGenerator;
@@ -15,6 +17,7 @@ import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session.PremiumSession;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session.PremiumSessionFactory;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Session.PremiumSessionRegistry;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.State.PremiumConnectionKeys;
+import pl.tomekf1846.Login.Spigot.MainSpigot;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -25,6 +28,7 @@ import java.util.logging.Logger;
 
 public class PremiumHandshakeManager {
 
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(PremiumHandshakeManager.class);
     private final PremiumSessionFactory sessionFactory = new PremiumSessionFactory();
     private final PremiumSessionRegistry sessionRegistry = new PremiumSessionRegistry();
     private final ConnectionResolver connectionResolver;
@@ -77,8 +81,10 @@ public class PremiumHandshakeManager {
                 logger.warning("[PremiumLogin] START username=" + username + " - unable to resolve Netty channel (key="
                         + context.key() + "). Falling back to pending session queue.");
             }
-
-            encryptionRequestSender.send(event, channel, session);
+            boolean isPremiumCommandEnabled = MainSpigot.getInstance().getConfig().getBoolean("Main-Settings.Premium-Command");
+            if (isPremiumCommandEnabled) {
+                encryptionRequestSender.send(event, channel, session);
+            }
         } catch (Exception ex) {
             logger.warning("[PremiumLogin] START handler failed: " + ex.getMessage());
             disconnectHelper.disconnect(event, null, "Failed to verify username!");

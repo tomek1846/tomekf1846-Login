@@ -94,7 +94,7 @@ Storage:
       Security: "tomekf1846-login-users_security"
       Ip-History: "tomekf1846-login-users_ip_history"
       Login-Attempts: "tomekf1846-login-users_login_attempts"
-    Username: "sa"
+    Username: "tom"
     Password: ""
 
   # Remote database settings (MySQL/MariaDB/PostgreSQL).
