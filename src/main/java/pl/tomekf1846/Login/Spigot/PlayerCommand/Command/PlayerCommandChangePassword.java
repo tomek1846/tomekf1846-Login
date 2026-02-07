@@ -8,6 +8,7 @@ import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Session.Cracked.SessionCrackedManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
+import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
 import java.util.Map;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public class PlayerCommandChangePassword {
         }
 
         String storedPassword = playerData.get("Password");
-        if (storedPassword == null || !storedPassword.equals(oldPassword)) {
+        if (storedPassword == null || !PasswordSecurity.matches(oldPassword, storedPassword)) {
             sender.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.incorrect-old-password"));
             return;
         }
@@ -56,9 +57,11 @@ public class PlayerCommandChangePassword {
             return;
         }
 
-        PlayerDataSave.setPlayerPassword(playerUUID, newPassword);
-        PlayerLoginManager.removePlayerLoginStatus(player);
-        SessionCrackedManager.clearLoginCount(player.getUniqueId());
-        sender.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.success-password-change"));
+        PasswordSecurity.encodeAsync(MainSpigot.getInstance(), newPassword, encodedPassword -> {
+            PlayerDataSave.setPlayerPassword(playerUUID, encodedPassword);
+            PlayerLoginManager.removePlayerLoginStatus(player);
+            SessionCrackedManager.clearLoginCount(player.getUniqueId());
+            sender.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.success-password-change"));
+        });
     }
 }

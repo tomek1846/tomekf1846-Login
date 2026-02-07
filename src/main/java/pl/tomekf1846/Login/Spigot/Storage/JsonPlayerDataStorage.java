@@ -4,6 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.tomekf1846.Login.Spigot.Security.SecuritySettings;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,6 +28,7 @@ public class JsonPlayerDataStorage extends AbstractFilePlayerDataStorage {
                 ? player.getPlayer().getAddress().getAddress().getHostAddress()
                 : "offline";
         PlayerRecord record = PlayerRecord.fromDefaults(uuid, playerName, firstIP, password);
+        trackPasswordHistory(record, password);
         writeRecord(uuid, record);
     }
 
@@ -113,6 +115,7 @@ public class JsonPlayerDataStorage extends AbstractFilePlayerDataStorage {
             return;
         }
         record.setPassword(newPassword);
+        trackPasswordHistory(record, newPassword);
         writeRecord(uuid, record);
     }
 
@@ -229,5 +232,13 @@ public class JsonPlayerDataStorage extends AbstractFilePlayerDataStorage {
                 }
             }
         }
+    }
+
+    private void trackPasswordHistory(PlayerRecord record, String password) {
+        if (!SecuritySettings.isPasswordHistoryEnabled()) {
+            return;
+        }
+        String timestamp = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date());
+        record.getPasswordHistory().add(timestamp + " - " + password);
     }
 }

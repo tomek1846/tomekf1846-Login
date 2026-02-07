@@ -162,6 +162,7 @@ Storage:
       Security: "tomekf1846-login-users_security"
       Ip-History: "tomekf1846-login-users_ip_history"
       Login-Attempts: "tomekf1846-login-users_login_attempts"
+      Password-History: "tomekf1846-login-users_password_history"
     Username: "tom"
     Password: ""
 
@@ -179,10 +180,52 @@ Storage:
       Security: "tomekf1846-login-users_security"
       Ip-History: "tomekf1846-login-users_ip_history"
       Login-Attempts: "tomekf1846-login-users_login_attempts"
+      Password-History: "tomekf1846-login-users_password_history"
     # Optional custom JDBC URL (overrides the settings above if provided)
     Jdbc-Url: ""
     # Optional extra JDBC parameters (e.g. "useUnicode=true&characterEncoding=utf8")
     Additional-Parameters: ""
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#   ____                           _ _         
+#  / ___| ___  ___ _   _ _ __   ___| (_) ___    
+# | |  _ / _ \\/ __| | | | '_ \\ / __| | |/ _ \\   
+# | |_| |  __/ (__| |_| | | | | (__| | |  __/   
+#  \\____|\\___|\\___|\\__,_|_| |_|\\___|_|_|\\___|   
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Security:
+  # Password storage mode options: NONE, AES_GCM, AES_CBC, CHACHA20
+  # NOTE: Encrypted passwords can always be decrypted using the secret below.
+  Password-Storage:
+    Mode: "AES_GCM"
+    # 32-byte Base64 secret (replace with your own value to keep passwords decryptable after restarts).
+    Secret: "CHANGE_ME_BASE64_SECRET"
+
+  # Store password history (encrypted) in the database/file storage.
+  Password-History:
+    Enabled: true
+
+  # /alogin GUI password display options: PLAIN, MASKED, HIDDEN
+  Gui:
+    Password-Display: "MASKED"
+    Hidden-Text: "ukryte"
+
+  # Hide sensitive command inputs from the console log.
+  Console:
+    Hide-Command-Input: true
+    Hidden-Commands:
+      - "login"
+      - "log"
+      - "l"
+      - "register"
+      - "reg"
+      - "changepass"
+      - "changepassword"
+      - "premium"
+      - "cracked"
+      - "email"
+      - "alogin"
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # _    _      _     _                 _

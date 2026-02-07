@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.PluginManager.SkinsRestorerHook;
+import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class PlayerListManager {
             String rawNick = playerData.get("Nick");
             String nick = getOrDefault(viewer, rawNick);
             String uuid = getOrDefault(viewer, playerData.get("Player-UUID"));
-            String password = getOrDefault(viewer, playerData.get("Password"));
+            String password = getPasswordForDisplay(viewer, playerData.get("Password"));
             String firstIP = getOrDefault(viewer, playerData.get("FirstIP"));
             String lastIP = getOrDefault(viewer, playerData.get("LastIP"));
             String email = getOrDefault(viewer, playerData.get("Email"));
@@ -84,5 +85,15 @@ public class PlayerListManager {
         return (value == null || value.trim().isEmpty())
                 ? LanguageManager.getMessage(viewer, "messages.gui.no-data")
                 : value;
+    }
+
+    private static String getPasswordForDisplay(Player viewer, String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return LanguageManager.getMessage(viewer, "messages.gui.no-data");
+        }
+        String formatted = PasswordSecurity.formatForDisplay(value);
+        return formatted == null || formatted.isBlank()
+                ? LanguageManager.getMessage(viewer, "messages.gui.no-data")
+                : formatted;
     }
 }

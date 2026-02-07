@@ -23,8 +23,12 @@ import pl.tomekf1846.Login.Spigot.PlayerCommand.Other.PlayerCommandManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Premium.Listener.SuccessPacketListener;
 import pl.tomekf1846.Login.Spigot.PlayerCommand.Other.PlayerCommandTabCompleter;
 import pl.tomekf1846.Login.Spigot.PluginManager.PluginStart;
+import pl.tomekf1846.Login.Spigot.Security.CommandLogFilter;
+import pl.tomekf1846.Login.Spigot.Security.SecuritySettings;
 
 import java.util.Objects;
+import java.util.logging.Filter;
+import java.util.logging.Logger;
 
 public final class MainSpigot extends JavaPlugin {
     private static MainSpigot instance;
@@ -42,6 +46,7 @@ public final class MainSpigot extends JavaPlugin {
         pluginStart.printPluginInfo();
 
         saveDefaultConfig();
+        installCommandLogFilter();
         PlayerDataSave.initialize(this);
         AdminCommandManager commandManager = new AdminCommandManager(this, languageManager);
         BlockedPasswordManager.copyBlockedPasswordFile(getDataFolder());
@@ -134,5 +139,12 @@ public final class MainSpigot extends JavaPlugin {
 
     public static MainSpigot getInstance() {
         return instance;
+    }
+
+    private void installCommandLogFilter() {
+        Logger serverLogger = getServer().getLogger();
+        Filter currentFilter = serverLogger.getFilter();
+        serverLogger.setFilter(new CommandLogFilter(currentFilter, SecuritySettings.isCommandLogHiddenEnabled(),
+                SecuritySettings.getHiddenCommands()));
     }
 }

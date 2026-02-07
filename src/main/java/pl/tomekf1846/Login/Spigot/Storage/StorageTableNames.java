@@ -5,12 +5,14 @@ public class StorageTableNames {
     private final String securityTable;
     private final String ipHistoryTable;
     private final String loginAttemptsTable;
+    private final String passwordHistoryTable;
 
-    public StorageTableNames(String playerTable, String securityTable, String ipHistoryTable, String loginAttemptsTable) {
+    public StorageTableNames(String playerTable, String securityTable, String ipHistoryTable, String loginAttemptsTable, String passwordHistoryTable) {
         this.playerTable = playerTable;
         this.securityTable = securityTable;
         this.ipHistoryTable = ipHistoryTable;
         this.loginAttemptsTable = loginAttemptsTable;
+        this.passwordHistoryTable = passwordHistoryTable;
     }
 
     public String getPlayerTable() {
@@ -27,5 +29,9 @@ public class StorageTableNames {
 
     public String getLoginAttemptsTable() {
         return loginAttemptsTable;
+    }
+
+    public String getPasswordHistoryTable() {
+        return passwordHistoryTable;
     }
 }

@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
+import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +149,12 @@ public class PlayerListSearch implements Listener {
                 String value = entry.getValue().get(key);
                 if (value == null || value.isEmpty()) {
                     return LanguageManager.getMessage(viewer, "messages.gui.no-data");
+                }
+                if ("Password".equalsIgnoreCase(key)) {
+                    String formatted = PasswordSecurity.formatForDisplay(value);
+                    return formatted == null || formatted.isBlank()
+                            ? LanguageManager.getMessage(viewer, "messages.gui.no-data")
+                            : formatted;
                 }
                 return value;
             }
