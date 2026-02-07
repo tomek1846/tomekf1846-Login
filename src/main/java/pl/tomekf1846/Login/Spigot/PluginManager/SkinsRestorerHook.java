@@ -25,6 +25,20 @@ public final class SkinsRestorerHook {
         }
     }
 
+    public static boolean applySkinByName(ItemStack head, SkullMeta meta, String skinName) {
+        if (!isAvailable() || skinName == null || skinName.isBlank()) {
+            return false;
+        }
+        try {
+            Class<?> providerClass = Class.forName("net.skinsrestorer.api.SkinsRestorerProvider");
+            Method getMethod = providerClass.getMethod("get");
+            Object api = getMethod.invoke(null);
+            return applyViaApi(api, head, meta, skinName);
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+            return false;
+        }
+    }
+
     private static boolean applyViaApi(Object api, ItemStack head, SkullMeta meta, String textureValue)
             throws ReflectiveOperationException {
         for (Method method : api.getClass().getMethods()) {

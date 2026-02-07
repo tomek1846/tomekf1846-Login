@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
+import pl.tomekf1846.Login.Spigot.PluginManager.SkinsRestorerHook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,8 @@ public class PlayerListManager {
             }
 
             Map<String, String> playerData = entry.getValue();
-            String nick = getOrDefault(viewer, playerData.get("Nick"));
+            String rawNick = playerData.get("Nick");
+            String nick = getOrDefault(viewer, rawNick);
             String uuid = getOrDefault(viewer, playerData.get("Player-UUID"));
             String password = getOrDefault(viewer, playerData.get("Password"));
             String firstIP = getOrDefault(viewer, playerData.get("FirstIP"));
@@ -37,13 +39,13 @@ public class PlayerListManager {
             String email = getOrDefault(viewer, playerData.get("Email"));
             String premium = getOrDefault(viewer, playerData.get("Premium"));
 
-            playerHeads.add(createPlayerHead(viewer, nick, playerUUID, uuid, password, firstIP, lastIP, email, premium));
+            playerHeads.add(createPlayerHead(viewer, nick, rawNick, player, playerUUID, uuid, password, firstIP, lastIP, email, premium));
         }
 
         return playerHeads.toArray(new ItemStack[0]);
     }
 
-    private static ItemStack createPlayerHead(Player viewer, String nick, UUID playerUUID, String uuid, String password, String firstIP, String lastIP, String email, String premium) {
+    private static ItemStack createPlayerHead(Player viewer, String nick, String rawNick, Player player, UUID playerUUID, String uuid, String password, String firstIP, String lastIP, String email, String premium) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
 
@@ -60,9 +62,18 @@ public class PlayerListManager {
 
             meta.setLore(lore);
 
-            try {
-                meta.setOwningPlayer(Bukkit.getOfflinePlayer(playerUUID));
-            } catch (Exception ignored) {}
+            boolean applied = false;
+            if (rawNick != null && !rawNick.isBlank()) {
+                applied = SkinsRestorerHook.applySkinByName(head, meta, rawNick);
+            }
+            if (!applied && player != null) {
+                applied = SkinsRestorerHook.applySkinByName(head, meta, player.getName());
+            }
+            if (!applied) {
+                try {
+                    meta.setOwningPlayer(Bukkit.getOfflinePlayer(playerUUID));
+                } catch (Exception ignored) {}
+            }
 
             head.setItemMeta(meta);
         }
