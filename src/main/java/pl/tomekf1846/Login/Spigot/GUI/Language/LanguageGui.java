@@ -139,9 +139,9 @@ public class LanguageGui {
             meta.setLore(lore);
             boolean applied = false;
             if (texture != null && !texture.isBlank()) {
-                applied = SkinsRestorerHook.applySkullTexture(head, meta, texture);
+                applied = applyTexture(meta, texture);
                 if (!applied) {
-                    applied = applyTexture(meta, texture);
+                    applied = SkinsRestorerHook.applySkullTexture(head, meta, texture);
                 }
             }
             if (!applied && owner != null && !owner.isBlank()) {
