@@ -39,7 +39,7 @@ public class SessionPremiumCheck {
         });
     }
 
-    private static boolean isPlayerPremium(String nickname) {
+    public static boolean isPlayerPremium(String nickname) {
         try {
             URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + nickname);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
