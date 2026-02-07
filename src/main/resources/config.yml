@@ -73,7 +73,7 @@ Main-Settings:
 
 Storage:
   # Available types:
-  # LOCAL: YML (default), JSON, H2, TOMEKDATA (legacy, not recommended)
+  # LOCAL: YML (default), JSON, H2
   # REMOTE: MYSQL, MARIADB, POSTGRESQL
   Type: YML
 
@@ -93,6 +93,7 @@ Storage:
       Players: "tomekf1846-login-users"
       Security: "tomekf1846-login-users_security"
       Ip-History: "tomekf1846-login-users_ip_history"
+      Login-Attempts: "tomekf1846-login-users_login_attempts"
     Username: "sa"
     Password: ""
 
@@ -109,6 +110,7 @@ Storage:
       Players: "tomekf1846-login-users"
       Security: "tomekf1846-login-users_security"
       Ip-History: "tomekf1846-login-users_ip_history"
+      Login-Attempts: "tomekf1846-login-users_login_attempts"
     # Optional custom JDBC URL (overrides the settings above if provided)
     Jdbc-Url: ""
     # Optional extra JDBC parameters (e.g. "useUnicode=true&characterEncoding=utf8")

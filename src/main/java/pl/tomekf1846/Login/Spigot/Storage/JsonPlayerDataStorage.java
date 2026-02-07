@@ -90,6 +90,20 @@ public class JsonPlayerDataStorage extends AbstractFilePlayerDataStorage {
     }
 
     @Override
+    public void saveLoginAttempt(LoginAttemptRecord attempt) {
+        if (attempt == null) {
+            return;
+        }
+        UUID uuid = attempt.getUuid();
+        PlayerRecord record = readRecord(uuid);
+        if (record == null) {
+            return;
+        }
+        record.getLoginAttempts().add(attempt);
+        writeRecord(uuid, record);
+    }
+
+    @Override
     public void setPlayerPassword(UUID uuid, String newPassword) {
         if (uuid == null || newPassword == null || newPassword.isEmpty()) {
             return;
