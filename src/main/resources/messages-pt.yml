@@ -267,10 +267,10 @@ messages:
         layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
         name: "&b&lResultados da pesquisa de jogadores"
         no-player-data: "&cNão foram encontrados jogadores correspondentes."
-        search-message: "&aIntroduza um nick para pesquisar"
+        search-message: "&aIntroduza um nick para pesquisar (&fcancel&a para cancelar)"
         search-title:
           title: "&6Introduza um nick"
-          subtitle: "&ePesquisar jogador no chat"
+          subtitle: "&ePesquisar jogador no chat (&fcancel&e para cancelar)"
         buttons:
           Close:
             material: BARRIER
@@ -278,7 +278,7 @@ messages:
             lore:
               - "&7Clique RMB/LMB para fechar o GUI"
     PlayerManage:
-      name: "&d&lGestão do jogador: {player}"
+      name: "&d&lGestão: {player}"
       layout: "ABCB1BCBABCBACABCBCB2B3B4BCABC5A6CBAB7BACAB8BCBAB9BABC"
       filling:
         filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
@@ -337,13 +337,13 @@ messages:
             - "&7Clique RMB/LMB para fechar o GUI"
       input:
         email:
-          message: "&aEscreve o novo email para &f{player}&a no chat."
+          message: "&aEscreve o novo email para &f{player}&a no chat (&fcancel&a para cancelar)."
           title: "&6Introduz o email"
-          subtitle: "&eEscreve no chat"
+          subtitle: "&eEscreve no chat (&fcancel&e para cancelar)"
         password:
-          message: "&aEscreve a nova palavra-passe para &f{player}&a no chat."
+          message: "&aEscreve a nova palavra-passe para &f{player}&a no chat (&fcancel&a para cancelar)."
           title: "&6Introduz a palavra-passe"
-          subtitle: "&eEscreve no chat"
+          subtitle: "&eEscreve no chat (&fcancel&e para cancelar)"
       Language:
         name: "&9&lIdioma: {player}"
         layout: "ABCABCABCBLLLLLLLBABCAXCABC"
@@ -397,21 +397,21 @@ messages:
               - "&7Idioma: &fPortuguês"
               - "{status}"
       ConfirmUnregister:
-        name: "&4&lConfirmar anulação: {player}"
-        layout: "RRRRRRRRRRRCAARYRRRRRRRRRRR"
+        name: "&4&lConfirmar anulação"
+        layout: "ABCBABCBABC1ACA2CBCBABABABC"
         filling:
           filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-          filling-R: "RED_CONCRETE"
-          filling-G: "GREEN_CONCRETE"
+          filling-B: "BLACK_STAINED_GLASS_PANE"
+          filling-C: "BLUE_STAINED_GLASS_PANE"
         buttons:
           Cancel:
-            material: RED_CONCRETE
+            material: GREEN_CONCRETE
             name: "&c&lCancelar"
             lore:
               - "&7Voltar sem alterações."
           Confirm:
-            material: GREEN_CONCRETE
-            name: "&a&lConfirmar"
+            material: RED_CONCRETE
+            name: "&4&lAnular registo"
             lore:
               - "&7Anular o registo deste jogador."
     Language:

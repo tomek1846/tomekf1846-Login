@@ -264,10 +264,10 @@ messages:
         layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
         name: "&b&lWyniki Wyszukiwania"
         no-player-data: "&cNie znaleziono graczy pasujących do tej nazwy."
-        search-message: "&aWpisz nazwę gracza, aby wyszukać"
+        search-message: "&aWpisz nazwę gracza, aby wyszukać (&fcancel&a aby anulować)"
         search-title:
           title: "&6Wpisz nazwę"
-          subtitle: "&eNa czacie, aby wyszukać gracza"
+          subtitle: "&eNa czacie, aby wyszukać gracza (&fcancel&e aby anulować)"
         buttons:
           Close:
             material: BARRIER
@@ -275,7 +275,7 @@ messages:
             lore:
               - "&7Kliknij PPM/LPM, aby zamknąć GUI"
     PlayerManage:
-      name: "&d&lZarządzanie graczem: {player}"
+      name: "&d&lZarządzanie: {player}"
       layout: "ABCB1BCBABCBACABCBCB2B3B4BCABC5A6CBAB7BACAB8BCBAB9BABC"
       filling:
         filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
@@ -334,13 +334,13 @@ messages:
             - "&7Kliknij PPM/LPM, aby zamknąć GUI"
       input:
         email:
-          message: "&aWpisz nowy email dla &f{player}&a na czacie."
+          message: "&aWpisz nowy email dla &f{player}&a na czacie (&fcancel&a aby anulować)."
           title: "&6Podaj Email"
-          subtitle: "&eWpisz na czacie"
+          subtitle: "&eWpisz na czacie (&fcancel&e aby anulować)"
         password:
-          message: "&aWpisz nowe hasło dla &f{player}&a na czacie."
+          message: "&aWpisz nowe hasło dla &f{player}&a na czacie (&fcancel&a aby anulować)."
           title: "&6Podaj Hasło"
-          subtitle: "&eWpisz na czacie"
+          subtitle: "&eWpisz na czacie (&fcancel&e aby anulować)"
       Language:
         name: "&9&lJęzyk: {player}"
         layout: "ABCABCABCBLLLLLLLBABCAXCABC"
@@ -394,21 +394,21 @@ messages:
               - "&7Język: &fPortugalski"
               - "{status}"
       ConfirmUnregister:
-        name: "&4&lPotwierdź Unregister: {player}"
-        layout: "RRRRRRRRRRRCAARYRRRRRRRRRRR"
+        name: "&4&lPotwierdź Unregister"
+        layout: "ABCBABCBABC1ACA2CBCBABABABC"
         filling:
           filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-          filling-R: "RED_CONCRETE"
-          filling-G: "GREEN_CONCRETE"
+          filling-B: "BLACK_STAINED_GLASS_PANE"
+          filling-C: "BLUE_STAINED_GLASS_PANE"
         buttons:
           Cancel:
-            material: RED_CONCRETE
+            material: GREEN_CONCRETE
             name: "&c&lAnuluj"
             lore:
               - "&7Wróć bez zmian."
           Confirm:
-            material: GREEN_CONCRETE
-            name: "&a&lPotwierdź"
+            material: RED_CONCRETE
+            name: "&4&lUnregister"
             lore:
               - "&7Wyrejestruj tego gracza."
     Language:

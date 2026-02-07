@@ -19,8 +19,7 @@ public class PlayerManageConfirmGuiListener implements Listener {
         if (targetName == null) {
             return;
         }
-        String title = LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.ConfirmUnregister.name")
-                .replace("{player}", targetName);
+        String title = LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.ConfirmUnregister.name");
         if (!event.getView().getTitle().equals(title)) {
             return;
         }

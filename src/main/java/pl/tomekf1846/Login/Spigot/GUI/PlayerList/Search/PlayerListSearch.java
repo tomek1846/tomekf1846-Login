@@ -12,6 +12,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerList.Other.PlayerListPageManager;
+import pl.tomekf1846.Login.Spigot.GUI.PlayerList.PlayerListGui;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageState;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
@@ -173,7 +175,14 @@ public class PlayerListSearch implements Listener {
         if (searchingPlayer != null && searchingPlayer.equals(player)) {
             event.setCancelled(true);
 
-            Bukkit.getScheduler().runTask(MainSpigot.getInstance(), () -> searchAndDisplay(message));
+            Bukkit.getScheduler().runTask(MainSpigot.getInstance(), () -> {
+                if ("cancel".equalsIgnoreCase(message.trim())) {
+                    searchingPlayer = null;
+                    PlayerListGui.openGUI(player, PlayerListPageManager.playerPages.getOrDefault(player.getUniqueId(), 1));
+                    return;
+                }
+                searchAndDisplay(message);
+            });
         }
     }
 }
