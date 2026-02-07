@@ -184,9 +184,9 @@ messages:
     Maingui:
       name: "&e&l主菜单"
       filling:
-        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-        filling-B: "BLACK_STAINED_GLASS_PANE"
-        filling-C: "BLUE_STAINED_GLASS_PANE"
+        filling-A: LIGHT_BLUE_STAINED_GLASS_PANE
+        filling-B: BLACK_STAINED_GLASS_PANE
+        filling-C: BLUE_STAINED_GLASS_PANE
       buttons:
         Player-Accounts:
           material: "PAPER"
@@ -280,9 +280,9 @@ messages:
         current: "&a已选择"
         available: "&e点击选择"
       filling:
-        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-        filling-B: "BLACK_STAINED_GLASS_PANE"
-        filling-C: "BLUE_STAINED_GLASS_PANE"
+        filling-A: LIGHT_BLUE_STAINED_GLASS_PANE
+        filling-B: BLACK_STAINED_GLASS_PANE
+        filling-C: BLUE_STAINED_GLASS_PANE
       buttons:
         Close:
           material: BARRIER
