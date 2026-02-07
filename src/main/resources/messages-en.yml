@@ -276,7 +276,7 @@ messages:
               - "&7Click RMB/LMB to close the GUI"
     Language:
       name: "&9&lLanguage"
-      layout: "ABCABCABCBLLLLLBBBABCAXCABC"
+      layout: "ABCABCABCBLLLLLLLBABCAXCABC"
       status:
         current: "&aSelected"
         available: "&eClick to select"

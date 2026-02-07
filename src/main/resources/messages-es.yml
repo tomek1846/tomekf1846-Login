@@ -276,7 +276,7 @@ messages:
               - "&7Haz clic derecho/izquierdo para cerrar el GUI"
     Language:
       name: "&9&lIdioma"
-      layout: "ABCABCABCBLLLLLBBBABCAXCABC"
+      layout: "ABCABCABCBLLLLLLLBABCAXCABC"
       status:
         current: "&aSeleccionado"
         available: "&eHaz clic para seleccionar"

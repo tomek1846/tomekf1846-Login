@@ -276,7 +276,7 @@ messages:
               - "&7Rechtsklick/Linksklick zum Schließen der GUI"
     Language:
       name: "&9&lSprache"
-      layout: "ABCABCABCBLLLLLBBBABCAXCABC"
+      layout: "ABCABCABCBLLLLLLLBABCAXCABC"
       status:
         current: "&aAusgewählt"
         available: "&eKlicken zum Auswählen"
