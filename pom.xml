@@ -91,6 +91,10 @@
             <id>maven-central</id>
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
+        <repository>
+            <id>skinsrestorer</id>
+            <url>https://repo.skinsrestorer.net/repository/maven-public/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -141,6 +145,12 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.7</version>
+        </dependency>
+        <dependency>
+            <groupId>net.skinsrestorer</groupId>
+            <artifactId>skinsrestorer-api</artifactId>
+            <version>15.0.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
