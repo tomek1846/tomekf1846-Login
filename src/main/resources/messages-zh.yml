@@ -285,7 +285,7 @@ messages:
         filling-C: "BLUE_STAINED_GLASS_PANE"
       buttons:
         Close:
-          material: BARRIER
+          material: "BARRIER"
           name: "&c&l关闭GUI"
           lore:
             - "&7右键/左键点击关闭GUI"
