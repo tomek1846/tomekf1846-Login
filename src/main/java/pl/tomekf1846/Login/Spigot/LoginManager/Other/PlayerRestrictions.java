@@ -25,13 +25,11 @@ import java.util.Set;
 
 public class PlayerRestrictions implements Listener {
 
-    private static String PREFIX;
     private static final Set<Player> blockedPlayers = new HashSet<>();
     private static List<String> allowedCommands = new ArrayList<>();
 
     public PlayerRestrictions() {
         loadAllowedCommands();
-        PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
     }
 
     public static void reloadAllowedCommands() {
@@ -85,7 +83,8 @@ public class PlayerRestrictions implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (isPlayerBlocked(event.getPlayer())) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.blocked-chat"));
+            event.getPlayer().sendMessage(LanguageManager.getMessage(event.getPlayer(), "messages.prefix.main-prefix")
+                    + LanguageManager.getMessage(event.getPlayer(), "messages.player-commands.blocked-chat"));
         }
     }
 
@@ -114,7 +113,8 @@ public class PlayerRestrictions implements Listener {
 
         if (isPlayerBlocked(player)) {
             event.setCancelled(true);
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.blocked-command"));
+            player.sendMessage(LanguageManager.getMessage(player, "messages.prefix.main-prefix")
+                    + LanguageManager.getMessage(player, "messages.player-commands.blocked-command"));
         }
     }
 

@@ -16,16 +16,16 @@ public class AdminCommandEmail {
 
     public static void changeEmail(CommandSender sender, String playerName, String newEmail) {
         UUID uuid = NickUuidCheck.getUUIDFromNick(playerName);
-        String prefix = languageManager.getMessage("messages.prefix.main-prefix");
+        String prefix = LanguageManager.getMessage(sender, "messages.prefix.main-prefix");
 
         if (uuid == null) {
-            sender.sendMessage(prefix + languageManager.getMessage("messages.admin-commands.player_not_found"));
+            sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.player_not_found"));
             return;
         }
 
         if ("(none)".equalsIgnoreCase(newEmail) || "none".equalsIgnoreCase(newEmail)) {
             PlayerDataSave.setPlayerEmail(uuid, "none");
-            sender.sendMessage(prefix + languageManager.getMessage("messages.admin-commands.email_removed").replace("{player}", playerName));
+            sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.email_removed").replace("{player}", playerName));
             return;
         }
 
@@ -49,13 +49,13 @@ public class AdminCommandEmail {
                     pendingConfirmations.remove(key);
                     pendingEmails.remove(key);
                 }, 300);
-                sender.sendMessage(prefix + languageManager.getMessage("messages.admin-commands.invalid_email"));
+                sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.invalid_email"));
                 return;
             }
 
             if (System.currentTimeMillis() - pendingConfirmations.get(key) <= 15000) {
                 PlayerDataSave.setPlayerEmail(uuid, newEmail);
-                sender.sendMessage(prefix + languageManager.getMessage("messages.admin-commands.email_changed")
+                sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.email_changed")
                         .replace("{player}", playerName)
                         .replace("{email}", newEmail));
                 pendingConfirmations.remove(key);
@@ -65,7 +65,7 @@ public class AdminCommandEmail {
         }
 
         PlayerDataSave.setPlayerEmail(uuid, newEmail);
-        sender.sendMessage(prefix + languageManager.getMessage("messages.admin-commands.email_changed")
+        sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.email_changed")
                 .replace("{player}", playerName)
                 .replace("{email}", newEmail));
     }

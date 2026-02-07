@@ -8,12 +8,13 @@ import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import java.util.UUID;
 
 public class PlayerCommandEmail {
-    private static final String PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
-
     public static void changeEmail(CommandSender sender, String playerName, String newEmail) {
+        String prefix = sender instanceof org.bukkit.entity.Player player
+                ? LanguageManager.getMessage(player, "messages.prefix.main-prefix")
+                : LanguageManager.getMessage("messages.prefix.main-prefix");
         UUID uuid = NickUuidCheck.getUUIDFromNick(playerName);
         if (uuid == null) {
-            sender.sendMessage(PREFIX + LanguageManager.getMessage("messages.admin-commands.player_not_found"));
+            sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.player_not_found"));
             return;
         }
 
@@ -28,12 +29,12 @@ public class PlayerCommandEmail {
                 atIndex > lastDotIndex ||
                 lastDotIndex - atIndex < 3
         ) {
-            sender.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.invalid-email-format"));
+            sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.player-commands.invalid-email-format"));
             return;
         }
 
         PlayerDataSave.setPlayerEmail(uuid, newEmail);
-        sender.sendMessage(PREFIX + LanguageManager.getMessage("messages.admin-commands.email_changed")
+        sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.email_changed")
                 .replace("{player}", playerName)
                 .replace("{email}", newEmail));
     }

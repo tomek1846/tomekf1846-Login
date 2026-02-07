@@ -40,6 +40,8 @@ messages:
     cracked_usage: "&cUso: /cracked (nueva contraseña)"
     changepass_usage: "&cUso: /changepass (contraseña antigua) (nueva contraseña)"
     email_usage: "&cUso: /email (correo electrónico)"
+    language_unknown: "&cIdioma desconocido. Usa /language gui o /language <idioma>."
+    language_changed: "&aTu idioma ha sido cambiado a {language}."
     unknown_command: "&cComando desconocido. Usa /login-help para ver los comandos disponibles."
     help:
       available_commands: "&cComandos disponibles:"
@@ -53,7 +55,11 @@ messages:
       changepass_command: "&e/changepass (contraseña-antigua) (contraseña-nueva)"
       changepassword_command: "&e/changepassword (contraseña-antigua) (contraseña-nueva)"
       email_command: "&e/email (email) (contraseña)"
+      language_command: "&e/language [gui|idioma]"
+      lang_command: "&e/lang [gui|idioma]"
       login_help_command: "&e/login-help"
+      ulogin_command: "&e/ulogin"
+      userlogin_command: "&e/userlogin"
     premium-player: "&cNo puedes cambiar la contraseña porque eres un jugador premium."
     data-not-found: "&cNo se encontró el archivo de datos de inicio de sesión."
     incorrect-old-password: "&c¡La contraseña antigua no es correcta!"
@@ -152,6 +158,9 @@ messages:
     usage_forcelogin: "&cUso: /alogin forcelogin (jugador)"
     usage_ip: "&cUso: /alogin ip (jugador)"
     usage_reload: "&cUso: /alogin reload"
+    usage_language: "&cUso: /alogin language (jugador) (idioma)"
+    language_unknown: "&cIdioma desconocido."
+    language_changed: "&aEl idioma de {player} se ha cambiado a {language}."
     unknown_command: "&cComando desconocido. Intenta con /alogin."
     help:
       available_commands: "&cComandos disponibles:"
@@ -166,6 +175,8 @@ messages:
       email_command: "&e/alogin email (jugador) (correo electrónico o none)"
       forcelogin_command: "&e/alogin forcelogin (jugador)"
       ip_command: "&e/alogin ip (jugador)"
+      language_command: "&e/alogin language (jugador) (idioma)"
+      lang_command: "&e/alogin lang (jugador) (idioma)"
       reload_command: "&e/alogin reload"
 gui:
   frist-page: "&cEsta es la primera página, no puedes volver atrás."
@@ -263,5 +274,42 @@ Search:
       name: "&c&lCerrar GUI"
       lore:
         - "&7Haz clic derecho/izquierdo para cerrar el GUI"
+  Language:
+    name: "&9&lIdioma"
+    layout: "ABCABCABCBLLLLLBBBABCAXCABC"
+    status:
+      current: "&aSeleccionado"
+      available: "&eHaz clic para seleccionar"
+    filling:
+      filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+      filling-B: "BLACK_STAINED_GLASS_PANE"
+      filling-C: "BLUE_STAINED_GLASS_PANE"
+    buttons:
+      Close:
+        material: BARRIER
+        name: "&c&lCerrar GUI"
+        lore:
+          - "&7Haz clic derecho/izquierdo para cerrar el GUI"
+    languages:
+      english:
+        name: "&aEnglish"
+        lore:
+          - "&7Idioma: &fEnglish"
+          - "{status}"
+      polish:
+        name: "&cPolish"
+        lore:
+          - "&7Idioma: &fPolish"
+          - "{status}"
+      spanish:
+        name: "&eEspañol"
+        lore:
+          - "&7Idioma: &fEspañol"
+          - "{status}"
+      chinese:
+        name: "&b中文"
+        lore:
+          - "&7Idioma: &f中文"
+          - "{status}"
 Config-Version: 1.0.0 #NO CAMBIES
 #Generado por tomekf1846-Login

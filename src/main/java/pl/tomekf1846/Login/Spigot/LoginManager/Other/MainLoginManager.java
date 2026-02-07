@@ -15,10 +15,10 @@ import java.util.UUID;
 public class MainLoginManager {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final SecureRandom RANDOM = new SecureRandom();
-    private static final String PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
 
     public static void LoginRegisterMainManger(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
         String playerName = player.getName();
         UUID playerUUID = player.getUniqueId();
         boolean isPremiumCommandEnabled = MainSpigot.getInstance().getConfig().getBoolean("Main-Settings.Premium-Command");
@@ -31,12 +31,13 @@ public class MainLoginManager {
                     String newPassword = generateRandomPassword();
                     PlayerDataSave.setPlayerPassword(playerUUID, newPassword);
                     PlayerDataSave.setPlayerSession(playerName, false);
-                    player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.premium-login-disabled").replace("{new_password}", newPassword));
+                    player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.premium-login-disabled")
+                            .replace("{new_password}", newPassword));
                     PlayerLoginManager.forceLoginPlayer(player);
                 }
             } else {
                 PlayerRestrictions.blockPlayer(player);
-                player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.login-message"));
+                player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.login-message"));
             }
         } else {
             if (SessionPremiumCheck.isPlayerPremium(playerName)) {
@@ -44,11 +45,11 @@ public class MainLoginManager {
                     SessionPremiumCheck.handlePremiumRegister(player);
                 } else {
                     PlayerRestrictions.blockPlayer(player);
-                    player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.register-message"));
+                    player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.register-message"));
                 }
             } else {
                 PlayerRestrictions.blockPlayer(player);
-                player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.register-message"));
+                player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.register-message"));
             }
         }
     }

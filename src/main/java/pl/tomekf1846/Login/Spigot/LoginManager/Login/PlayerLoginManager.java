@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PlayerLoginManager {
-
-    private static final String PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
     private static final Map<Player, Boolean> playerLoginStatus = new HashMap<>();
     private static final Map<UUID, Integer> wrongPasswordAttempts = new HashMap<>();
 
@@ -23,19 +21,20 @@ public class PlayerLoginManager {
     }
 
     public static void loginPlayer(Player player, String password) {
+        String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
         if (isPlayerLoggedIn(player)) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.already_logged_in"));
+            player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.already_logged_in"));
             return;
         }
 
         if (!isPlayerRegistered(player)) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.not_registered"));
+            player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.not_registered"));
             return;
         }
 
         Map<String, String> config = PlayerDataSave.loadPlayerData(player.getUniqueId());
         if (config == null) {
-            player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.not_registered"));
+            player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.not_registered"));
             return;
         }
         UUID playerUUID = player.getUniqueId();
@@ -46,9 +45,9 @@ public class PlayerLoginManager {
             wrongPasswordAttempts.put(playerUUID, wrongAttempts);
             PlayerDataSave.saveLoginAttempt(player, false, password, wrongAttempts);
             if (kickOnWrongPassword) {
-                player.kickPlayer(LanguageManager.getMessage("messages.player-commands.incorrect-password"));
+                player.kickPlayer(LanguageManager.getMessage(player, "messages.player-commands.incorrect-password"));
             } else {
-                player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.incorrect-password"));
+                player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.incorrect-password"));
             }
             return;
         }
@@ -56,7 +55,7 @@ public class PlayerLoginManager {
         wrongPasswordAttempts.remove(playerUUID);
         PlayerRestrictions.unblockPlayer(player);
         PlayerDataSave.saveLoginAttempt(player, true, null, 0);
-        player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.successfully_logged_in"));
+        player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.successfully_logged_in"));
         playerLoginStatus.put(player, true);
         SessionCrackedManager.incrementLoginCount(playerUUID);
         LoginMessagesManager.LoginTitle(player);
@@ -66,12 +65,13 @@ public class PlayerLoginManager {
         if (isPlayerLoggedIn(player)) {
             return;
         }
+        String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
 
         UUID playerUUID = player.getUniqueId();
         wrongPasswordAttempts.remove(playerUUID);
         PlayerRestrictions.unblockPlayer(player);
         PlayerDataSave.saveLoginAttempt(player, true, null, 0);
-        player.sendMessage(PREFIX + LanguageManager.getMessage("messages.player-commands.successfully_logged_in"));
+        player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.successfully_logged_in"));
         playerLoginStatus.put(player, true);
         SessionCrackedManager.incrementLoginCount(playerUUID);
         LoginMessagesManager.LoginTitle(player);

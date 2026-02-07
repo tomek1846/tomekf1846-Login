@@ -16,7 +16,8 @@ public class PlayerListGuiListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        String guiTitle = LanguageManager.getMessage("messages.gui.Playerlist.name");
+        Player player = (Player) event.getWhoClicked();
+        String guiTitle = LanguageManager.getMessage(player, "messages.gui.Playerlist.name");
         if (event.getView().getTitle().equals(guiTitle)) {
             event.setCancelled(true);
 
@@ -27,25 +28,23 @@ public class PlayerListGuiListener implements Listener {
             ItemMeta itemMeta = clickedItem.getItemMeta();
             String clickedName = itemMeta.hasDisplayName() ? itemMeta.getDisplayName() : "";
 
-            Player player = (Player) event.getWhoClicked();
-
-            if (clickedMaterial == Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Close.material")) &&
-                    clickedName.equals(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Close.name"))) {
+            if (clickedMaterial == Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Close.material")) &&
+                    clickedName.equals(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Close.name"))) {
                 player.closeInventory();
-            } else if ((clickedMaterial == Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Onlinedye.material")) &&
-                    clickedName.equals(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Onlinedye.name"))) ||
-                    (clickedMaterial == Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Offlinedye.material")) &&
-                            clickedName.equals(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Offlinedye.name")))) {
+            } else if ((clickedMaterial == Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Onlinedye.material")) &&
+                    clickedName.equals(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Onlinedye.name"))) ||
+                    (clickedMaterial == Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Offlinedye.material")) &&
+                            clickedName.equals(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Offlinedye.name")))) {
                 PlayerListStateManager.toggleOnlineOffline(player);
-            } else if (clickedMaterial == Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Search-player.material")) &&
-                    clickedName.equals(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Search-player.name"))) {
+            } else if (clickedMaterial == Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Search-player.material")) &&
+                    clickedName.equals(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Search-player.name"))) {
                 PlayerListSearch.startSearch(player);
                 player.closeInventory();
-            } else if (clickedMaterial == Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Next-page.material")) &&
-                    clickedName.equals(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Next-page.name"))) {
+            } else if (clickedMaterial == Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Next-page.material")) &&
+                    clickedName.equals(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Next-page.name"))) {
                 PlayerListPageManager.nextPage(player);
-            } else if (clickedMaterial == Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Previous-page.material")) &&
-                    clickedName.equals(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Previous-page.name"))) {
+            } else if (clickedMaterial == Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Previous-page.material")) &&
+                    clickedName.equals(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Previous-page.name"))) {
                 PlayerListPageManager.previousPage(player);
             }
         }

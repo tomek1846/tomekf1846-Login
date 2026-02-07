@@ -39,6 +39,35 @@ Main-Settings:
   # Language defaults to English
   # Supported languages: Polish, English, Spanish, Chinese
   Language: English
+  Language-Options:
+    English:
+      Aliases:
+        - "english"
+        - "en"
+      Skull-Texture: ""
+      Skull-Owner: ""
+    Polish:
+      Aliases:
+        - "polish"
+        - "pl"
+        - "polski"
+      Skull-Texture: ""
+      Skull-Owner: ""
+    Spanish:
+      Aliases:
+        - "spanish"
+        - "es"
+        - "espanol"
+        - "español"
+      Skull-Texture: ""
+      Skull-Owner: ""
+    Chinese:
+      Aliases:
+        - "chinese"
+        - "zh"
+        - "中文"
+      Skull-Texture: ""
+      Skull-Owner: ""
 
   # Premium account registration !NOT IMPLEMENTED!
   Premium-Command: false
@@ -60,6 +89,11 @@ Main-Settings:
     - "l"
     - "register"
     - "reg"
+    - "login-help"
+    - "ulogin"
+    - "userlogin"
+    - "language"
+    - "lang"
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #   _____ _

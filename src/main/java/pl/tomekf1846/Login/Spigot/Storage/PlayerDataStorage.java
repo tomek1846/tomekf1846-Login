@@ -23,6 +23,10 @@ public interface PlayerDataStorage {
 
     void setPlayerEmail(UUID uuid, String newEmail);
 
+    void setPlayerLanguage(UUID uuid, String language);
+
+    String getPlayerLanguage(UUID uuid);
+
     boolean setPlayerSession(String nick, boolean isPremium);
 
     UUID findUUIDByNick(String nick);

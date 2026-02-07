@@ -17,54 +17,54 @@ public class PlayerListGui {
     private static final PlayerListStateManager stateManager = new PlayerListStateManager();
 
     public static void openGUI(Player player, int page) {
-        String title = LanguageManager.getMessage("messages.gui.Playerlist.name");
+        String title = LanguageManager.getMessage(player, "messages.gui.Playerlist.name");
         Inventory gui = Bukkit.createInventory(null, 54, title);
 
-        String layout = LanguageManager.getMessage("messages.gui.Playerlist.layout");
+        String layout = LanguageManager.getMessage(player, "messages.gui.Playerlist.layout");
 
         ItemStack a = createItem(
-                Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.filling.filling-A")),
+                Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.filling.filling-A")),
                 "§7",
                 List.of()
         );
 
         ItemStack b = createItem(
-                Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.filling.filling-B")),
+                Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.filling.filling-B")),
                 "§7",
                 List.of()
         );
 
         ItemStack c = createItem(
-                Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.filling.filling-C")),
+                Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.filling.filling-C")),
                 "§7",
                 List.of()
         );
 
         ItemStack sign = createItem(
-                Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Search-player.material")),
-                LanguageManager.getMessage("messages.gui.Playerlist.buttons.Search-player.name"),
-                LanguageManager.getMessageList("messages.gui.Playerlist.buttons.Search-player.lore"));
+                Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Search-player.material")),
+                LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Search-player.name"),
+                LanguageManager.getMessageList(player, "messages.gui.Playerlist.buttons.Search-player.lore"));
 
         ItemStack arrow1 = createItem(
-                Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Previous-page.material")),
-                LanguageManager.getMessage("messages.gui.Playerlist.buttons.Previous-page.name"),
-                LanguageManager.getMessageList("messages.gui.Playerlist.buttons.Previous-page.lore").stream()
+                Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Previous-page.material")),
+                LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Previous-page.name"),
+                LanguageManager.getMessageList(player, "messages.gui.Playerlist.buttons.Previous-page.lore").stream()
                         .map(lore -> lore.replace("{page}", String.valueOf(page)))
                         .toList());
 
         ItemStack arrow2 = createItem(
-                Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Next-page.material")),
-                LanguageManager.getMessage("messages.gui.Playerlist.buttons.Next-page.name"),
-                LanguageManager.getMessageList("messages.gui.Playerlist.buttons.Next-page.lore").stream()
+                Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Next-page.material")),
+                LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Next-page.name"),
+                LanguageManager.getMessageList(player, "messages.gui.Playerlist.buttons.Next-page.lore").stream()
                         .map(lore -> lore.replace("{page}", String.valueOf(page)))
                         .toList());
 
         ItemStack barrier = createItem(
-                Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.buttons.Close.material")),
-                LanguageManager.getMessage("messages.gui.Playerlist.buttons.Close.name"),
-                LanguageManager.getMessageList("messages.gui.Playerlist.buttons.Close.lore"));
+                Material.valueOf(LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Close.material")),
+                LanguageManager.getMessage(player, "messages.gui.Playerlist.buttons.Close.name"),
+                LanguageManager.getMessageList(player, "messages.gui.Playerlist.buttons.Close.lore"));
 
-        ItemStack onlineOfflineDye = stateManager.getOnlineItem();
+        ItemStack onlineOfflineDye = stateManager.getOnlineItem(player);
 
         for (int i = 0; i < layout.length(); i++) {
             switch (layout.charAt(i)) {
@@ -105,7 +105,7 @@ public class PlayerListGui {
                 36, 37, 38, 39, 40, 41, 42, 43, 44
         };
 
-        ItemStack[] playerHeads = PlayerListPageManager.getPlayersForPage(page);
+        ItemStack[] playerHeads = PlayerListPageManager.getPlayersForPage(player, page);
         for (int i = 0; i < playerHeads.length && i < playerSlots.length; i++) {
             gui.setItem(playerSlots[i], playerHeads[i]);
         }

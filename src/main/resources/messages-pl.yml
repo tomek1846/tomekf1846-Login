@@ -37,6 +37,8 @@ messages:
     cracked_usage: "&cUżycie: /cracked (nowe-hasło)"
     changepass_usage: "&cUżycie: /changepass (stare-hasło) (nowe-hasło)"
     email_usage: "&cUżycie: /email (email)"
+    language_unknown: "&cNieznany język. Użyj /language gui lub /language <język>."
+    language_changed: "&aZmieniono język na {language}."
     unknown_command: "&cNieznana komenda. Użyj /login-help aby poznać dostępne komendy."
     help:
       available_commands: "&cDostępne komendy:"
@@ -50,7 +52,11 @@ messages:
       changepass_command: "&e/changepass (stare-hasło) (nowe-hasło)"
       changepassword_command: "&e/changepassword (stare-hasło) (nowe-hasło)"
       email_command: "&e/email (email) (hasło)"
+      language_command: "&e/language [gui|język]"
+      lang_command: "&e/lang [gui|język]"
       login_help_command: "&e/login-help"
+      ulogin_command: "&e/ulogin"
+      userlogin_command: "&e/userlogin"
     premium-player: "&cNie możesz zmienić hasła, ponieważ jesteś graczem premium!"
     data-not-found: "&cNie znaleziono pliku danych logowania!"
     incorrect-old-password: "&cNiepoprawne obecne hasło!"
@@ -149,6 +155,9 @@ messages:
     usage_forcelogin: "&cUżycie: /alogin forcelogin (gracz)"
     usage_ip: "&cUżycie: /alogin ip (gracz)"
     usage_reload: "&cUżycie: /alogin reload"
+    usage_language: "&cUżycie: /alogin language (gracz) (język)"
+    language_unknown: "&cNieznany język."
+    language_changed: "&aUstawiono język gracza {player} na {language}."
     unknown_command: "&cNieznana komenda. Spróbuj /alogin."
     help:
       available_commands: "&cDostępne komendy:"
@@ -163,6 +172,8 @@ messages:
       email_command: "&e/alogin email (gracz) (e-mail lub none)"
       forcelogin_command: "&e/alogin forcelogin (gracz)"
       ip_command: "&e/alogin ip (gracz)"
+      language_command: "&e/alogin language (gracz) (język)"
+      lang_command: "&e/alogin lang (gracz) (język)"
       reload_command: "&e/alogin reload"
   gui:
     frist-page: "&cTo jest pierwsza strona. Nie możesz cofnąć się dalej."
@@ -260,5 +271,42 @@ messages:
             name: "&c&lZamknij GUI"
             lore:
               - "&7Kliknij PPM/LPM, aby zamknąć GUI"
+    Language:
+      name: "&9&lJęzyk"
+      layout: "ABCABCABCBLLLLLBBBABCAXCABC"
+      status:
+        current: "&aWybrany"
+        available: "&eKliknij aby wybrać"
+      filling:
+        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+        filling-B: "BLACK_STAINED_GLASS_PANE"
+        filling-C: "BLUE_STAINED_GLASS_PANE"
+      buttons:
+        Close:
+          material: BARRIER
+          name: "&c&lZamknij GUI"
+          lore:
+            - "&7Kliknij PPM/LPM aby zamknąć GUI"
+      languages:
+        english:
+          name: "&aEnglish"
+          lore:
+            - "&7Język: &fEnglish"
+            - "{status}"
+        polish:
+          name: "&cPolski"
+          lore:
+            - "&7Język: &fPolski"
+            - "{status}"
+        spanish:
+          name: "&eEspañol"
+          lore:
+            - "&7Język: &fEspañol"
+            - "{status}"
+        chinese:
+          name: "&b中文"
+          lore:
+            - "&7Język: &f中文"
+            - "{status}"
 Config-Version: 1.0.0 #NIE ZMIENIAJ
 #Wygenerowano przez tomekf1846-Login
