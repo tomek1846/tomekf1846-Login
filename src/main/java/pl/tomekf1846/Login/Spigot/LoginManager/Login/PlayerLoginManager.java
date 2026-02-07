@@ -7,6 +7,7 @@ import pl.tomekf1846.Login.Spigot.LoginManager.Other.PlayerRestrictions;
 import pl.tomekf1846.Login.Spigot.LoginManager.Session.Cracked.SessionCrackedManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
+import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class PlayerLoginManager {
         UUID playerUUID = player.getUniqueId();
         String savedPassword = config.get("Password");
         boolean kickOnWrongPassword = MainSpigot.getInstance().getConfig().getBoolean("Main-Settings.Wrong-kick-password");
-        if (savedPassword == null || !savedPassword.equals(password)) {
+        if (savedPassword == null || !PasswordSecurity.matches(password, savedPassword)) {
             int wrongAttempts = wrongPasswordAttempts.getOrDefault(playerUUID, 0) + 1;
             wrongPasswordAttempts.put(playerUUID, wrongAttempts);
             PlayerDataSave.saveLoginAttempt(player, false, password, wrongAttempts);

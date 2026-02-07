@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
+import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
 import java.util.Map;
 
@@ -28,8 +29,10 @@ public class AdminCommandRegister {
                     .replace("{player}", playerName));
             return;
         }
-        PlayerDataSave.savePlayerData(offlinePlayer, password);
-        sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.successfully_registered")
-                .replace("{player}", playerName));
+        PasswordSecurity.encodeAsync(MainSpigot.getInstance(), password, encodedPassword -> {
+            PlayerDataSave.savePlayerData(offlinePlayer, encodedPassword);
+            sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.successfully_registered")
+                    .replace("{player}", playerName));
+        });
     }
 }

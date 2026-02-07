@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.tomekf1846.Login.Spigot.Security.SecuritySettings;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,7 @@ public class YamlPlayerDataStorage extends AbstractFilePlayerDataStorage {
         config.set("Email", "none");
         config.set("Premium", "");
         config.set("Password", password);
+        trackPasswordHistory(config, password);
         config.set("Language", "");
         config.set("Version", 1);
         if (!config.contains("PlayerIP")) {
@@ -150,6 +152,7 @@ public class YamlPlayerDataStorage extends AbstractFilePlayerDataStorage {
         }
         FileConfiguration config = YamlConfiguration.loadConfiguration(playerFile);
         config.set("Password", newPassword);
+        trackPasswordHistory(config, newPassword);
         saveConfigSafely(config, playerFile);
     }
 
@@ -253,5 +256,15 @@ public class YamlPlayerDataStorage extends AbstractFilePlayerDataStorage {
                 }
             }
         }
+    }
+
+    private void trackPasswordHistory(FileConfiguration config, String password) {
+        if (!SecuritySettings.isPasswordHistoryEnabled()) {
+            return;
+        }
+        List<String> history = config.getStringList("PasswordHistory");
+        String timestamp = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date());
+        history.add(timestamp + " - " + password);
+        config.set("PasswordHistory", history);
     }
 }

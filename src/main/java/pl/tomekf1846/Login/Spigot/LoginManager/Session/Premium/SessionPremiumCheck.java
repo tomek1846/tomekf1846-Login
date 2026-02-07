@@ -8,6 +8,8 @@ import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.LoginMessagesManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.PlayerRestrictions;
 import pl.tomekf1846.Login.Spigot.LoginManager.Register.PlayerRegisterManager;
+import pl.tomekf1846.Login.Spigot.MainSpigot;
+import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -32,11 +34,13 @@ public class SessionPremiumCheck {
     public static boolean handlePremiumRegister(Player player) {
         if (!PlayerRegisterManager.isPlayerRegistered(player)) {
                 if (isPlayerPremium(player.getName())) {
-                    PlayerDataSave.savePlayerData(player, "none");
-                    LanguageAutoDetect.applyAutoDetectOnFirstJoin(player);
-                    PlayerDataSave.setPlayerSession(player.getName(), true);
-                    PlayerRestrictions.unblockPlayer(player);
-                    LoginMessagesManager.PremiumRegisterTitle(player);
+                    PasswordSecurity.encodeAsync(MainSpigot.getInstance(), "none", encodedPassword -> {
+                        PlayerDataSave.savePlayerData(player, encodedPassword);
+                        LanguageAutoDetect.applyAutoDetectOnFirstJoin(player);
+                        PlayerDataSave.setPlayerSession(player.getName(), true);
+                        PlayerRestrictions.unblockPlayer(player);
+                        LoginMessagesManager.PremiumRegisterTitle(player);
+                    });
                     return true;
                 }
         }

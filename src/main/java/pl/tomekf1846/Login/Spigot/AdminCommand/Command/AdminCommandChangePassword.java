@@ -8,6 +8,7 @@ import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
+import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
 import java.util.UUID;
 
@@ -30,8 +31,10 @@ public class AdminCommandChangePassword {
         }
 
         PlayerLoginManager.removePlayerLoginStatus(player);
-        PlayerDataSave.setPlayerPassword(uuid, newPassword);
-        sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.password_changed")
-                .replace("{player}", playerName));
+        PasswordSecurity.encodeAsync(MainSpigot.getInstance(), newPassword, encodedPassword -> {
+            PlayerDataSave.setPlayerPassword(uuid, encodedPassword);
+            sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.password_changed")
+                    .replace("{player}", playerName));
+        });
     }
 }

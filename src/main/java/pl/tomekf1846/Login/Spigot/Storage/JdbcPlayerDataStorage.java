@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.tomekf1846.Login.Spigot.Security.SecuritySettings;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -18,6 +19,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
     private final String securityTable;
     private final String historyTable;
     private final String loginAttemptsTable;
+    private final String passwordHistoryTable;
     private final SqlDialect dialect;
     public JdbcPlayerDataStorage(JavaPlugin plugin, HikariDataSource dataSource, StorageTableNames tableNames, SqlDialect dialect) {
         this.plugin = plugin;
@@ -26,6 +28,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
         this.securityTable = tableNames.getSecurityTable();
         this.historyTable = tableNames.getIpHistoryTable();
         this.loginAttemptsTable = tableNames.getLoginAttemptsTable();
+        this.passwordHistoryTable = tableNames.getPasswordHistoryTable();
         this.dialect = dialect;
         ensureTables();
     }
@@ -35,6 +38,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
         String quotedSecurity = dialect.quote(securityTable);
         String quotedHistory = dialect.quote(historyTable);
         String quotedLoginAttempts = dialect.quote(loginAttemptsTable);
+        String quotedPasswordHistory = dialect.quote(passwordHistoryTable);
         String playerSql = "CREATE TABLE IF NOT EXISTS " + quotedPlayers + " ("
                 + "uuid VARCHAR(36) PRIMARY KEY,"
                 + "nick VARCHAR(32),"
@@ -69,12 +73,18 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
                 + "ip_address VARCHAR(45),"
                 + "snapshot_json TEXT"
                 + ")";
+        String passwordHistorySql = "CREATE TABLE IF NOT EXISTS " + quotedPasswordHistory + " ("
+                + "uuid VARCHAR(36),"
+                + "password VARCHAR(255),"
+                + "created_at VARCHAR(32)"
+                + ")";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute(playerSql);
             statement.execute(securitySql);
             statement.execute(historySql);
             statement.execute(loginSql);
+            statement.execute(passwordHistorySql);
             ensureLanguageColumn(statement, quotedPlayers);
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, "Unable to create player data tables.", ex);
@@ -98,6 +108,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
                 : "offline";
         PlayerRecord record = PlayerRecord.fromDefaults(uuid, playerName, firstIP, password);
         upsertRecord(uuid, record, nowTimestamp());
+        insertPasswordHistory(uuid, password);
     }
 
     @Override
@@ -203,6 +214,7 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
             statement.setString(2, uuid.toString());
             statement.executeUpdate();
             touchUpdatedAt(uuid);
+            insertPasswordHistory(uuid, newPassword);
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.WARNING, "Failed updating password for " + uuid, ex);
         }
@@ -492,6 +504,23 @@ public class JdbcPlayerDataStorage implements PlayerDataStorage {
             statement.executeUpdate();
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.WARNING, "Failed inserting IP history for " + uuid, ex);
+        }
+    }
+
+    private void insertPasswordHistory(UUID uuid, String password) {
+        if (!SecuritySettings.isPasswordHistoryEnabled() || uuid == null || password == null) {
+            return;
+        }
+        String sql = "INSERT INTO " + dialect.quote(passwordHistoryTable) + " (uuid, password, created_at) VALUES (?, ?, ?)";
+        String timestamp = nowTimestamp();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, uuid.toString());
+            statement.setString(2, password);
+            statement.setString(3, timestamp);
+            statement.executeUpdate();
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.WARNING, "Failed saving password history for " + uuid, ex);
         }
     }
 

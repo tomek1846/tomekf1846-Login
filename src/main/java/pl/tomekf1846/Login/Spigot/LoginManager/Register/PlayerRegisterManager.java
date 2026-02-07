@@ -9,6 +9,7 @@ import pl.tomekf1846.Login.Spigot.LoginManager.Other.LoginMessagesManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Other.PlayerRestrictions;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
+import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
 import java.io.File;
 import java.util.List;
@@ -39,12 +40,14 @@ public class PlayerRegisterManager {
             return;
         }
 
-        PlayerDataSave.savePlayerData(player, password);
-        LanguageAutoDetect.applyAutoDetectOnFirstJoin(player);
-        PlayerRestrictions.unblockPlayer(player);
-        PlayerDataSave.setPlayerSession(player.getName(), false);
-        player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.registration-success"));
-        LoginMessagesManager.CrackedRegisterTitle(player);
+        PasswordSecurity.encodeAsync(MainSpigot.getInstance(), password, encodedPassword -> {
+            PlayerDataSave.savePlayerData(player, encodedPassword);
+            LanguageAutoDetect.applyAutoDetectOnFirstJoin(player);
+            PlayerRestrictions.unblockPlayer(player);
+            PlayerDataSave.setPlayerSession(player.getName(), false);
+            player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.registration-success"));
+            LoginMessagesManager.CrackedRegisterTitle(player);
+        });
     }
 
     public static boolean isPlayerRegistered(Player player) {

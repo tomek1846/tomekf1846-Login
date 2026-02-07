@@ -82,7 +82,8 @@ public class StorageFactory {
         String securityTable = config.getString(prefix + ".Tables.Security", legacyName + "_security");
         String ipHistoryTable = config.getString(prefix + ".Tables.Ip-History", legacyName + "_ip_history");
         String loginAttemptsTable = config.getString(prefix + ".Tables.Login-Attempts", legacyName + "_login_attempts");
-        return new StorageTableNames(playerTable, securityTable, ipHistoryTable, loginAttemptsTable);
+        String passwordHistoryTable = config.getString(prefix + ".Tables.Password-History", legacyName + "_password_history");
+        return new StorageTableNames(playerTable, securityTable, ipHistoryTable, loginAttemptsTable, passwordHistoryTable);
     }
 
     private static String buildJdbcUrl(StorageType type, String host, int port, String database, boolean useSSL, String extra) {

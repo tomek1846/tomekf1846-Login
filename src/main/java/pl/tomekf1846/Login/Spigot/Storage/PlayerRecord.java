@@ -19,6 +19,7 @@ public class PlayerRecord {
     private String language;
     private int version;
     private List<String> playerIP;
+    private List<String> passwordHistory;
     private List<LoginAttemptRecord> loginAttempts;
 
     public static PlayerRecord fromDefaults(UUID uuid, String nick, String firstIp, String password) {
@@ -35,6 +36,7 @@ public class PlayerRecord {
         record.language = "";
         record.version = 1;
         record.playerIP = new ArrayList<>();
+        record.passwordHistory = new ArrayList<>();
         return record;
     }
 
@@ -151,6 +153,17 @@ public class PlayerRecord {
 
     public void setPlayerIP(List<String> playerIP) {
         this.playerIP = playerIP;
+    }
+
+    public List<String> getPasswordHistory() {
+        if (passwordHistory == null) {
+            passwordHistory = new ArrayList<>();
+        }
+        return passwordHistory;
+    }
+
+    public void setPasswordHistory(List<String> passwordHistory) {
+        this.passwordHistory = passwordHistory;
     }
 
     public List<LoginAttemptRecord> getLoginAttempts() {

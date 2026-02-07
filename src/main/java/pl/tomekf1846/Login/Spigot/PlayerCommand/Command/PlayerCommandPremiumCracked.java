@@ -8,6 +8,7 @@ import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
 import pl.tomekf1846.Login.Spigot.LoginManager.Session.Cracked.SessionCrackedManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
+import pl.tomekf1846.Login.Spigot.Security.PasswordSecurity;
 
 import java.util.*;
 
@@ -51,7 +52,7 @@ public class PlayerCommandPremiumCracked {
             }
 
             String storedPassword = playerData.get("Password");
-            if (storedPassword == null || !storedPassword.equals(password)) {
+            if (storedPassword == null || !PasswordSecurity.matches(password, storedPassword)) {
                 player.sendMessage(prefix + LanguageManager.getMessage(player, "messages.player-commands.incorrect-password"));
                 return;
             }
@@ -70,7 +71,9 @@ public class PlayerCommandPremiumCracked {
                 confirmationType.remove(playerUUID);
 
                 if (!premiumStatus) {
-                    PlayerDataSave.setPlayerPassword(playerUUID, password);
+                    PasswordSecurity.encodeAsync(MainSpigot.getInstance(), password, encodedPassword -> {
+                        PlayerDataSave.setPlayerPassword(playerUUID, encodedPassword);
+                    });
                 }
 
                 setPlayerStatus(player, premiumStatus);
