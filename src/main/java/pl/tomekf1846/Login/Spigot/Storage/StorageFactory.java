@@ -37,17 +37,17 @@ public class StorageFactory {
         String fileName = config.getString("Storage.H2.File-Name", "tomekf1846-login");
         File dbFile = new File(plugin.getDataFolder(), fileName);
         String jdbcUrl = "jdbc:h2:file:" + dbFile.getAbsolutePath() + ";AUTO_SERVER=TRUE";
-        String tableName = config.getString("Storage.H2.Table-Name", "tomekf1846-login-users");
+        StorageTableNames tableNames = resolveTableNames(config, "Storage.H2", "tomekf1846-login-users");
         HikariConfig hikariConfig = baseHikariConfig(config);
         hikariConfig.setJdbcUrl(jdbcUrl);
         hikariConfig.setUsername(config.getString("Storage.H2.Username", "sa"));
         hikariConfig.setPassword(config.getString("Storage.H2.Password", ""));
         hikariConfig.setDriverClassName("org.h2.Driver");
-        return new JdbcPlayerDataStorage(plugin, new HikariDataSource(hikariConfig), tableName, SqlDialect.H2);
+        return new JdbcPlayerDataStorage(plugin, new HikariDataSource(hikariConfig), tableNames, SqlDialect.H2);
     }
 
     private static PlayerDataStorage createRemoteStorage(JavaPlugin plugin, FileConfiguration config, StorageType type) {
-        String tableName = config.getString("Storage.Remote.Table-Name", "tomekf1846-login-users");
+        StorageTableNames tableNames = resolveTableNames(config, "Storage.Remote", "tomekf1846-login-users");
         String jdbcUrl = config.getString("Storage.Remote.Jdbc-Url", "").trim();
         if (jdbcUrl.isEmpty()) {
             String host = config.getString("Storage.Remote.Host", "localhost");
@@ -64,7 +64,7 @@ public class StorageFactory {
         hikariConfig.setPassword(config.getString("Storage.Remote.Password", ""));
         hikariConfig.setDriverClassName(driverFor(type));
 
-        return new JdbcPlayerDataStorage(plugin, new HikariDataSource(hikariConfig), tableName, dialectFor(type));
+        return new JdbcPlayerDataStorage(plugin, new HikariDataSource(hikariConfig), tableNames, dialectFor(type));
     }
 
     private static HikariConfig baseHikariConfig(FileConfiguration config) {
@@ -76,6 +76,14 @@ public class StorageFactory {
         hikariConfig.setMaxLifetime(config.getLong("Storage.Hikari.Max-Lifetime", 1800000));
         hikariConfig.setPoolName("tomekf1846-login");
         return hikariConfig;
+    }
+
+    private static StorageTableNames resolveTableNames(FileConfiguration config, String prefix, String defaultLegacyName) {
+        String legacyName = config.getString(prefix + ".Table-Name", defaultLegacyName);
+        String playerTable = config.getString(prefix + ".Tables.Players", legacyName);
+        String securityTable = config.getString(prefix + ".Tables.Security", legacyName + "_security");
+        String ipHistoryTable = config.getString(prefix + ".Tables.Ip-History", legacyName + "_ip_history");
+        return new StorageTableNames(playerTable, securityTable, ipHistoryTable);
     }
 
     private static String buildJdbcUrl(StorageType type, String host, int port, String database, boolean useSSL, String extra) {

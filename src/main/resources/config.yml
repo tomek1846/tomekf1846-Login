@@ -82,6 +82,10 @@ Storage:
   H2:
     File-Name: "tomekf1846-login"
     Table-Name: "tomekf1846-login-users"
+    Tables:
+      Players: "tomekf1846-login-users"
+      Security: "tomekf1846-login-users_security"
+      Ip-History: "tomekf1846-login-users_ip_history"
     Username: "sa"
     Password: ""
 
@@ -94,6 +98,10 @@ Storage:
     Password: ""
     Use-SSL: false
     Table-Name: "tomekf1846-login-users"
+    Tables:
+      Players: "tomekf1846-login-users"
+      Security: "tomekf1846-login-users_security"
+      Ip-History: "tomekf1846-login-users_ip_history"
     # Optional custom JDBC URL (overrides the settings above if provided)
     Jdbc-Url: ""
     # Optional extra JDBC parameters (e.g. "useUnicode=true&characterEncoding=utf8")
