@@ -181,6 +181,9 @@ messages:
   gui:
     frist-page: "&cTo jest pierwsza strona. Nie możesz cofnąć się dalej."
     no-data: "&cNieokreślone"
+    cancel-button:
+      text: "&c[Anuluj]"
+      hover: "&7Kliknij aby anulować"
     Maingui:
       name: "&e&lGłówne Menu"
       filling:
@@ -264,10 +267,10 @@ messages:
         layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
         name: "&b&lWyniki Wyszukiwania"
         no-player-data: "&cNie znaleziono graczy pasujących do tej nazwy."
-        search-message: "&aWpisz nazwę gracza, aby wyszukać (&fcancel&a aby anulować)"
+        search-message: "&aWpisz nazwę gracza, aby wyszukać."
         search-title:
           title: "&6Wpisz nazwę"
-          subtitle: "&eNa czacie, aby wyszukać gracza (&fcancel&e aby anulować)"
+          subtitle: "&eNa czacie, aby wyszukać gracza"
         buttons:
           Close:
             material: BARRIER
@@ -334,13 +337,13 @@ messages:
             - "&7Kliknij PPM/LPM, aby zamknąć GUI"
       input:
         email:
-          message: "&aWpisz nowy email dla &f{player}&a na czacie (&fcancel&a aby anulować)."
+          message: "&aWpisz nowy email dla &f{player}&a na czacie."
           title: "&6Podaj Email"
-          subtitle: "&eWpisz na czacie (&fcancel&e aby anulować)"
+          subtitle: "&eWpisz na czacie"
         password:
-          message: "&aWpisz nowe hasło dla &f{player}&a na czacie (&fcancel&a aby anulować)."
+          message: "&aWpisz nowe hasło dla &f{player}&a na czacie."
           title: "&6Podaj Hasło"
-          subtitle: "&eWpisz na czacie (&fcancel&e aby anulować)"
+          subtitle: "&eWpisz na czacie"
       Language:
         name: "&9&lJęzyk: {player}"
         layout: "ABCABCABCBLLLLLLLBABCAXCABC"

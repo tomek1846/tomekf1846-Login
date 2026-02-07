@@ -184,6 +184,9 @@ messages:
   gui:
     frist-page: "&cThis is the first page. You cannot go back any further."
     no-data: "&cUndefined"
+    cancel-button:
+      text: "&c[Cancel]"
+      hover: "&7Click to cancel"
     Maingui:
       name: "&e&lMain Gui"
       filling:
@@ -267,10 +270,10 @@ messages:
         layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
         name: "&b&lPlayer Search Results"
         no-player-data: "&cNo players matching this nickname were found."
-        search-message: "&aEnter a nickname to search (&fcancel&a to abort)"
+        search-message: "&aEnter a nickname to search."
         search-title:
           title: "&6Enter nickname"
-          subtitle: "&eIn chat to search for player (&fcancel&e to abort)"
+          subtitle: "&eIn chat to search for player"
         buttons:
           Close:
             material: BARRIER
@@ -337,13 +340,13 @@ messages:
             - "&7Click RMB/LMB to close the GUI"
       input:
         email:
-          message: "&aType the new email for &f{player}&a in chat (&fcancel&a to abort)."
+          message: "&aType the new email for &f{player}&a in chat."
           title: "&6Enter Email"
-          subtitle: "&eType it in chat (&fcancel&e to abort)"
+          subtitle: "&eType it in chat"
         password:
-          message: "&aType the new password for &f{player}&a in chat (&fcancel&a to abort)."
+          message: "&aType the new password for &f{player}&a in chat."
           title: "&6Enter Password"
-          subtitle: "&eType it in chat (&fcancel&e to abort)"
+          subtitle: "&eType it in chat"
       Language:
         name: "&9&lLanguage: {player}"
         layout: "ABCABCABCBLLLLLLLBABCAXCABC"

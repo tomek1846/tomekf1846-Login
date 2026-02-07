@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.GUI.ChatCancelButton;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerList.Other.PlayerListPageManager;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerList.PlayerListGui;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerManage.PlayerManageState;
@@ -30,6 +31,7 @@ public class PlayerListSearch implements Listener {
         searchingPlayer = player;
         searchingPlayer.sendMessage(LanguageManager.getMessage(player, "messages.prefix.main-prefix")
                 + LanguageManager.getMessage(player, "messages.gui.Playerlist.Search.search-message"));
+        ChatCancelButton.send(player);
         sendSearchTitle(player);
     }
 
@@ -95,6 +97,14 @@ public class PlayerListSearch implements Listener {
         }
 
         searchingPlayer = null;
+    }
+
+    public static void cancelSearch(Player player) {
+        if (player == null || searchingPlayer == null || !searchingPlayer.equals(player)) {
+            return;
+        }
+        searchingPlayer = null;
+        PlayerListGui.openGUI(player, PlayerListPageManager.playerPages.getOrDefault(player.getUniqueId(), 1));
     }
 
 
@@ -174,13 +184,9 @@ public class PlayerListSearch implements Listener {
 
         if (searchingPlayer != null && searchingPlayer.equals(player)) {
             event.setCancelled(true);
+            event.getRecipients().clear();
 
             Bukkit.getScheduler().runTask(MainSpigot.getInstance(), () -> {
-                if ("cancel".equalsIgnoreCase(message.trim())) {
-                    searchingPlayer = null;
-                    PlayerListGui.openGUI(player, PlayerListPageManager.playerPages.getOrDefault(player.getUniqueId(), 1));
-                    return;
-                }
                 searchAndDisplay(message);
             });
         }
