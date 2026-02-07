@@ -139,13 +139,16 @@ public class LanguageGui {
             meta.setLore(lore);
             boolean applied = false;
             if (texture != null && !texture.isBlank()) {
-                applied = SkinsRestorerHook.applySkullTexture(head, meta, texture);
+                applied = applyTexture(meta, texture);
                 if (!applied) {
-                    applied = applyTexture(meta, texture);
+                    applied = SkinsRestorerHook.applySkullTexture(head, meta, texture);
                 }
             }
             if (!applied && owner != null && !owner.isBlank()) {
-                meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+                applied = SkinsRestorerHook.applySkinByName(head, meta, owner);
+                if (!applied) {
+                    meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+                }
             }
             head.setItemMeta(meta);
         }
@@ -179,9 +182,9 @@ public class LanguageGui {
         }
         String trimmed = textureValue.trim();
         if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-            return trimmed;
+            return normalizeTextureUrl(trimmed);
         }
-        return extractSkinUrlFromBase64(trimmed);
+        return normalizeTextureUrl(extractSkinUrlFromBase64(trimmed));
     }
 
     private static String extractSkinUrlFromBase64(String base64Texture) {
@@ -203,5 +206,15 @@ public class LanguageGui {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static String normalizeTextureUrl(String url) {
+        if (url == null || url.isBlank()) {
+            return null;
+        }
+        if (url.startsWith("http://textures.minecraft.net/texture/")) {
+            return url.replace("http://", "https://");
+        }
+        return url;
     }
 }
