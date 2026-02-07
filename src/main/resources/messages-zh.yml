@@ -266,10 +266,10 @@ messages:
         layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
         name: "&b&l玩家搜索结果"
         no-player-data: "&c没有找到匹配的玩家。"
-        search-message: "&a请输入昵称进行搜索"
+        search-message: "&a请输入昵称进行搜索（&fcancel&a 取消）"
         search-title:
           title: "&6请输入昵称"
-          subtitle: "&e在聊天框中搜索玩家"
+          subtitle: "&e在聊天框中搜索玩家（&fcancel&e 取消）"
         buttons:
           Close:
             material: BARRIER
@@ -277,7 +277,7 @@ messages:
             lore:
               - "&7右键/左键点击关闭GUI"
     PlayerManage:
-      name: "&d&l玩家管理: {player}"
+      name: "&d&l管理: {player}"
       layout: "ABCB1BCBABCBACABCBCB2B3B4BCABC5A6CBAB7BACAB8BCBAB9BABC"
       filling:
         filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
@@ -336,13 +336,13 @@ messages:
             - "&7右键/左键点击关闭GUI"
       input:
         email:
-          message: "&a请在聊天中输入 &f{player}&a 的新邮箱。"
+          message: "&a请在聊天中输入 &f{player}&a 的新邮箱（&fcancel&a 取消）。"
           title: "&6输入邮箱"
-          subtitle: "&e在聊天中输入"
+          subtitle: "&e在聊天中输入（&fcancel&e 取消）"
         password:
-          message: "&a请在聊天中输入 &f{player}&a 的新密码。"
+          message: "&a请在聊天中输入 &f{player}&a 的新密码（&fcancel&a 取消）。"
           title: "&6输入密码"
-          subtitle: "&e在聊天中输入"
+          subtitle: "&e在聊天中输入（&fcancel&e 取消）"
       Language:
         name: "&9&l语言: {player}"
         layout: "ABCABCABCBLLLLLLLBABCAXCABC"
@@ -396,21 +396,21 @@ messages:
               - "&7语言: &f葡萄牙语"
               - "{status}"
       ConfirmUnregister:
-        name: "&4&l确认注销: {player}"
-        layout: "RRRRRRRRRRRCAARYRRRRRRRRRRR"
+        name: "&4&l确认注销"
+        layout: "ABCBABCBABC1ACA2CBCBABABABC"
         filling:
           filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-          filling-R: "RED_CONCRETE"
-          filling-G: "GREEN_CONCRETE"
+          filling-B: "BLACK_STAINED_GLASS_PANE"
+          filling-C: "BLUE_STAINED_GLASS_PANE"
         buttons:
           Cancel:
-            material: RED_CONCRETE
+            material: GREEN_CONCRETE
             name: "&c&l取消"
             lore:
               - "&7返回，不进行更改。"
           Confirm:
-            material: GREEN_CONCRETE
-            name: "&a&l确认"
+            material: RED_CONCRETE
+            name: "&4&l注销"
             lore:
               - "&7注销该玩家。"
     Language:

@@ -13,28 +13,27 @@ import java.util.List;
 public class PlayerManageConfirmGui {
 
     public static void openGUI(Player viewer, String targetName) {
-        String title = LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.ConfirmUnregister.name")
-                .replace("{player}", targetName);
+        String title = LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.ConfirmUnregister.name");
         String layout = LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.ConfirmUnregister.layout");
         int size = layout.length();
         if (size == 0 || size % 9 != 0) {
             size = 27;
-            layout = "RRRRRRRRRRRCAARYRRRRRRRRRRR";
+            layout = "ABCBABCBABC1ACA2CBCBABABABC";
         }
         Inventory gui = Bukkit.createInventory(null, size, title);
 
-        ItemStack glass = createItem(
+        ItemStack glassA = createItem(
                 Material.valueOf(LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.ConfirmUnregister.filling.filling-A")),
                 "§7",
                 List.of()
         );
-        ItemStack redFill = createItem(
-                Material.valueOf(LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.ConfirmUnregister.filling.filling-R")),
+        ItemStack glassB = createItem(
+                Material.valueOf(LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.ConfirmUnregister.filling.filling-B")),
                 "§7",
                 List.of()
         );
-        ItemStack greenFill = createItem(
-                Material.valueOf(LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.ConfirmUnregister.filling.filling-G")),
+        ItemStack glassC = createItem(
+                Material.valueOf(LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.ConfirmUnregister.filling.filling-C")),
                 "§7",
                 List.of()
         );
@@ -52,11 +51,11 @@ public class PlayerManageConfirmGui {
         for (int i = 0; i < layout.length() && i < gui.getSize(); i++) {
             char symbol = layout.charAt(i);
             switch (symbol) {
-                case 'A' -> gui.setItem(i, glass);
-                case 'R' -> gui.setItem(i, redFill);
-                case 'G' -> gui.setItem(i, greenFill);
-                case 'C' -> gui.setItem(i, cancel);
-                case 'Y' -> gui.setItem(i, confirm);
+                case 'A' -> gui.setItem(i, glassA);
+                case 'B' -> gui.setItem(i, glassB);
+                case 'C' -> gui.setItem(i, glassC);
+                case '1' -> gui.setItem(i, confirm);
+                case '2' -> gui.setItem(i, cancel);
                 default -> {
                 }
             }

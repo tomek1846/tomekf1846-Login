@@ -15,6 +15,14 @@ public class AdminCommandEmail {
     private static final HashMap<String, String> pendingEmails = new HashMap<>();
 
     public static void changeEmail(CommandSender sender, String playerName, String newEmail) {
+        changeEmail(sender, playerName, newEmail, true);
+    }
+
+    public static void changeEmailFromGui(CommandSender sender, String playerName, String newEmail) {
+        changeEmail(sender, playerName, newEmail, false);
+    }
+
+    private static void changeEmail(CommandSender sender, String playerName, String newEmail, boolean requireConfirmation) {
         UUID uuid = NickUuidCheck.getUUIDFromNick(playerName);
         String prefix = LanguageManager.getMessage(sender, "messages.prefix.main-prefix");
 
@@ -31,14 +39,15 @@ public class AdminCommandEmail {
 
         int atIndex = newEmail.indexOf("@");
         int lastDotIndex = newEmail.lastIndexOf(".");
-        if (newEmail.length() < 3 ||
+        boolean invalidFormat = newEmail.length() < 3 ||
                 !newEmail.contains("@") ||
                 newEmail.chars().filter(ch -> ch == '@').count() > 1 ||
                 newEmail.startsWith("@") ||
                 newEmail.contains("@.") ||
                 lastDotIndex == -1 ||
                 atIndex > lastDotIndex ||
-                lastDotIndex - atIndex < 3) {
+                lastDotIndex - atIndex < 3;
+        if (invalidFormat && requireConfirmation) {
             String key = sender.getName() + ":" + playerName;
             MainSpigot instance = MainSpigot.getInstance();
 

@@ -267,10 +267,10 @@ messages:
         layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
         name: "&b&lRésultats de recherche de joueurs"
         no-player-data: "&cAucun joueur correspondant trouvé."
-        search-message: "&aEntrez un pseudo pour rechercher"
+        search-message: "&aEntrez un pseudo pour rechercher (&fcancel&a pour annuler)"
         search-title:
           title: "&6Entrez un pseudo"
-          subtitle: "&eRecherchez un joueur dans le chat"
+          subtitle: "&eRecherchez un joueur dans le chat (&fcancel&e pour annuler)"
         buttons:
           Close:
             material: BARRIER
@@ -278,7 +278,7 @@ messages:
             lore:
               - "&7Cliquez RMB/LMB pour fermer le GUI"
     PlayerManage:
-      name: "&d&lGestion du joueur : {player}"
+      name: "&d&lGestion : {player}"
       layout: "ABCB1BCBABCBACABCBCB2B3B4BCABC5A6CBAB7BACAB8BCBAB9BABC"
       filling:
         filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
@@ -337,13 +337,13 @@ messages:
             - "&7Cliquez RMB/LMB pour fermer le GUI"
       input:
         email:
-          message: "&aÉcrivez le nouvel email pour &f{player}&a dans le chat."
+          message: "&aÉcrivez le nouvel email pour &f{player}&a dans le chat (&fcancel&a pour annuler)."
           title: "&6Saisir l'email"
-          subtitle: "&eÉcrivez-le dans le chat"
+          subtitle: "&eÉcrivez-le dans le chat (&fcancel&e pour annuler)"
         password:
-          message: "&aÉcrivez le nouveau mot de passe pour &f{player}&a dans le chat."
+          message: "&aÉcrivez le nouveau mot de passe pour &f{player}&a dans le chat (&fcancel&a pour annuler)."
           title: "&6Saisir le mot de passe"
-          subtitle: "&eÉcrivez-le dans le chat"
+          subtitle: "&eÉcrivez-le dans le chat (&fcancel&e pour annuler)"
       Language:
         name: "&9&lLangue : {player}"
         layout: "ABCABCABCBLLLLLLLBABCAXCABC"
@@ -397,21 +397,21 @@ messages:
               - "&7Langue : &fPortugais"
               - "{status}"
       ConfirmUnregister:
-        name: "&4&lConfirmer la désinscription : {player}"
-        layout: "RRRRRRRRRRRCAARYRRRRRRRRRRR"
+        name: "&4&lConfirmer la désinscription"
+        layout: "ABCBABCBABC1ACA2CBCBABABABC"
         filling:
           filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
-          filling-R: "RED_CONCRETE"
-          filling-G: "GREEN_CONCRETE"
+          filling-B: "BLACK_STAINED_GLASS_PANE"
+          filling-C: "BLUE_STAINED_GLASS_PANE"
         buttons:
           Cancel:
-            material: RED_CONCRETE
+            material: GREEN_CONCRETE
             name: "&c&lAnnuler"
             lore:
               - "&7Retour sans modifications."
           Confirm:
-            material: GREEN_CONCRETE
-            name: "&a&lConfirmer"
+            material: RED_CONCRETE
+            name: "&4&lDésinscrire"
             lore:
               - "&7Désinscrire ce joueur."
     Language:

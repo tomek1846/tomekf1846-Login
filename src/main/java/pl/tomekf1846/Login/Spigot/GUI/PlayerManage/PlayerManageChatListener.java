@@ -22,6 +22,15 @@ public class PlayerManageChatListener implements Listener {
         event.setCancelled(true);
         String targetName = PlayerManageState.getTarget(player);
         String message = event.getMessage();
+        if ("cancel".equalsIgnoreCase(message.trim())) {
+            PlayerManageState.clearInput(player);
+            Bukkit.getScheduler().runTask(MainSpigot.getInstance(), () -> {
+                if (targetName != null && !targetName.isBlank()) {
+                    PlayerManageGui.openGUI(player, targetName);
+                }
+            });
+            return;
+        }
 
         PlayerManageState.clearInput(player);
 
@@ -30,7 +39,7 @@ public class PlayerManageChatListener implements Listener {
                 return;
             }
             if (mode == PlayerManageState.InputMode.EMAIL) {
-                AdminCommandEmail.changeEmail(player, targetName, message);
+                AdminCommandEmail.changeEmailFromGui(player, targetName, message);
             } else if (mode == PlayerManageState.InputMode.PASSWORD) {
                 AdminCommandChangePassword.changePassword(player, targetName, message);
             }
