@@ -275,7 +275,7 @@ messages:
               - "&7右键/左键点击关闭GUI"
     Language:
       name: "&9&l语言"
-      layout: "ABCABCABCBLLLLLBBBABCAXCABC"
+      layout: "ABCABCABCBLLLLLLLBABCAXCABC"
       status:
         current: "&a已选择"
         available: "&e点击选择"

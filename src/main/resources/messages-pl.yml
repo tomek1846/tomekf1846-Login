@@ -273,7 +273,7 @@ messages:
               - "&7Kliknij PPM/LPM, aby zamknąć GUI"
     Language:
       name: "&9&lJęzyk"
-      layout: "ABCABCABCBLLLLLBBBABCAXCABC"
+      layout: "ABCABCABCBLLLLLLLBABCAXCABC"
       status:
         current: "&aWybrany"
         available: "&eKliknij aby wybrać"
