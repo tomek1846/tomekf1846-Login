@@ -39,6 +39,34 @@ Main-Settings:
   # Language defaults to English
   # Supported languages: Polish, English, Spanish, Chinese, German, French, Portuguese
   Language: English
+
+  # Premium account registration !NOT IMPLEMENTED!
+  Premium-Command: false
+
+  # Password Requirements
+  Password-Requirements:
+    Minimum-length: 6  # Minimum password length (Set 0 to disbale)
+    Password-simple: true  # Password Weakness Verification (blocked-passwords.yml File)
+
+  Wrong-kick-password: false  # Kick a player after entering the wrong password
+
+  Time-to-Login: 25  # Time to log in (Set 0 to disbale)
+  Time-to-Register: 60  # Time to register (Set 0 to disbale)
+
+  # Commands available before logging in
+  Login-Command:
+    - "login"
+    - "log"
+    - "l"
+    - "register"
+    - "reg"
+    - "login-help"
+    - "ulogin"
+    - "userlogin"
+    - "language"
+    - "lang"
+
+  # Descriptions and heads to set and language selection for a specific person in the plugin.
   Language-Options:
     English:
       Aliases:
@@ -93,32 +121,6 @@ Main-Settings:
         - "pt-pt"
       Skull-Texture: ""
       Skull-Owner: "MHF_Portugal"
-
-  # Premium account registration !NOT IMPLEMENTED!
-  Premium-Command: false
-
-  # Password Requirements
-  Password-Requirements:
-    Minimum-length: 6  # Minimum password length (Set 0 to disbale)
-    Password-simple: true  # Password Weakness Verification (blocked-passwords.yml File)
-
-  Wrong-kick-password: false  # Kick a player after entering the wrong password
-
-  Time-to-Login: 25  # Time to log in (Set 0 to disbale)
-  Time-to-Register: 60  # Time to register (Set 0 to disbale)
-
-  # Commands available before logging in
-  Login-Command:
-    - "login"
-    - "log"
-    - "l"
-    - "register"
-    - "reg"
-    - "login-help"
-    - "ulogin"
-    - "userlogin"
-    - "language"
-    - "lang"
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #   _____ _
