@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import pl.tomekf1846.Login.Spigot.FileManager.LanguageSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,10 @@ public class AdminCommandTabCompleter implements TabCompleter {
             suggestions.add("email");
             suggestions.add("forcelogin");
             suggestions.add("ip");
+            suggestions.add("language");
+            suggestions.add("lang");
         } else if (args.length == 2) {
-            if (matchesAny(args[0], "cracked", "premium", "forcelogin", "ip", "unregister", "changepass", "changepassword", "email", "register")) {
+            if (matchesAny(args[0], "cracked", "premium", "forcelogin", "ip", "unregister", "changepass", "changepassword", "email", "register", "language", "lang")) {
                 return getMatchingPlayers(args[1]);
             }
         } else if (args.length == 3) {
@@ -43,6 +46,8 @@ public class AdminCommandTabCompleter implements TabCompleter {
                 suggestions.add("(None)");
             } else if (args[0].equalsIgnoreCase("register")) {
                 suggestions.add("(Password)");
+            } else if (matchesAny(args[0], "language", "lang")) {
+                suggestions.addAll(LanguageSettings.getLanguageCommandNames());
             }
         }
 

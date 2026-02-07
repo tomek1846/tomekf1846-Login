@@ -40,6 +40,8 @@ messages:
     cracked_usage: "&c用法: /cracked (新密码)"
     changepass_usage: "&c用法: /changepass (旧密码) (新密码)"
     email_usage: "&c用法: /email (邮箱)"
+    language_unknown: "&c未知语言。请使用 /language gui 或 /language <语言>。"
+    language_changed: "&a语言已更改为 {language}。"
     unknown_command: "&c未知命令。请使用 /login-help 查看可用命令。"
     help:
       available_commands: "&c可用命令:"
@@ -53,7 +55,11 @@ messages:
       changepass_command: "&e/changepass (旧密码) (新密码)"
       changepassword_command: "&e/changepassword (旧密码) (新密码)"
       email_command: "&e/email (电子邮件) (密码)"
+      language_command: "&e/language [gui|语言]"
+      lang_command: "&e/lang [gui|语言]"
       login_help_command: "&e/login-help"
+      ulogin_command: "&e/ulogin"
+      userlogin_command: "&e/userlogin"
     premium-player: "&c由于您是 premium 玩家，无法更改密码！"
     data-not-found: "&c未找到登录数据文件！"
     incorrect-old-password: "&c旧密码不正确！"
@@ -152,6 +158,9 @@ messages:
     usage_forcelogin: "&c用法: /alogin forcelogin (玩家)"
     usage_ip: "&c用法: /alogin ip (玩家)"
     usage_reload: "&c用法: /alogin reload"
+    usage_language: "&c用法: /alogin language (玩家) (语言)"
+    language_unknown: "&c未知语言。"
+    language_changed: "&a已将玩家 {player} 的语言设置为 {language}。"
     unknown_command: "&c未知命令。请尝试 /alogin。"
     help:
       available_commands: "&c可用命令:"
@@ -166,6 +175,8 @@ register_command: "&e/alogin register (玩家) (密码)"
 email_command: "&e/alogin email (玩家) (邮箱或 none)"
 forcelogin_command: "&e/alogin forcelogin (玩家)"
 ip_command: "&e/alogin ip (玩家)"
+language_command: "&e/alogin language (玩家) (语言)"
+lang_command: "&e/alogin lang (玩家) (语言)"
 reload_command: "&e/alogin reload"
 gui:
   frist-page: "&c这是第一页，不能再退回去了。"
@@ -263,5 +274,42 @@ gui:
           name: "&c&l关闭GUI"
           lore:
             - "&7右键/左键点击关闭GUI"
+    Language:
+      name: "&9&l语言"
+      layout: "ABCABCABCBLLLLLBBBABCAXCABC"
+      status:
+        current: "&a已选择"
+        available: "&e点击选择"
+      filling:
+        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+        filling-B: "BLACK_STAINED_GLASS_PANE"
+        filling-C: "BLUE_STAINED_GLASS_PANE"
+      buttons:
+        Close:
+          material: BARRIER
+          name: "&c&l关闭GUI"
+          lore:
+            - "&7右键/左键点击关闭GUI"
+      languages:
+        english:
+          name: "&aEnglish"
+          lore:
+            - "&7语言: &fEnglish"
+            - "{status}"
+        polish:
+          name: "&cPolish"
+          lore:
+            - "&7语言: &fPolish"
+            - "{status}"
+        spanish:
+          name: "&eEspañol"
+          lore:
+            - "&7语言: &fEspañol"
+            - "{status}"
+        chinese:
+          name: "&b中文"
+          lore:
+            - "&7语言: &f中文"
+            - "{status}"
 Config-Version: 1.0.0 #不要更改
 #由tomekf1846-Login生成

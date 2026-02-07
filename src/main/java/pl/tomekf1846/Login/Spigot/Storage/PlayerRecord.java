@@ -16,6 +16,7 @@ public class PlayerRecord {
     private String email;
     private String premium;
     private String password;
+    private String language;
     private int version;
     private List<String> playerIP;
     private List<LoginAttemptRecord> loginAttempts;
@@ -31,6 +32,7 @@ public class PlayerRecord {
         record.email = "none";
         record.premium = "";
         record.password = password;
+        record.language = "";
         record.version = 1;
         record.playerIP = new ArrayList<>();
         return record;
@@ -47,6 +49,7 @@ public class PlayerRecord {
         map.put("Email", email);
         map.put("Premium", premium);
         map.put("Password", password);
+        map.put("Language", language);
         map.put("Version", String.valueOf(version));
         return map;
     }
@@ -121,6 +124,14 @@ public class PlayerRecord {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public int getVersion() {

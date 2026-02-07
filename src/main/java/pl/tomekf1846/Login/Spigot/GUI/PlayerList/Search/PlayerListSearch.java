@@ -19,21 +19,20 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PlayerListSearch implements Listener {
-    private static final String PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
-
     public static Player searchingPlayer = null;
 
     public static void startSearch(Player player) {
         searchingPlayer = player;
-        searchingPlayer.sendMessage(PREFIX + LanguageManager.getMessage("messages.gui.Playerlist.Search.search-message"));
+        searchingPlayer.sendMessage(LanguageManager.getMessage(player, "messages.prefix.main-prefix")
+                + LanguageManager.getMessage(player, "messages.gui.Playerlist.Search.search-message"));
         sendSearchTitle(player);
     }
 
     private static void sendSearchTitle(Player player) {
         Bukkit.getScheduler().runTaskTimer(MainSpigot.getInstance(), () -> {
             if (searchingPlayer != null && searchingPlayer.equals(player)) {
-                player.sendTitle(LanguageManager.getMessage("messages.gui.Playerlist.Search.search-title.title"),
-                        LanguageManager.getMessage("messages.gui.Playerlist.Search.search-title.subtitle"),
+                player.sendTitle(LanguageManager.getMessage(player, "messages.gui.Playerlist.Search.search-title.title"),
+                        LanguageManager.getMessage(player, "messages.gui.Playerlist.Search.search-title.subtitle"),
                         10, 40, 10);
             }
         }, 0L, 40L);
@@ -47,29 +46,30 @@ public class PlayerListSearch implements Listener {
         List<String> matchedPlayers = searchPlayers(searchText.toLowerCase());
 
         if (matchedPlayers.isEmpty()) {
-            searchingPlayer.sendMessage(PREFIX + LanguageManager.getMessage("messages.gui.Playerlist.Search.no-player-data"));
+            searchingPlayer.sendMessage(LanguageManager.getMessage(searchingPlayer, "messages.prefix.main-prefix")
+                    + LanguageManager.getMessage(searchingPlayer, "messages.gui.Playerlist.Search.no-player-data"));
         } else {
-            Inventory gui = Bukkit.createInventory(null, 54, LanguageManager.getMessage("messages.gui.Playerlist.Search.name"));
-            String layout = LanguageManager.getMessage("messages.gui.Playerlist.Search.layout");
+            Inventory gui = Bukkit.createInventory(null, 54, LanguageManager.getMessage(searchingPlayer, "messages.gui.Playerlist.Search.name"));
+            String layout = LanguageManager.getMessage(searchingPlayer, "messages.gui.Playerlist.Search.layout");
             for (int i = 0; i < layout.length(); i++) {
                 int slot = i;
                 char ch = layout.charAt(i);
                 switch (ch) {
                     case 'A':
-                        gui.setItem(slot, new ItemStack(Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.filling.filling-A"))));
+                        gui.setItem(slot, new ItemStack(Material.valueOf(LanguageManager.getMessage(searchingPlayer, "messages.gui.Playerlist.filling.filling-A"))));
                         break;
                     case 'B':
-                        gui.setItem(slot, new ItemStack(Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.filling.filling-B"))));
+                        gui.setItem(slot, new ItemStack(Material.valueOf(LanguageManager.getMessage(searchingPlayer, "messages.gui.Playerlist.filling.filling-B"))));
                         break;
                     case 'C':
-                        gui.setItem(slot, new ItemStack(Material.valueOf(LanguageManager.getMessage("messages.gui.Playerlist.filling.filling-C"))));
+                        gui.setItem(slot, new ItemStack(Material.valueOf(LanguageManager.getMessage(searchingPlayer, "messages.gui.Playerlist.filling.filling-C"))));
                         break;
                     case '1':
                         ItemStack barrier = new ItemStack(Material.BARRIER);
                         var meta = barrier.getItemMeta();
                         if (meta != null) {
-                            meta.setDisplayName(LanguageManager.getMessage("messages.gui.Playerlist.Search.buttons.Close.name"));
-                            meta.setLore(LanguageManager.getMessageList("messages.gui.Playerlist.Search.buttons.Close.lore"));
+                            meta.setDisplayName(LanguageManager.getMessage(searchingPlayer, "messages.gui.Playerlist.Search.buttons.Close.name"));
+                            meta.setLore(LanguageManager.getMessageList(searchingPlayer, "messages.gui.Playerlist.Search.buttons.Close.lore"));
                         }
                         barrier.setItemMeta(meta);
                         gui.setItem(slot, barrier);
@@ -82,7 +82,7 @@ public class PlayerListSearch implements Listener {
             int slotIndex = 9;
             for (String nick : matchedPlayers) {
                 if (slotIndex >= 45) break;
-                gui.setItem(slotIndex, createPlayerHead(nick));
+                gui.setItem(slotIndex, createPlayerHead(searchingPlayer, nick));
                 slotIndex++;
             }
 
@@ -107,12 +107,12 @@ public class PlayerListSearch implements Listener {
         return matchedPlayers;
     }
 
-    private static ItemStack createPlayerHead(String nick) {
+    private static ItemStack createPlayerHead(Player viewer, String nick) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName(LanguageManager.getMessage("messages.gui.Playerlist.Players.name").replace("{player}", nick));
+            meta.setDisplayName(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.name").replace("{player}", nick));
 
             try {
                 meta.setOwningPlayer(Bukkit.getOfflinePlayer(nick));
@@ -120,12 +120,18 @@ public class PlayerListSearch implements Listener {
             }
 
             List<String> lore = new ArrayList<>();
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.uuid").replace("{uuid}", getPlayerData(nick, "Player-UUID")));
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.password").replace("{password}", getPlayerData(nick, "Password")));
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.fristip").replace("{fristip}", getPlayerData(nick, "FirstIP")));
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.lastip").replace("{lastip}", getPlayerData(nick, "LastIP")));
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.email").replace("{email}", getPlayerData(nick, "Email")));
-            lore.add(LanguageManager.getMessage("messages.gui.Playerlist.Players.lore.premium").replace("{premium}", getPlayerData(nick, "Premium")));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.uuid")
+                    .replace("{uuid}", getPlayerData(viewer, nick, "Player-UUID")));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.password")
+                    .replace("{password}", getPlayerData(viewer, nick, "Password")));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.fristip")
+                    .replace("{fristip}", getPlayerData(viewer, nick, "FirstIP")));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.lastip")
+                    .replace("{lastip}", getPlayerData(viewer, nick, "LastIP")));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.email")
+                    .replace("{email}", getPlayerData(viewer, nick, "Email")));
+            lore.add(LanguageManager.getMessage(viewer, "messages.gui.Playerlist.Players.lore.premium")
+                    .replace("{premium}", getPlayerData(viewer, nick, "Premium")));
 
             meta.setLore(lore);
             head.setItemMeta(meta);
@@ -133,7 +139,7 @@ public class PlayerListSearch implements Listener {
         return head;
     }
 
-    private static String getPlayerData(String nick, String key) {
+    private static String getPlayerData(Player viewer, String nick, String key) {
         Map<UUID, Map<String, String>> allPlayerData = PlayerDataSave.loadAllPlayerData();
 
         for (Map.Entry<UUID, Map<String, String>> entry : allPlayerData.entrySet()) {
@@ -141,12 +147,12 @@ public class PlayerListSearch implements Listener {
             if (playerNick != null && playerNick.equalsIgnoreCase(nick)) {
                 String value = entry.getValue().get(key);
                 if (value == null || value.isEmpty()) {
-                    return LanguageManager.getMessage("messages.gui.no-data");
+                    return LanguageManager.getMessage(viewer, "messages.gui.no-data");
                 }
                 return value;
             }
         }
-        return LanguageManager.getMessage("messages.gui.no-data");
+        return LanguageManager.getMessage(viewer, "messages.gui.no-data");
     }
 
     @EventHandler

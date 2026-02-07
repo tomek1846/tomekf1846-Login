@@ -130,6 +130,31 @@ public class JsonPlayerDataStorage extends AbstractFilePlayerDataStorage {
     }
 
     @Override
+    public void setPlayerLanguage(UUID uuid, String language) {
+        if (uuid == null || language == null || language.isEmpty()) {
+            return;
+        }
+        PlayerRecord record = readRecord(uuid);
+        if (record == null) {
+            return;
+        }
+        record.setLanguage(language);
+        writeRecord(uuid, record);
+    }
+
+    @Override
+    public String getPlayerLanguage(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+        PlayerRecord record = readRecord(uuid);
+        if (record == null) {
+            return null;
+        }
+        return record.getLanguage();
+    }
+
+    @Override
     public boolean setPlayerSession(String nick, boolean isPremium) {
         UUID uuid = findUUIDByNick(nick);
         if (uuid == null) {

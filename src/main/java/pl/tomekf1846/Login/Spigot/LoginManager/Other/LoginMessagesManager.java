@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class LoginMessagesManager {
-    private static final String PREFIX = LanguageManager.getMessage("messages.prefix.main-prefix");
-
     private static final Map<UUID, BossBar> bossBars = new HashMap<>();
     private static final Map<UUID, BukkitRunnable> countdownTasks = new HashMap<>();
     private static final Map<UUID, BukkitRunnable> messageTasks = new HashMap<>();
@@ -68,7 +66,8 @@ public class LoginMessagesManager {
     private static void showRegisterInfo(Player player, int time) {
         UUID uuid = player.getUniqueId();
         if (time > 0) {
-            String bossBarMessage = LanguageManager.getMessage("messages.bossbar.registration_time_left").replace("{seconds}", String.valueOf(time));
+            String bossBarMessage = LanguageManager.getMessage(player, "messages.bossbar.registration_time_left")
+                    .replace("{seconds}", String.valueOf(time));
             BossBar bossBar = Bukkit.createBossBar(bossBarMessage, BarColor.BLUE, BarStyle.SOLID);
             bossBar.setProgress(1.0);
             bossBar.addPlayer(player);
@@ -77,17 +76,19 @@ public class LoginMessagesManager {
         }
 
         sendRepeatingTitle(player,
-                LanguageManager.getMessage("messages.title.useregister.title"),
-                LanguageManager.getMessage("messages.title.useregister.subtitle")
+                LanguageManager.getMessage(player, "messages.title.useregister.title"),
+                LanguageManager.getMessage(player, "messages.title.useregister.subtitle")
         );
 
-        sendRepeatingMessage(player, PREFIX + LanguageManager.getMessage("messages.player-commands.register-message"));
+        String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
+        sendRepeatingMessage(player, prefix + LanguageManager.getMessage(player, "messages.player-commands.register-message"));
     }
 
     private static void showLoginInfo(Player player, int time) {
         UUID uuid = player.getUniqueId();
         if (time > 0) {
-            String bossBarMessage = LanguageManager.getMessage("messages.bossbar.login_time_left").replace("{seconds}", String.valueOf(time));
+            String bossBarMessage = LanguageManager.getMessage(player, "messages.bossbar.login_time_left")
+                    .replace("{seconds}", String.valueOf(time));
             BossBar bossBar = Bukkit.createBossBar(bossBarMessage, BarColor.GREEN, BarStyle.SOLID);
             bossBar.setProgress(1.0);
             bossBar.addPlayer(player);
@@ -96,11 +97,12 @@ public class LoginMessagesManager {
         }
 
         sendRepeatingTitle(player,
-                LanguageManager.getMessage("messages.title.uselogin.title"),
-                LanguageManager.getMessage("messages.title.uselogin.subtitle")
+                LanguageManager.getMessage(player, "messages.title.uselogin.title"),
+                LanguageManager.getMessage(player, "messages.title.uselogin.subtitle")
         );
 
-        sendRepeatingMessage(player, PREFIX + LanguageManager.getMessage("messages.player-commands.login-message"));
+        String prefix = LanguageManager.getMessage(player, "messages.prefix.main-prefix");
+        sendRepeatingMessage(player, prefix + LanguageManager.getMessage(player, "messages.player-commands.login-message"));
     }
 
     private static void startCountdown(Player player, int time, boolean isRegister) {
@@ -120,7 +122,7 @@ public class LoginMessagesManager {
 
                 if (remainingTime <= 0) {
                     String kickMessageKey = isRegister ? "messages.title.registration-timeout.message" : "messages.title.login-timeout.message";
-                    player.kickPlayer(LanguageManager.getMessage(kickMessageKey));
+                    player.kickPlayer(LanguageManager.getMessage(player, kickMessageKey));
                     hideInfo(player);
                     cancel();
                 } else {
@@ -128,7 +130,8 @@ public class LoginMessagesManager {
                     bossBar.setProgress(Math.max(0.0, Math.min(1.0, progress)));
 
                     String bossBarMessageKey = isRegister ? "messages.title.bossbar.registration_time_left" : "messages.title.bossbar.login_time_left";
-                    String bossBarMessage = LanguageManager.getMessage(bossBarMessageKey).replace("{seconds}", String.valueOf(remainingTime));
+                    String bossBarMessage = LanguageManager.getMessage(player, bossBarMessageKey)
+                            .replace("{seconds}", String.valueOf(remainingTime));
                     bossBar.setTitle(bossBarMessage);
 
                     remainingTime--;
@@ -196,8 +199,8 @@ public class LoginMessagesManager {
     }
 
     private static void sendTitle(Player player, String titlePath, String subtitlePath) {
-        String title = LanguageManager.getMessage(titlePath);
-        String subtitle = LanguageManager.getMessage(subtitlePath);
+        String title = LanguageManager.getMessage(player, titlePath);
+        String subtitle = LanguageManager.getMessage(player, subtitlePath);
         player.sendTitle(title, subtitle, 10, 70, 20);
     }
 }

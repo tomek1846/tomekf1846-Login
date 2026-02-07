@@ -13,14 +13,14 @@ import java.util.UUID;
 
 public class AdminCommandUnregister {
     private static final LanguageManager languageManager = new LanguageManager(MainSpigot.getInstance());
-    private static final String PREFIX = languageManager.getMessage("messages.prefix.main-prefix");
 
 
     public static boolean unregisterPlayer(CommandSender sender, String playerName) {
         Player targetPlayer = Bukkit.getPlayer(playerName);
+        String prefix = LanguageManager.getMessage(sender, "messages.prefix.main-prefix");
 
         if (sender instanceof Player && sender.getName().equalsIgnoreCase(playerName)) {
-            sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.cannot_unregister_self"));
+            sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.cannot_unregister_self"));
             return false;
         }
 
@@ -28,7 +28,8 @@ public class AdminCommandUnregister {
             UUID uuid = NickUuidCheck.getUUIDFromNick(playerName);
 
             if (uuid == null) {
-                sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.player_does_not_exist").replace("{player}", playerName));
+                sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.player_does_not_exist")
+                        .replace("{player}", playerName));
                 return false;
             }
             return unregisterOfflinePlayer(sender, uuid, playerName);
@@ -40,21 +41,26 @@ public class AdminCommandUnregister {
 
     private static boolean unregisterOnlinePlayer(CommandSender sender, Player targetPlayer, UUID uuid, String playerName) {
         if (PlayerDataSave.deletePlayerData(uuid)) {
-            targetPlayer.kickPlayer(languageManager.getMessage("messages.admin-commands.player_kicked_unregistered"));
-            sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.successfully_unregistered").replace("{player}", playerName));
+            targetPlayer.kickPlayer(LanguageManager.getMessage(targetPlayer, "messages.admin-commands.player_kicked_unregistered"));
+            sender.sendMessage(LanguageManager.getMessage(sender, "messages.prefix.main-prefix")
+                    + LanguageManager.getMessage(sender, "messages.admin-commands.successfully_unregistered")
+                    .replace("{player}", playerName));
             return true;
         }
-        sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.failed_to_unregister").replace("{player}", playerName));
+        sender.sendMessage(LanguageManager.getMessage(sender, "messages.prefix.main-prefix")
+                + LanguageManager.getMessage(sender, "messages.admin-commands.failed_to_unregister").replace("{player}", playerName));
         PlayerLoginManager.removePlayerLoginStatus(targetPlayer);
         return false;
     }
 
     private static boolean unregisterOfflinePlayer(CommandSender sender, UUID uuid, String playerName) {
         if (PlayerDataSave.deletePlayerData(uuid)) {
-            sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.successfully_unregistered").replace("{player}", playerName));
+            sender.sendMessage(LanguageManager.getMessage(sender, "messages.prefix.main-prefix")
+                    + LanguageManager.getMessage(sender, "messages.admin-commands.successfully_unregistered").replace("{player}", playerName));
             return true;
         }
-        sender.sendMessage(PREFIX + languageManager.getMessage("messages.admin-commands.failed_to_unregister").replace("{player}", playerName));
+        sender.sendMessage(LanguageManager.getMessage(sender, "messages.prefix.main-prefix")
+                + LanguageManager.getMessage(sender, "messages.admin-commands.failed_to_unregister").replace("{player}", playerName));
         return false;
     }
 }

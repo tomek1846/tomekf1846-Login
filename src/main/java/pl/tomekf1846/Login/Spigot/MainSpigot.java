@@ -10,6 +10,7 @@ import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.GUI.MainGui.MainGuiListener;
 import pl.tomekf1846.Login.Spigot.AdminCommand.AdminCommandManager;
 import pl.tomekf1846.Login.Spigot.AdminCommand.AdminCommandTabCompleter;
+import pl.tomekf1846.Login.Spigot.GUI.Language.LanguageGuiListener;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerList.PlayerListGuiListener;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerList.Search.PlayerListSearchListener;
 import pl.tomekf1846.Login.Spigot.GUI.PlayerList.Search.PlayerListSearch;
@@ -74,6 +75,14 @@ public final class MainSpigot extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("email")).setTabCompleter(playerCommandTabCompleter);
         Objects.requireNonNull(this.getCommand("login-help")).setExecutor(playerCommandManager);
         Objects.requireNonNull(this.getCommand("login-help")).setTabCompleter(playerCommandTabCompleter);
+        Objects.requireNonNull(this.getCommand("ulogin")).setExecutor(playerCommandManager);
+        Objects.requireNonNull(this.getCommand("ulogin")).setTabCompleter(playerCommandTabCompleter);
+        Objects.requireNonNull(this.getCommand("userlogin")).setExecutor(playerCommandManager);
+        Objects.requireNonNull(this.getCommand("userlogin")).setTabCompleter(playerCommandTabCompleter);
+        Objects.requireNonNull(this.getCommand("language")).setExecutor(playerCommandManager);
+        Objects.requireNonNull(this.getCommand("language")).setTabCompleter(playerCommandTabCompleter);
+        Objects.requireNonNull(this.getCommand("lang")).setExecutor(playerCommandManager);
+        Objects.requireNonNull(this.getCommand("lang")).setTabCompleter(playerCommandTabCompleter);
         pluginStart.printLoadingSuccess();
 
         pluginStart.printLoadingListener();
@@ -86,6 +95,7 @@ public final class MainSpigot extends JavaPlugin {
         pm.addPacketListener(this.successListener);
 
         getServer().getPluginManager().registerEvents(new MainGuiListener(), this);
+        getServer().getPluginManager().registerEvents(new LanguageGuiListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerListGuiListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerLeaveListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);

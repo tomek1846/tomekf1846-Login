@@ -16,17 +16,20 @@ public class AdminCommandRegister {
 
     public static void forceRegister(CommandSender sender, String playerName, String password) {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-        String prefix = languageManager.getMessage("messages.prefix.main-prefix");
+        String prefix = LanguageManager.getMessage(sender, "messages.prefix.main-prefix");
         if (!offlinePlayer.hasPlayedBefore()) {
-            sender.sendMessage(prefix + languageManager.getMessage("messages.admin-commands.never_played_before").replace("{player}", playerName));
+            sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.never_played_before")
+                    .replace("{player}", playerName));
             return;
         }
         Map<String, String> playerData = PlayerDataSave.loadPlayerData(offlinePlayer.getUniqueId());
         if (playerData != null) {
-            sender.sendMessage(prefix + languageManager.getMessage("messages.admin-commands.already_registered").replace("{player}", playerName));
+            sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.already_registered")
+                    .replace("{player}", playerName));
             return;
         }
         PlayerDataSave.savePlayerData(offlinePlayer, password);
-        sender.sendMessage(prefix + languageManager.getMessage("messages.admin-commands.successfully_registered").replace("{player}", playerName));
+        sender.sendMessage(prefix + LanguageManager.getMessage(sender, "messages.admin-commands.successfully_registered")
+                .replace("{player}", playerName));
     }
 }

@@ -15,7 +15,9 @@ import java.util.Objects;
 
 public class LanguageManager {
     private final JavaPlugin plugin;
-    private static FileConfiguration languageConfig;
+    private static JavaPlugin pluginInstance;
+    private static final java.util.Map<String, FileConfiguration> languageConfigs = new java.util.HashMap<>();
+    private static String defaultLanguage = "english";
 
     private static final String ENGLISH_FILE_NAME = "messages-en.yml";
     private static final String POLISH_FILE_NAME = "messages-pl.yml";
@@ -24,6 +26,7 @@ public class LanguageManager {
 
     public LanguageManager(JavaPlugin plugin) {
         this.plugin = plugin;
+        pluginInstance = plugin;
         loadLanguageFile();
     }
 
@@ -56,19 +59,12 @@ public class LanguageManager {
         saveDefaultLanguageFile(CHINESE_FILE_NAME);
 
         String language = plugin.getConfig().getString("Main-Settings.Language");
-        String fileName = switch (Objects.requireNonNull(language).toLowerCase()) {
-            case "polish" -> POLISH_FILE_NAME;
-            case "spanish" -> SPANISH_FILE_NAME;
-            case "chinese" -> CHINESE_FILE_NAME;
-            default -> ENGLISH_FILE_NAME;
-        };
-
-        File languageFile = new File(languagesDir, fileName);
-        if (!languageFile.exists()) {
-            plugin.getLogger().severe("File " + fileName + " not found!");
-        } else {
-            languageConfig = YamlConfiguration.loadConfiguration(languageFile);
-        }
+        defaultLanguage = LanguageSettings.normalizeLanguage(Objects.requireNonNullElse(language, "english"));
+        languageConfigs.clear();
+        loadLanguageConfig(languagesDir, "english", ENGLISH_FILE_NAME);
+        loadLanguageConfig(languagesDir, "polish", POLISH_FILE_NAME);
+        loadLanguageConfig(languagesDir, "spanish", SPANISH_FILE_NAME);
+        loadLanguageConfig(languagesDir, "chinese", CHINESE_FILE_NAME);
     }
 
     public static void configReload(JavaPlugin plugin) {
@@ -83,14 +79,69 @@ public class LanguageManager {
     }
 
     public static @NotNull String getMessage(String path) {
-        String message = languageConfig.getString(path, "&cMessages error: " + path);
-        return convertColors(message);
+        return getMessage(null, path);
+    }
+
+    public static @NotNull String getMessage(org.bukkit.command.CommandSender sender, String path) {
+        if (sender instanceof org.bukkit.entity.Player player) {
+            return getMessage(player, path);
+        }
+        return getMessageFromLanguage(defaultLanguage, path);
+    }
+
+    public static @NotNull String getMessage(org.bukkit.entity.Player player, String path) {
+        String language = defaultLanguage;
+        if (player != null) {
+            String playerLanguage = PlayerDataSave.getPlayerLanguage(player.getUniqueId());
+            if (playerLanguage != null && !playerLanguage.isBlank()) {
+                language = LanguageSettings.normalizeLanguage(playerLanguage);
+            }
+        }
+        return getMessageFromLanguage(language, path);
     }
 
     public static @NotNull List<String> getMessageList(String path) {
-        List<String> messages = languageConfig.getStringList(path);
+        return getMessageList(null, path);
+    }
+
+    public static @NotNull List<String> getMessageList(org.bukkit.entity.Player player, String path) {
+        String language = defaultLanguage;
+        if (player != null) {
+            String playerLanguage = PlayerDataSave.getPlayerLanguage(player.getUniqueId());
+            if (playerLanguage != null && !playerLanguage.isBlank()) {
+                language = LanguageSettings.normalizeLanguage(playerLanguage);
+            }
+        }
+        return getMessageListFromLanguage(language, path);
+    }
+
+    private static void loadLanguageConfig(File languagesDir, String key, String fileName) {
+        File languageFile = new File(languagesDir, fileName);
+        if (!languageFile.exists()) {
+            pluginInstance.getLogger().severe("File " + fileName + " not found!");
+            return;
+        }
+        languageConfigs.put(key, YamlConfiguration.loadConfiguration(languageFile));
+    }
+
+    private static @NotNull String getMessageFromLanguage(String language, String path) {
+        FileConfiguration config = languageConfigs.getOrDefault(language, languageConfigs.get("english"));
+        if (config == null) {
+            return convertColors("&cMessages error: " + path);
+        }
+        String message = config.getString(path, "&cMessages error: " + path);
+        return convertColors(message);
+    }
+
+    private static @NotNull List<String> getMessageListFromLanguage(String language, String path) {
+        FileConfiguration config = languageConfigs.getOrDefault(language, languageConfigs.get("english"));
+        if (config == null) {
+            return List.of();
+        }
+        List<String> messages = config.getStringList(path);
         return messages.stream()
                 .map(LanguageManager::convertColors)
                 .toList();
     }
+}
 }
