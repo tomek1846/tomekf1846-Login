@@ -47,8 +47,7 @@ public class PlayerRegisterManager {
     }
 
     public static boolean isPlayerRegistered(Player player) {
-        File playerDataFile = new File("plugins/tomekf1846-Login/Data/" + player.getUniqueId() + ".yml");
-        return playerDataFile.exists();
+        return PlayerDataSave.loadPlayerData(player.getUniqueId()) != null;
     }
 
     public static boolean isPasswordTooSimple(String password) {

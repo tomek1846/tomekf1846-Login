@@ -62,6 +62,44 @@ Main-Settings:
     - "reg"
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Storage Configuration
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Storage:
+  # Available types:
+  # LOCAL: YML (default), JSON, H2, TOMEKDATA (legacy, not recommended)
+  # REMOTE: MYSQL, MARIADB, POSTGRESQL
+  Type: YML
+
+  # HikariCP settings for database-based storage (H2/remote).
+  Hikari:
+    Maximum-Pool-Size: 10
+    Minimum-Idle: 2
+    Connection-Timeout: 30000
+    Idle-Timeout: 600000
+    Max-Lifetime: 1800000
+
+  # H2 (local single file, no directory).
+  H2:
+    File-Name: "tomekf1846-login"
+    Table-Name: "tomekf1846-login-users"
+    Username: "sa"
+    Password: ""
+
+  # Remote database settings (MySQL/MariaDB/PostgreSQL).
+  Remote:
+    Host: "localhost"
+    Port: 3306
+    Database: "minecraft"
+    Username: "root"
+    Password: ""
+    Use-SSL: false
+    Table-Name: "tomekf1846-login-users"
+    # Optional custom JDBC URL (overrides the settings above if provided)
+    Jdbc-Url: ""
+    # Optional extra JDBC parameters (e.g. "useUnicode=true&characterEncoding=utf8")
+    Additional-Parameters: ""
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # _    _      _     _                 _
 #| |  | |    | |   | |               | |
 #| |  | | ___| |__ | |__   ___   ___ | | __
