@@ -100,7 +100,7 @@ public class LanguageManager {
 
     public static @NotNull String getMessage(org.bukkit.entity.Player player, String path) {
         String language = defaultLanguage;
-        if (player != null) {
+        if (player != null && LanguageSettings.isPerPlayerLanguageEnabled()) {
             String playerLanguage = PlayerDataSave.getPlayerLanguage(player.getUniqueId());
             if (playerLanguage != null && !playerLanguage.isBlank()) {
                 language = LanguageSettings.normalizeLanguage(playerLanguage);
@@ -115,7 +115,7 @@ public class LanguageManager {
 
     public static @NotNull List<String> getMessageList(org.bukkit.entity.Player player, String path) {
         String language = defaultLanguage;
-        if (player != null) {
+        if (player != null && LanguageSettings.isPerPlayerLanguageEnabled()) {
             String playerLanguage = PlayerDataSave.getPlayerLanguage(player.getUniqueId());
             if (playerLanguage != null && !playerLanguage.isBlank()) {
                 language = LanguageSettings.normalizeLanguage(playerLanguage);

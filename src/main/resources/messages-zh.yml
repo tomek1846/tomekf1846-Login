@@ -34,6 +34,7 @@ messages:
   player-commands:
     only_players: "&c仅限玩家使用此命令。"
     command_disabled: "&c已禁用 premium/cracked 命令。"
+    language_command_disabled: "&c配置中已禁用玩家语言选择。"
     register_usage: "&c用法: /register (密码) (确认密码)"
     login_usage: "&c用法: /login (密码)"
     premium_usage: "&c用法: /premium (密码)"
@@ -131,6 +132,7 @@ messages:
     force_login_success: "&a成功强制玩家 {player} 登录。"
     cannot_change_own_status: "&c您不能更改您自己账号的状态！"
     premium_command_disabled: "&c已禁用 Premium/Cracked 命令。"
+    language_command_disabled: "&c配置中已禁用玩家语言选择。"
     player_file_not_found: "&c未找到玩家数据文件！"
     already_premium: "&c该玩家已是 Premium 玩家！"
     already_cracked: "&c该玩家已是 Cracked 玩家！"

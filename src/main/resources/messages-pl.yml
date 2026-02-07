@@ -31,6 +31,7 @@ messages:
   player-commands:
     only_players: "&cTylko gracze mogą użyć tej komendy."
     command_disabled: "&cKomendy premium/cracked są wyłączone w konfiguracji."
+    language_command_disabled: "&cZmiana języka gracza jest wyłączona w konfiguracji."
     register_usage: "&cUżycie: /register (hasło) (powtóż_hasło)"
     login_usage: "&cUżycie: /login (hasło)"
     premium_usage: "&cUżycie: /premium (hasło)"
@@ -128,6 +129,7 @@ messages:
     force_login_success: "&aPomyślnie zalogowano gracza {player}."
     cannot_change_own_status: "&cNie możesz zmienić statusu własnego konta!"
     premium_command_disabled: "&cKomendy premium/cracked są wyłączone w konfiguracji."
+    language_command_disabled: "&cZmiana języka gracza jest wyłączona w konfiguracji."
     player_file_not_found: "&cPlik gracza nie został znaleziony!"
     already_premium: "&cTen gracz jest już ustawiony jako premium!"
     already_cracked: "&cTen gracz jest już ustawiony jako cracked!"
