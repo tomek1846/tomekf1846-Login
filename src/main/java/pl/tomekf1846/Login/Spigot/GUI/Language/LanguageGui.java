@@ -137,7 +137,9 @@ public class LanguageGui {
             meta.setDisplayName(name);
             meta.setLore(lore);
             if (texture != null && !texture.isBlank()) {
-                applyTexture(meta, texture);
+                if (!applyTexture(meta, texture) && owner != null && !owner.isBlank()) {
+                    meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+                }
             } else if (owner != null && !owner.isBlank()) {
                 meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
             }
@@ -146,9 +148,11 @@ public class LanguageGui {
         return head;
     }
 
-    public static void applyTexture(SkullMeta meta, String base64Texture) {
-        String skinUrl = extractSkinUrlFromBase64(base64Texture);
-        if (skinUrl == null) return;
+    public static boolean applyTexture(SkullMeta meta, String textureValue) {
+        String skinUrl = resolveSkinUrl(textureValue);
+        if (skinUrl == null) {
+            return false;
+        }
 
         PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
         PlayerTextures textures = profile.getTextures();
@@ -157,11 +161,23 @@ public class LanguageGui {
             textures.setSkin(new URL(skinUrl));
         } catch (Exception e) {
             e.printStackTrace();
-            return;
+            return false;
         }
 
         profile.setTextures(textures);
         meta.setOwnerProfile(profile);
+        return true;
+    }
+
+    private static String resolveSkinUrl(String textureValue) {
+        if (textureValue == null || textureValue.isBlank()) {
+            return null;
+        }
+        String trimmed = textureValue.trim();
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+            return trimmed;
+        }
+        return extractSkinUrlFromBase64(trimmed);
     }
 
     private static String extractSkinUrlFromBase64(String base64Texture) {
