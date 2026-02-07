@@ -12,6 +12,7 @@ import org.bukkit.potion.PotionEffectType;
 import pl.tomekf1846.Login.Spigot.AdminCommand.Command.AdminCommandForceLogin;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
+import pl.tomekf1846.Login.Spigot.GUI.GuiChatHelper;
 import pl.tomekf1846.Login.Spigot.LoginManager.Login.PlayerLoginManager;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
 
@@ -52,18 +53,18 @@ public class PlayerManageGuiListener implements Listener {
         if (material == Material.REPEATER && name.equals(LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.buttons.Email.name"))) {
             PlayerManageState.startInput(viewer, targetName, PlayerManageState.InputMode.EMAIL);
             viewer.closeInventory();
-            viewer.sendMessage(LanguageManager.getMessage(viewer, "messages.prefix.main-prefix")
-                    + LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.input.email.message")
-                    .replace("{player}", targetName));
+            GuiChatHelper.sendMessageWithCancelButton(viewer,
+                    LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.input.email.message")
+                            .replace("{player}", targetName));
             return;
         }
 
         if (material == Material.COMPARATOR && name.equals(LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.buttons.Password.name"))) {
             PlayerManageState.startInput(viewer, targetName, PlayerManageState.InputMode.PASSWORD);
             viewer.closeInventory();
-            viewer.sendMessage(LanguageManager.getMessage(viewer, "messages.prefix.main-prefix")
-                    + LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.input.password.message")
-                    .replace("{player}", targetName));
+            GuiChatHelper.sendMessageWithCancelButton(viewer,
+                    LanguageManager.getMessage(viewer, "messages.gui.PlayerManage.input.password.message")
+                            .replace("{player}", targetName));
             return;
         }
 

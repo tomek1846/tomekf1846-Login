@@ -53,6 +53,18 @@ public class PlayerManageState {
         }
     }
 
+    public static boolean cancelInput(Player viewer) {
+        if (!inputModes.containsKey(viewer.getUniqueId())) {
+            return false;
+        }
+        clearInput(viewer);
+        String targetName = getTarget(viewer);
+        if (targetName != null && !targetName.isBlank()) {
+            PlayerManageGui.openGUI(viewer, targetName);
+        }
+        return true;
+    }
+
     private static void sendInputTitle(Player viewer, InputMode mode) {
         BukkitTask existing = titleTasks.remove(viewer.getUniqueId());
         if (existing != null) {

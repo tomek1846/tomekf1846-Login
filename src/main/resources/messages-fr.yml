@@ -184,6 +184,9 @@ messages:
   gui:
     frist-page: "&cCeci est la première page. Vous ne pouvez pas revenir en arrière."
     no-data: "&cNon défini"
+    cancel-button:
+      text: "&c[Annuler]"
+      hover: "&7Cliquez pour annuler"
     Maingui:
       name: "&e&lMenu principal"
       filling:
@@ -267,10 +270,10 @@ messages:
         layout: "ABCBABCBA000000000000000000000000000000000000CBAB1BABC"
         name: "&b&lRésultats de recherche de joueurs"
         no-player-data: "&cAucun joueur correspondant trouvé."
-        search-message: "&aEntrez un pseudo pour rechercher (&fcancel&a pour annuler)"
+        search-message: "&aEntrez un pseudo pour rechercher"
         search-title:
           title: "&6Entrez un pseudo"
-          subtitle: "&eRecherchez un joueur dans le chat (&fcancel&e pour annuler)"
+          subtitle: "&eRecherchez un joueur dans le chat"
         buttons:
           Close:
             material: BARRIER
@@ -337,13 +340,13 @@ messages:
             - "&7Cliquez RMB/LMB pour fermer le GUI"
       input:
         email:
-          message: "&aÉcrivez le nouvel email pour &f{player}&a dans le chat (&fcancel&a pour annuler)."
+          message: "&aÉcrivez le nouvel email pour &f{player}&a dans le chat."
           title: "&6Saisir l'email"
-          subtitle: "&eÉcrivez-le dans le chat (&fcancel&e pour annuler)"
+          subtitle: "&eÉcrivez-le dans le chat"
         password:
-          message: "&aÉcrivez le nouveau mot de passe pour &f{player}&a dans le chat (&fcancel&a pour annuler)."
+          message: "&aÉcrivez le nouveau mot de passe pour &f{player}&a dans le chat."
           title: "&6Saisir le mot de passe"
-          subtitle: "&eÉcrivez-le dans le chat (&fcancel&e pour annuler)"
+          subtitle: "&eÉcrivez-le dans le chat"
       Language:
         name: "&9&lLangue : {player}"
         layout: "ABCABCABCBLLLLLLLBABCAXCABC"
