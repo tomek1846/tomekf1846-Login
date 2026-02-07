@@ -35,16 +35,19 @@ public final class MainSpigot extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        saveDefaultConfig();
-        PlayerDataSave.initialize(this);
+
         LanguageManager languageManager = new LanguageManager(this);
         PluginStart pluginStart = new PluginStart(this, languageManager);
+        pluginStart.printPluginInfo();
+
+        saveDefaultConfig();
+        PlayerDataSave.initialize(this);
         AdminCommandManager commandManager = new AdminCommandManager(this, languageManager);
         BlockedPasswordManager.copyBlockedPasswordFile(getDataFolder());
         AdminCommandTabCompleter tabCompleter = new AdminCommandTabCompleter();
         PlayerCommandManager playerCommandManager = new PlayerCommandManager();
         PlayerCommandTabCompleter playerCommandTabCompleter = new PlayerCommandTabCompleter();
-        pluginStart.printPluginInfo();
+
 
         pluginStart.printLoadingCommand();
         Objects.requireNonNull(this.getCommand("alogin")).setExecutor(commandManager);
