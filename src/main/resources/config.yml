@@ -73,6 +73,7 @@ Main-Settings:
     - "lang"
 
   # Descriptions and heads to set and language selection for a specific person in the plugin.
+  # SkinsRestorer is responsible for loading head skins (country flags) when available.
   Language-Options:
     English:
       Aliases:

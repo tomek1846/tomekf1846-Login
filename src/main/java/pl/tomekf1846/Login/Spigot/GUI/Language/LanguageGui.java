@@ -17,6 +17,7 @@ import pl.tomekf1846.Login.Spigot.FileManager.LanguageManager;
 import pl.tomekf1846.Login.Spigot.FileManager.LanguageSettings;
 import pl.tomekf1846.Login.Spigot.FileManager.PlayerDataSave;
 import pl.tomekf1846.Login.Spigot.MainSpigot;
+import pl.tomekf1846.Login.Spigot.PluginManager.SkinsRestorerHook;
 
 
 import java.net.URL;
@@ -136,11 +137,14 @@ public class LanguageGui {
         if (meta != null) {
             meta.setDisplayName(name);
             meta.setLore(lore);
+            boolean applied = false;
             if (texture != null && !texture.isBlank()) {
-                if (!applyTexture(meta, texture) && owner != null && !owner.isBlank()) {
-                    meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+                applied = SkinsRestorerHook.applySkullTexture(head, meta, texture);
+                if (!applied) {
+                    applied = applyTexture(meta, texture);
                 }
-            } else if (owner != null && !owner.isBlank()) {
+            }
+            if (!applied && owner != null && !owner.isBlank()) {
                 meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
             }
             head.setItemMeta(meta);
