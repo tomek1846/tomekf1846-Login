@@ -92,8 +92,8 @@
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
         <repository>
-            <id>skinsrestorer</id>
-            <url>https://repo.skinsrestorer.net/repository/maven-public/</url>
+            <id>codemc</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
         </repository>
     </repositories>
     <dependencies>
