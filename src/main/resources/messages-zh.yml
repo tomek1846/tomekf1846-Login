@@ -276,6 +276,143 @@ messages:
             name: "&c&l关闭GUI"
             lore:
               - "&7右键/左键点击关闭GUI"
+    PlayerManage:
+      name: "&d&l玩家管理: {player}"
+      layout: "ABCB1BCBABCBACABCBCB2B3B4BCABC5A6CBAB7BACAB8BCBAB9BABC"
+      filling:
+        filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+        filling-B: "BLACK_STAINED_GLASS_PANE"
+        filling-C: "BLUE_STAINED_GLASS_PANE"
+      player:
+        name: "&d玩家 {player}"
+        lore:
+          uuid: "&7UUID: &f{uuid}"
+          password: "&7密码: &f{password}"
+          fristip: "&7首次IP: &f{fristip}"
+          lastip: "&7最后IP: &f{lastip}"
+          email: "&7邮箱: &f{email}"
+          premium: "&7Premium: &f{premium}"
+      buttons:
+        Email:
+          name: "&b&l邮箱"
+          lore:
+            - "&7当前: &f{email}"
+            - "&7点击更改邮箱。"
+        Forcelogin:
+          name: "&a&l强制登录"
+          lore:
+            - "&7让玩家立刻登录"
+            - "&7无需输入 /login。"
+        Password:
+          name: "&e&l密码"
+          lore:
+            - "&7当前: &f{password}"
+            - "&7点击设置新密码。"
+        Language:
+          name: "&6&l语言"
+          lore:
+            - "&7当前: &f{language}"
+            - "&7点击更改语言。"
+        IP-List:
+          name: "&c&lIP 列表"
+          lore:
+            - "&7IP 历史即将推出。"
+        Premium:
+          name: "&d&l账户类型"
+          status:
+            premium: "&aPremium"
+            cracked: "&cCracked"
+          lore:
+            - "&7状态: {status}"
+            - "&7点击切换账户类型。"
+        Unregister:
+          name: "&4&l注销"
+          lore:
+            - "&7删除玩家数据并注销。"
+            - "&c此操作无法撤销。"
+        Close:
+          name: "&c&l关闭GUI"
+          lore:
+            - "&7右键/左键点击关闭GUI"
+      input:
+        email:
+          message: "&a请在聊天中输入 &f{player}&a 的新邮箱。"
+          title: "&6输入邮箱"
+          subtitle: "&e在聊天中输入"
+        password:
+          message: "&a请在聊天中输入 &f{player}&a 的新密码。"
+          title: "&6输入密码"
+          subtitle: "&e在聊天中输入"
+      Language:
+        name: "&9&l语言: {player}"
+        layout: "ABCABCABCBLLLLLLLBABCAXCABC"
+        status:
+          current: "&a已选择"
+          available: "&e点击选择"
+        filling:
+          filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+          filling-B: "BLACK_STAINED_GLASS_PANE"
+          filling-C: "BLUE_STAINED_GLASS_PANE"
+        buttons:
+          Close:
+            material: BARRIER
+            name: "&c&l关闭GUI"
+            lore:
+              - "&7右键/左键点击关闭GUI"
+        languages:
+          english:
+            name: "&aEnglish"
+            lore:
+              - "&7语言: &fEnglish"
+              - "{status}"
+          polish:
+            name: "&cPolish"
+            lore:
+              - "&7语言: &fPolish"
+              - "{status}"
+          spanish:
+            name: "&eEspañol"
+            lore:
+              - "&7语言: &fEspañol"
+              - "{status}"
+          chinese:
+            name: "&b中文"
+            lore:
+              - "&7语言: &f中文"
+              - "{status}"
+          german:
+            name: "&6德语"
+            lore:
+              - "&7语言: &f德语"
+              - "{status}"
+          french:
+            name: "&d法语"
+            lore:
+              - "&7语言: &f法语"
+              - "{status}"
+          portuguese:
+            name: "&2葡萄牙语"
+            lore:
+              - "&7语言: &f葡萄牙语"
+              - "{status}"
+      ConfirmUnregister:
+        name: "&4&l确认注销: {player}"
+        layout: "RRRRRRRRRRRCAARYRRRRRRRRRRR"
+        filling:
+          filling-A: "LIGHT_BLUE_STAINED_GLASS_PANE"
+          filling-R: "RED_CONCRETE"
+          filling-G: "GREEN_CONCRETE"
+        buttons:
+          Cancel:
+            material: RED_CONCRETE
+            name: "&c&l取消"
+            lore:
+              - "&7返回，不进行更改。"
+          Confirm:
+            material: GREEN_CONCRETE
+            name: "&a&l确认"
+            lore:
+              - "&7注销该玩家。"
     Language:
       name: "&9&l语言"
       layout: "ABCABCABCBLLLLLLLBABCAXCABC"
