@@ -429,7 +429,7 @@ messages:
         filling-C: BLUE_STAINED_GLASS_PANE
       buttons:
         Close:
-          material: BARRIER
+          material: "BARRIER"
           name: "&c&lCerrar GUI"
           lore:
             - "&7Haz clic derecho/izquierdo para cerrar el GUI"
